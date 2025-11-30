@@ -63,6 +63,15 @@ export default function QRTypePage({ type }: QRTypePageProps) {
   const [size, setSize] = useState(256)
   const [errorCorrection, setErrorCorrection] = useState<'L' | 'M' | 'Q' | 'H'>('M')
 
+  // Frame durumu (Frame state)
+  const [selectedFrame, setSelectedFrame] = useState('none')
+  const [frameText, setFrameText] = useState('')
+  const [frameColor, setFrameColor] = useState('#000000')
+
+  // Logo durumu (Logo state)
+  const [logo, setLogo] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(20)
+
   // İçerik değişikliği (Content change handler)
   const handleContentChange = (newContent: string, newData?: Record<string, string>) => {
     setContent(newContent)
@@ -139,10 +148,24 @@ export default function QRTypePage({ type }: QRTypePageProps) {
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Customize Design</h2>
               <QRCustomizer
-                foregroundColor={foregroundColor} backgroundColor={backgroundColor}
-                size={size} errorCorrection={errorCorrection}
-                onForegroundChange={setForegroundColor} onBackgroundChange={setBackgroundColor}
-                onSizeChange={setSize} onErrorCorrectionChange={setErrorCorrection}
+                foregroundColor={foregroundColor}
+                backgroundColor={backgroundColor}
+                size={size}
+                errorCorrection={errorCorrection}
+                selectedFrame={selectedFrame}
+                frameText={frameText}
+                frameColor={frameColor}
+                logo={logo}
+                logoSize={logoSize}
+                onForegroundChange={setForegroundColor}
+                onBackgroundChange={setBackgroundColor}
+                onSizeChange={setSize}
+                onErrorCorrectionChange={setErrorCorrection}
+                onFrameChange={setSelectedFrame}
+                onFrameTextChange={setFrameText}
+                onFrameColorChange={setFrameColor}
+                onLogoChange={setLogo}
+                onLogoSizeChange={setLogoSize}
               />
             </div>
           </div>
@@ -158,7 +181,18 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                   </h3>
                 </div>
                 <div className="p-6">
-                  <QRPreview content={content} foregroundColor={foregroundColor} backgroundColor={backgroundColor} size={size} errorCorrection={errorCorrection} />
+                  <QRPreview
+                    content={content}
+                    foregroundColor={foregroundColor}
+                    backgroundColor={backgroundColor}
+                    size={size}
+                    errorCorrection={errorCorrection}
+                    selectedFrame={selectedFrame}
+                    frameText={frameText}
+                    frameColor={frameColor}
+                    logo={logo}
+                    logoSize={logoSize}
+                  />
                 </div>
               </div>
             </div>

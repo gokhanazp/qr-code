@@ -7,4 +7,7 @@ export type { QRType } from './QRTypeSelector'
 export { default as QRContentForm } from './QRContentForm'
 export { default as QRCustomizer } from './QRCustomizer'
 export { default as QRPreview } from './QRPreview'
+export { default as QRFrameSelector, FRAME_TEMPLATES } from './QRFrameSelector'
+export type { FrameType } from './QRFrameSelector'
+export { default as QRLogoUploader } from './QRLogoUploader'
 

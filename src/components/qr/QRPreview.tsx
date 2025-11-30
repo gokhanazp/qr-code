@@ -1,5 +1,5 @@
 // QR Kod Önizleme bileşeni (QR Code Preview Component)
-// Modern tasarımlı QR kodu gösterme ve indirme
+// Modern tasarımlı QR kodu gösterme ve indirme (Frame ve Logo destekli)
 
 'use client'
 
@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import QRCode from 'qrcode'
 import { Download, Copy, Check, Image, FileType, Share2, Smartphone } from 'lucide-react'
 import clsx from 'clsx'
+import { FRAME_TEMPLATES } from './QRFrameSelector'
 
 interface QRPreviewProps {
   content: string
@@ -15,6 +16,13 @@ interface QRPreviewProps {
   backgroundColor: string
   size: number
   errorCorrection: 'L' | 'M' | 'Q' | 'H'
+  // Frame özellikleri (Frame properties)
+  selectedFrame?: string
+  frameText?: string
+  frameColor?: string
+  // Logo özellikleri (Logo properties)
+  logo?: string | null
+  logoSize?: number
 }
 
 export default function QRPreview({
@@ -23,12 +31,72 @@ export default function QRPreview({
   backgroundColor,
   size,
   errorCorrection,
+  selectedFrame = 'none',
+  frameText = '',
+  frameColor = '#000000',
+  logo = null,
+  logoSize = 20,
 }: QRPreviewProps) {
   const t = useTranslations('generator')
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [copied, setCopied] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState<string>('')
   const [activeDownload, setActiveDownload] = useState<string | null>(null)
+
+  // Frame template'i bul (Find frame template)
+  const frameTemplate = FRAME_TEMPLATES.find(f => f.id === selectedFrame) || FRAME_TEMPLATES[0]
+
+  // Yuvarlak köşeli dikdörtgen çiz (Draw rounded rectangle)
+  const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    ctx.lineTo(x + w - r, y)
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+    ctx.lineTo(x + w, y + h - r)
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+    ctx.lineTo(x + r, y + h)
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+    ctx.lineTo(x, y + r)
+    ctx.quadraticCurveTo(x, y, x + r, y)
+    ctx.closePath()
+  }
+
+  // Renk ayarlama - daha koyu/açık (Adjust color - darker/lighter)
+  const adjustColor = (hex: string, amount: number): string => {
+    const num = parseInt(hex.replace('#', ''), 16)
+    const r = Math.min(255, Math.max(0, (num >> 16) + amount))
+    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount))
+    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount))
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+  }
+
+  // Logo'yu yükle ve canvas'a çiz (Load and draw logo on canvas)
+  const drawLogoOnCanvas = (ctx: CanvasRenderingContext2D, canvasSize: number, logoSrc: string, logoPct: number): Promise<void> => {
+    return new Promise((resolve) => {
+      const img = new window.Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        // Logo boyutunu hesapla (Calculate logo size)
+        const logoW = canvasSize * (logoPct / 100)
+        const logoH = (img.height / img.width) * logoW
+        const x = (canvasSize - logoW) / 2
+        const y = (canvasSize - logoH) / 2
+
+        // Logo arka planı - beyaz yuvarlak (Logo background - white circle)
+        ctx.fillStyle = '#ffffff'
+        ctx.beginPath()
+        ctx.arc(canvasSize / 2, canvasSize / 2, Math.max(logoW, logoH) / 2 + 8, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Logo'yu çiz (Draw logo)
+        ctx.drawImage(img, x, y, logoW, logoH)
+        resolve()
+      }
+      img.onerror = () => resolve()
+      img.src = logoSrc
+    })
+  }
 
   // QR kodu oluştur (Generate QR code)
   useEffect(() => {
@@ -36,9 +104,96 @@ export default function QRPreview({
 
     const generateQR = async () => {
       try {
-        // Canvas'a QR kodu çiz (Draw QR code to canvas)
-        await QRCode.toCanvas(canvasRef.current, content, {
-          width: 200, // Sabit önizleme boyutu
+        const basePreviewSize = 200
+        const frameStyle = frameTemplate.frameStyle || 'none'
+        const hasFrame = selectedFrame !== 'none'
+
+        // Frame için boyutları hesapla (Calculate dimensions for frame)
+        const framePadding = hasFrame ? 16 : 0
+        const textHeight = hasFrame && frameTemplate.hasText && frameText ? 32 : 0
+        const topTextHeight = (frameStyle === 'bubble-top' || frameStyle === 'bubble') && frameText ? 24 : 0
+
+        const totalWidth = basePreviewSize + framePadding * 2
+        const totalHeight = basePreviewSize + framePadding * 2 + textHeight + topTextHeight
+
+        // Canvas boyutunu ayarla (Set canvas size)
+        const canvas = canvasRef.current!
+        canvas.width = hasFrame ? totalWidth : basePreviewSize
+        canvas.height = hasFrame ? totalHeight : basePreviewSize
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+
+        // Arka planı temizle (Clear background)
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+        const qrX = hasFrame ? framePadding : 0
+        const qrY = hasFrame ? framePadding + topTextHeight : 0
+        const qrSize = basePreviewSize
+        const frameBgColor = frameTemplate.backgroundColor || foregroundColor
+
+        // Frame stiline göre çiz (Draw based on frame style)
+        if (hasFrame) {
+          if (frameStyle === 'simple') {
+            // Siyah çerçeve, altta text
+            ctx.fillStyle = frameBgColor
+            roundRect(ctx, 0, 0, totalWidth, totalHeight, 6)
+            ctx.fill()
+            ctx.fillStyle = backgroundColor
+            roundRect(ctx, 8, 8, totalWidth - 16, basePreviewSize + framePadding, 4)
+            ctx.fill()
+          } else if (frameStyle === 'bubble-top') {
+            // Üstte konuşma balonu
+            ctx.fillStyle = frameBgColor
+            roundRect(ctx, totalWidth/2 - 50, 0, 100, 20, 4)
+            ctx.fill()
+            // Balon üçgeni
+            ctx.beginPath()
+            ctx.moveTo(totalWidth/2 - 6, 20)
+            ctx.lineTo(totalWidth/2 + 6, 20)
+            ctx.lineTo(totalWidth/2, 28)
+            ctx.fill()
+            // Text
+            ctx.fillStyle = '#ffffff'
+            ctx.font = 'bold 11px Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText(frameText, totalWidth/2, 15)
+          } else if (frameStyle === 'bubble') {
+            // Yeşil kenarlık, üstte text
+            ctx.strokeStyle = frameBgColor
+            ctx.lineWidth = 4
+            roundRect(ctx, framePadding, framePadding + topTextHeight, basePreviewSize, basePreviewSize, 0)
+            ctx.stroke()
+            // Üstteki text
+            ctx.fillStyle = foregroundColor
+            ctx.font = 'bold 12px Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText(frameText, totalWidth/2, topTextHeight - 6)
+          } else if (frameStyle === 'video') {
+            // Mavi çerçeve, play butonu
+            ctx.fillStyle = frameBgColor
+            roundRect(ctx, 0, 0, totalWidth, totalHeight, 6)
+            ctx.fill()
+            ctx.fillStyle = backgroundColor
+            roundRect(ctx, 8, 8, totalWidth - 16, basePreviewSize + framePadding, 4)
+            ctx.fill()
+          } else if (frameStyle === 'badge') {
+            // Yeşil rozet sol alt köşede
+            ctx.strokeStyle = '#e5e7eb'
+            ctx.lineWidth = 1
+            ctx.strokeRect(framePadding, framePadding, basePreviewSize, basePreviewSize)
+          } else if (frameStyle === 'text-bottom' || frameStyle === 'arrow' || frameStyle === 'tag' || frameStyle === 'shopping') {
+            // Sadece QR göster, text/dekor aşağıda
+            ctx.strokeStyle = '#e5e7eb'
+            ctx.lineWidth = 1
+            ctx.strokeRect(qrX, qrY, qrSize, qrSize)
+          }
+        }
+
+        // QR kodu oluştur (Generate QR code)
+        const qrDataUrl = await QRCode.toDataURL(content, {
+          width: qrSize,
           margin: 2,
           color: {
             dark: foregroundColor,
@@ -47,24 +202,262 @@ export default function QRPreview({
           errorCorrectionLevel: errorCorrection,
         })
 
-        // Data URL olarak da sakla - indirme için (Store as data URL for download)
-        const dataUrl = await QRCode.toDataURL(content, {
-          width: size, // İndirme için seçilen boyut
-          margin: 2,
-          color: {
-            dark: foregroundColor,
-            light: backgroundColor,
-          },
-          errorCorrectionLevel: errorCorrection,
-        })
-        setQrDataUrl(dataUrl)
+        // QR kodunu çiz (Draw QR code)
+        const qrImg = new window.Image()
+        qrImg.onload = async () => {
+          ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
+
+          // Logo ekle (Add logo)
+          if (logo) {
+            const logoCenterX = qrX + qrSize / 2
+            const logoCenterY = qrY + qrSize / 2
+            const logoW = qrSize * (logoSize / 100)
+
+            ctx.fillStyle = '#ffffff'
+            ctx.beginPath()
+            ctx.arc(logoCenterX, logoCenterY, logoW / 2 + 5, 0, Math.PI * 2)
+            ctx.fill()
+
+            const logoImg = new window.Image()
+            logoImg.onload = () => {
+              const actualLogoH = (logoImg.height / logoImg.width) * logoW
+              ctx.drawImage(logoImg, logoCenterX - logoW / 2, logoCenterY - actualLogoH / 2, logoW, actualLogoH)
+            }
+            logoImg.src = logo
+          }
+
+          // Frame text ekle (Add frame text)
+          if (hasFrame && frameTemplate.hasText && frameText && frameStyle !== 'bubble-top' && frameStyle !== 'bubble') {
+            const textY = qrY + qrSize + 24
+
+            if (frameStyle === 'simple' || frameStyle === 'video') {
+              ctx.fillStyle = '#ffffff'
+              ctx.font = 'bold 14px Arial'
+              ctx.textAlign = 'center'
+              ctx.fillText(frameText, totalWidth / 2, textY)
+
+              // Video için play butonu
+              if (frameStyle === 'video') {
+                const btnX = totalWidth / 2 - 60
+                const btnY = textY - 12
+                ctx.fillStyle = '#ffffff'
+                ctx.beginPath()
+                ctx.arc(btnX, btnY, 8, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.fillStyle = frameBgColor
+                ctx.beginPath()
+                ctx.moveTo(btnX - 2, btnY - 4)
+                ctx.lineTo(btnX - 2, btnY + 4)
+                ctx.lineTo(btnX + 4, btnY)
+                ctx.fill()
+              }
+            } else if (frameStyle === 'badge') {
+              // Yeşil rozet sol alt köşede
+              ctx.save()
+              ctx.translate(framePadding + 10, qrY + qrSize - 5)
+              ctx.rotate(-15 * Math.PI / 180)
+              ctx.fillStyle = frameBgColor
+              roundRect(ctx, 0, 0, 70, 18, 3)
+              ctx.fill()
+              ctx.fillStyle = '#ffffff'
+              ctx.font = 'bold 10px Arial'
+              ctx.textAlign = 'center'
+              ctx.fillText(frameText, 35, 13)
+              ctx.restore()
+            } else if (frameStyle === 'text-bottom') {
+              ctx.fillStyle = foregroundColor
+              ctx.font = 'bold 18px Arial'
+              ctx.textAlign = 'center'
+              ctx.fillText(frameText, totalWidth / 2, textY + 4)
+            } else if (frameStyle === 'tag') {
+              // Siyah etiket sağ alt köşede
+              const tagWidth = frameText.length * 8 + 16
+              ctx.fillStyle = frameBgColor
+              roundRect(ctx, totalWidth - tagWidth - 8, qrY + qrSize - 8, tagWidth, 20, 3)
+              ctx.fill()
+              ctx.fillStyle = '#ffffff'
+              ctx.font = 'bold 10px Arial'
+              ctx.textAlign = 'center'
+              ctx.fillText(frameText, totalWidth - tagWidth/2 - 8, qrY + qrSize + 6)
+            } else if (frameStyle === 'arrow') {
+              // Ok ve italik text
+              ctx.fillStyle = foregroundColor
+              ctx.font = 'italic 14px Arial'
+              ctx.textAlign = 'left'
+              ctx.fillText(frameText, qrX + qrSize - 50, textY)
+              // Ok çiz
+              ctx.strokeStyle = foregroundColor
+              ctx.lineWidth = 2
+              ctx.beginPath()
+              ctx.moveTo(qrX + qrSize - 60, textY - 20)
+              ctx.quadraticCurveTo(qrX + qrSize - 80, textY - 30, qrX + qrSize - 70, textY - 50)
+              ctx.stroke()
+            } else if (frameStyle === 'shopping') {
+              // Etiket ortalı alt
+              const tagWidth = frameText.length * 7 + 20
+              ctx.fillStyle = frameBgColor
+              ctx.fillRect(totalWidth/2 - tagWidth/2, qrY + qrSize + 4, tagWidth, 18)
+              ctx.fillStyle = '#ffffff'
+              ctx.font = 'bold 10px Arial'
+              ctx.textAlign = 'center'
+              ctx.fillText(frameText, totalWidth / 2, qrY + qrSize + 16)
+            }
+          }
+        }
+        qrImg.src = qrDataUrl
+
+        // İndirme için ayrı canvas oluştur (Create separate canvas for download)
+        const downloadCanvas = document.createElement('canvas')
+        const downloadCtx = downloadCanvas.getContext('2d')
+
+        if (downloadCtx) {
+          const dlFrameStyle = frameTemplate.frameStyle || 'none'
+          const dlHasFrame = selectedFrame !== 'none'
+          const dlPadding = dlHasFrame ? 24 : 0
+          const dlTextHeight = dlHasFrame && frameTemplate.hasText && frameText ? 48 : 0
+          const dlTopTextHeight = (dlFrameStyle === 'bubble-top' || dlFrameStyle === 'bubble') && frameText ? 36 : 0
+
+          const dlTotalWidth = size + dlPadding * 2
+          const dlTotalHeight = size + dlPadding * 2 + dlTextHeight + dlTopTextHeight
+          const dlFrameBgColor = frameTemplate.backgroundColor || foregroundColor
+
+          downloadCanvas.width = dlHasFrame ? dlTotalWidth : size
+          downloadCanvas.height = dlHasFrame ? dlTotalHeight : size
+
+          // Arka planı temizle (Clear background)
+          downloadCtx.fillStyle = backgroundColor
+          downloadCtx.fillRect(0, 0, downloadCanvas.width, downloadCanvas.height)
+
+          const dlQrX = dlHasFrame ? dlPadding : 0
+          const dlQrY = dlHasFrame ? dlPadding + dlTopTextHeight : 0
+
+          // Frame stiline göre çiz (Draw based on frame style)
+          if (dlHasFrame) {
+            if (dlFrameStyle === 'simple' || dlFrameStyle === 'video') {
+              downloadCtx.fillStyle = dlFrameBgColor
+              roundRect(downloadCtx, 0, 0, dlTotalWidth, dlTotalHeight, 8)
+              downloadCtx.fill()
+              downloadCtx.fillStyle = backgroundColor
+              roundRect(downloadCtx, 12, 12, dlTotalWidth - 24, size + dlPadding, 6)
+              downloadCtx.fill()
+            } else if (dlFrameStyle === 'bubble-top') {
+              downloadCtx.fillStyle = dlFrameBgColor
+              roundRect(downloadCtx, dlTotalWidth/2 - 80, 0, 160, 30, 6)
+              downloadCtx.fill()
+              downloadCtx.beginPath()
+              downloadCtx.moveTo(dlTotalWidth/2 - 10, 30)
+              downloadCtx.lineTo(dlTotalWidth/2 + 10, 30)
+              downloadCtx.lineTo(dlTotalWidth/2, 42)
+              downloadCtx.fill()
+              downloadCtx.fillStyle = '#ffffff'
+              downloadCtx.font = 'bold 16px Arial'
+              downloadCtx.textAlign = 'center'
+              downloadCtx.fillText(frameText, dlTotalWidth/2, 22)
+            } else if (dlFrameStyle === 'bubble') {
+              downloadCtx.strokeStyle = dlFrameBgColor
+              downloadCtx.lineWidth = 6
+              roundRect(downloadCtx, dlPadding, dlPadding + dlTopTextHeight, size, size, 0)
+              downloadCtx.stroke()
+              downloadCtx.fillStyle = foregroundColor
+              downloadCtx.font = 'bold 18px Arial'
+              downloadCtx.textAlign = 'center'
+              downloadCtx.fillText(frameText, dlTotalWidth/2, dlTopTextHeight - 10)
+            }
+          }
+
+          // QR kodu çiz (Draw QR code)
+          const qrDataUrlTemp = await QRCode.toDataURL(content, {
+            width: size,
+            margin: 2,
+            color: { dark: foregroundColor, light: backgroundColor },
+            errorCorrectionLevel: errorCorrection,
+          })
+
+          const downloadQrImg = new window.Image()
+          downloadQrImg.onload = async () => {
+            downloadCtx.drawImage(downloadQrImg, dlQrX, dlQrY, size, size)
+
+            // Logo ekle (Add logo)
+            if (logo) {
+              const logoCenterX = dlQrX + size / 2
+              const logoCenterY = dlQrY + size / 2
+              const logoW = size * (logoSize / 100)
+
+              downloadCtx.fillStyle = '#ffffff'
+              downloadCtx.beginPath()
+              downloadCtx.arc(logoCenterX, logoCenterY, logoW / 2 + 10, 0, Math.PI * 2)
+              downloadCtx.fill()
+
+              const downloadLogoImg = new window.Image()
+              downloadLogoImg.crossOrigin = 'anonymous'
+              await new Promise<void>((resolve) => {
+                downloadLogoImg.onload = () => {
+                  const actualLogoH = (downloadLogoImg.height / downloadLogoImg.width) * logoW
+                  downloadCtx.drawImage(downloadLogoImg, logoCenterX - logoW / 2, logoCenterY - actualLogoH / 2, logoW, actualLogoH)
+                  resolve()
+                }
+                downloadLogoImg.onerror = () => resolve()
+                downloadLogoImg.src = logo
+              })
+            }
+
+            // Frame text ekle (Add frame text for download)
+            if (dlHasFrame && frameTemplate.hasText && frameText && dlFrameStyle !== 'bubble-top' && dlFrameStyle !== 'bubble') {
+              const dlTextY = dlQrY + size + 36
+
+              if (dlFrameStyle === 'simple' || dlFrameStyle === 'video') {
+                downloadCtx.fillStyle = '#ffffff'
+                downloadCtx.font = 'bold 20px Arial'
+                downloadCtx.textAlign = 'center'
+                downloadCtx.fillText(frameText, dlTotalWidth / 2, dlTextY)
+              } else if (dlFrameStyle === 'badge') {
+                downloadCtx.save()
+                downloadCtx.translate(dlPadding + 15, dlQrY + size - 10)
+                downloadCtx.rotate(-15 * Math.PI / 180)
+                downloadCtx.fillStyle = dlFrameBgColor
+                roundRect(downloadCtx, 0, 0, 100, 26, 4)
+                downloadCtx.fill()
+                downloadCtx.fillStyle = '#ffffff'
+                downloadCtx.font = 'bold 14px Arial'
+                downloadCtx.textAlign = 'center'
+                downloadCtx.fillText(frameText, 50, 18)
+                downloadCtx.restore()
+              } else if (dlFrameStyle === 'text-bottom') {
+                downloadCtx.fillStyle = foregroundColor
+                downloadCtx.font = 'bold 24px Arial'
+                downloadCtx.textAlign = 'center'
+                downloadCtx.fillText(frameText, dlTotalWidth / 2, dlTextY + 6)
+              } else if (dlFrameStyle === 'tag') {
+                const tagWidth = frameText.length * 12 + 24
+                downloadCtx.fillStyle = dlFrameBgColor
+                roundRect(downloadCtx, dlTotalWidth - tagWidth - 12, dlQrY + size - 12, tagWidth, 30, 4)
+                downloadCtx.fill()
+                downloadCtx.fillStyle = '#ffffff'
+                downloadCtx.font = 'bold 14px Arial'
+                downloadCtx.textAlign = 'center'
+                downloadCtx.fillText(frameText, dlTotalWidth - tagWidth/2 - 12, dlQrY + size + 8)
+              } else if (dlFrameStyle === 'shopping') {
+                const tagWidth = frameText.length * 10 + 30
+                downloadCtx.fillStyle = dlFrameBgColor
+                downloadCtx.fillRect(dlTotalWidth/2 - tagWidth/2, dlQrY + size + 6, tagWidth, 28)
+                downloadCtx.fillStyle = '#ffffff'
+                downloadCtx.font = 'bold 14px Arial'
+                downloadCtx.textAlign = 'center'
+                downloadCtx.fillText(frameText, dlTotalWidth / 2, dlQrY + size + 26)
+              }
+            }
+
+            setQrDataUrl(downloadCanvas.toDataURL('image/png'))
+          }
+          downloadQrImg.src = qrDataUrlTemp
+        }
       } catch (err) {
         console.error('QR Code generation error:', err)
       }
     }
 
     generateQR()
-  }, [content, foregroundColor, backgroundColor, size, errorCorrection])
+  }, [content, foregroundColor, backgroundColor, size, errorCorrection, logo, logoSize, selectedFrame, frameText, frameTemplate])
 
   // PNG olarak indir (Download as PNG)
   const downloadPNG = () => {
