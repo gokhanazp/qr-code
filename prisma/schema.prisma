@@ -1,0 +1,162 @@
+// Prisma şeması - QR Code Generator
+// Veritabanı şeması için Prisma ORM kullanıyoruz
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Kullanıcı modeli - Üyelik sistemi için
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  image         String?
+  role          String    @default("USER") // USER veya ADMIN
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // İlişkiler
+  accounts      Account[]
+  sessions      Session[]
+  qrCodes       QRCode[]
+  subscription  Subscription?
+  payments      Payment[]
+}
+
+// OAuth hesapları için
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// Oturum yönetimi
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Email doğrulama token'ları
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// QR Code modeli
+model QRCode {
+  id          String      @id @default(cuid())
+  name        String
+  type        String      // URL, TEXT, EMAIL, PHONE, SMS, WIFI, VCARD, etc.
+  content     String      // URL, text, vCard vs.
+  data        String?     // JSON formatında ek veri
+  imageUrl    String?     // Oluşturulan QR kod görsel URL'i
+  shortUrl    String?     @unique // Kısa URL (dinamik QR için)
+  scanCount   Int         @default(0)
+  isActive    Boolean     @default(true)
+  isDynamic   Boolean     @default(false)
+  expiresAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // İlişkiler
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scans       QRScan[]
+}
+
+// QR Kod tarama kayıtları (analitik için)
+model QRScan {
+  id          String   @id @default(cuid())
+  qrCodeId    String
+  qrCode      QRCode   @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  userAgent   String?
+  ipAddress   String?
+  country     String?
+  city        String?
+  device      String?
+  browser     String?
+  referer     String?
+  scannedAt   DateTime @default(now())
+}
+
+// Paket planları
+model Plan {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  price           Float
+  currency        String   @default("USD")
+  interval        String   @default("monthly") // monthly, yearly
+  qrCodeLimit     Int      // -1 = sınırsız
+  scanLimit       Int      // -1 = sınırsız
+  dynamicQR       Boolean  @default(false)
+  analytics       Boolean  @default(false)
+  customDesign    Boolean  @default(false)
+  bulkCreate      Boolean  @default(false)
+  apiAccess       Boolean  @default(false)
+  priority        Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // İlişkiler
+  subscriptions   Subscription[]
+}
+
+// Kullanıcı abonelikleri
+model Subscription {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId          String
+  plan            Plan     @relation(fields: [planId], references: [id])
+  status          String   @default("ACTIVE") // ACTIVE, CANCELED, PAST_DUE, UNPAID, TRIALING
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean @default(false)
+  stripeSubscriptionId String? @unique
+  stripeCustomerId    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Ödeme kayıtları
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Float
+  currency        String   @default("USD")
+  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  stripePaymentId String?  @unique
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
