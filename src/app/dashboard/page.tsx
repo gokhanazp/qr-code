@@ -1,54 +1,77 @@
 // Dashboard Sayfası
-// Kullanıcı ana paneli
+// Supabase Auth ile kullanıcı paneli
 
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { QrCode, BarChart3, Clock, Plus, ExternalLink, Eye } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { QrCode, BarChart3, Clock, Plus, ExternalLink, Eye, LogOut } from 'lucide-react'
 import { Button, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui'
 
 export default async function DashboardPage() {
+  // Supabase client oluştur
+  const supabase = await createClient()
+
   // Oturum kontrolü
-  const session = await auth()
-  if (!session?.user) {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
     redirect('/auth/login')
   }
 
   const t = await getTranslations('dashboard')
 
-  // Kullanıcı verilerini çek
-  const [qrCodes, subscription] = await Promise.all([
-    prisma.qRCode.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: 'desc' },
-      take: 5,
-    }),
-    prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-      include: { plan: true },
-    }),
-  ])
+  // Kullanıcı profilini çek
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  // Kullanıcının QR kodlarını çek
+  const { data: qrCodes } = await supabase
+    .from('qr_codes')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  // Abonelik bilgisini çek
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
 
   // İstatistikler
-  const totalScans = qrCodes.reduce((sum, qr) => sum + qr.scanCount, 0)
-  const activeQRCodes = qrCodes.filter(qr => qr.isActive).length
+  const qrList = qrCodes || []
+  const totalScans = qrList.reduce((sum, qr) => sum + (qr.scan_count || 0), 0)
+  const activeQRCodes = qrList.filter(qr => qr.is_active).length
 
   // Abonelik kalan gün hesaplama
-  const daysRemaining = subscription
-    ? Math.max(0, Math.ceil((new Date(subscription.currentPeriodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+  const daysRemaining = subscription?.current_period_end
+    ? Math.max(0, Math.ceil((new Date(subscription.current_period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0
+
+  // Kullanıcı adı
+  const userName = profile?.full_name || user.user_metadata?.full_name || user.email
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hoşgeldin mesajı */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">
-            {t('welcome')}, {session.user.name || session.user.email}
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-gray-600 mt-1">
+              {t('welcome')}, {userName}
+            </p>
+          </div>
+          <form action="/auth/signout" method="POST">
+            <Button type="submit" variant="outline" leftIcon={<LogOut className="w-4 h-4" />}>
+              Çıkış Yap
+            </Button>
+          </form>
         </div>
 
         {/* İstatistik kartları */}
@@ -61,7 +84,7 @@ export default async function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">{t('myQRCodes')}</p>
-                <p className="text-2xl font-bold text-gray-900">{qrCodes.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{qrList.length}</p>
               </div>
             </CardContent>
           </Card>
@@ -112,52 +135,75 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t('myQRCodes')}</CardTitle>
-            <Link href="/dashboard/qr/create">
+            <Link href="/qr-generator/url">
               <Button leftIcon={<Plus className="w-4 h-4" />}>
                 {t('createNew')}
               </Button>
             </Link>
           </CardHeader>
           <CardContent>
-            {qrCodes.length > 0 ? (
+            {qrList.length > 0 ? (
               <div className="divide-y divide-gray-200">
-                {qrCodes.map((qr) => (
-                  <div key={qr.id} className="py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <QrCode className="w-6 h-6 text-gray-600" />
+                {qrList.map((qr) => {
+                  // Kalan gün hesapla
+                  const expiresAt = qr.expires_at ? new Date(qr.expires_at) : null
+                  const now = new Date()
+                  const daysLeft = expiresAt
+                    ? Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+                    : null
+                  const isExpired = daysLeft !== null && daysLeft <= 0
+
+                  return (
+                    <div key={qr.id} className="py-4 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <QrCode className="w-6 h-6 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{qr.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {qr.type?.toUpperCase()} • {qr.scan_count || 0} tarama
+                            {daysLeft !== null && (
+                              <span className={daysLeft <= 3 ? 'text-amber-600 ml-2' : 'ml-2'}>
+                                • {isExpired ? 'Süresi doldu' : `${daysLeft} gün kaldı`}
+                              </span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{qr.name}</p>
-                        <p className="text-sm text-gray-500">{qr.type} • {qr.scanCount} scans</p>
+                      <div className="flex items-center gap-2">
+                        {isExpired ? (
+                          <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                            Süresi Doldu
+                          </span>
+                        ) : (
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            qr.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {qr.is_active ? 'Aktif' : 'Pasif'}
+                          </span>
+                        )}
+                        <Link href={`/dashboard/qr/${qr.id}`}>
+                          <Button variant="ghost" size="sm">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </Link>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        qr.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {qr.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                      <Link href={`/dashboard/qr/${qr.id}`}>
-                        <Button variant="ghost" size="sm">
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             ) : (
               <div className="text-center py-12">
                 <QrCode className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">{t('noQRCodes')}</p>
-                <Link href="/dashboard/qr/create" className="mt-4 inline-block">
+                <Link href="/qr-generator/url" className="mt-4 inline-block">
                   <Button>{t('createNew')}</Button>
                 </Link>
               </div>
             )}
           </CardContent>
-          {qrCodes.length > 0 && (
+          {qrList.length > 0 && (
             <CardFooter className="justify-center">
               <Link href="/dashboard/qr">
                 <Button variant="ghost">{t('viewAll')}</Button>

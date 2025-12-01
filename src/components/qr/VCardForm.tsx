@@ -20,8 +20,10 @@ import {
   QrCode,
 } from 'lucide-react'
 import clsx from 'clsx'
+import { useTranslations } from 'next-intl'
 import VCardPhonePreview from './VCardPhonePreview'
 import QRPreview from './QRPreview'
+import VCardPhotoUpload from './VCardPhotoUpload'
 
 // Renk paletleri (Color palettes)
 const colorPalettes = [
@@ -41,6 +43,9 @@ interface VCardFormProps {
 }
 
 export default function VCardForm({ data, onChange }: VCardFormProps) {
+  // Çeviri hook'u (Translation hook)
+  const t = useTranslations('generator')
+
   // Açık/kapalı bölümler (Collapsible sections)
   const [openSections, setOpenSections] = useState({
     design: true,
@@ -121,14 +126,14 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
         {/* Tasarım Bölümü (Design Section) */}
         <CollapsibleSection
           icon={<Palette className="w-5 h-5" />}
-          title="Design"
-          subtitle="Choose a color theme for your page."
+          title={t('design')}
+          subtitle={t('designSubtitle')}
           isOpen={openSections.design}
           onToggle={() => toggleSection('design')}
         >
           {/* Renk Paleti (Color Palette) */}
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-700">Color palette</label>
+            <label className="block text-sm font-medium text-gray-700">{t('colorPalette')}</label>
             <div className="flex flex-wrap gap-3">
               {colorPalettes.map((palette) => (
                 <button
@@ -152,23 +157,23 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
             {/* Primary & Secondary Color Pickers */}
             <div className="flex items-center gap-4 mt-4">
               <ColorPicker
-                label="Primary color"
+                label={t('primaryColor')}
                 color={selectedPalette.primary}
                 onChange={(color) => {
                   setSelectedPalette({ ...selectedPalette, primary: color })
                   updateField('primaryColor', color)
                 }}
               />
-              
+
               <button
                 onClick={swapColors}
                 className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors mt-6"
               >
                 <ArrowLeftRight className="w-5 h-5" />
               </button>
-              
+
               <ColorPicker
-                label="Secondary color"
+                label={t('secondaryColor')}
                 color={selectedPalette.secondary}
                 onChange={(color) => {
                   setSelectedPalette({ ...selectedPalette, secondary: color })
@@ -182,45 +187,45 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
         {/* Kişisel Bilgiler (Personal Information) */}
         <CollapsibleSection
           icon={<User className="w-5 h-5" />}
-          title="Personal Information"
-          subtitle="Fill in your information."
+          title={t('personalInfo')}
+          subtitle={t('personalInfoSubtitle')}
           isOpen={openSections.personal}
           onToggle={() => toggleSection('personal')}
         >
-          <PersonalInfoFields data={data} onChange={updateField} />
+          <PersonalInfoFields data={data} onChange={updateField} t={t} />
         </CollapsibleSection>
 
         {/* İş Bilgileri (Work Information) */}
         <CollapsibleSection
           icon={<Briefcase className="w-5 h-5" />}
-          title="Work Information"
-          subtitle="Add your company details."
+          title={t('workInfo')}
+          subtitle={t('workInfoSubtitle')}
           isOpen={openSections.work}
           onToggle={() => toggleSection('work')}
         >
-          <WorkInfoFields data={data} onChange={updateField} />
+          <WorkInfoFields data={data} onChange={updateField} t={t} />
         </CollapsibleSection>
 
         {/* İletişim Bilgileri (Contact Information) */}
         <CollapsibleSection
           icon={<Phone className="w-5 h-5" />}
-          title="Contact Information"
-          subtitle="Add your contact details."
+          title={t('contactInfo')}
+          subtitle={t('contactInfoSubtitle')}
           isOpen={openSections.contact}
           onToggle={() => toggleSection('contact')}
         >
-          <ContactInfoFields data={data} onChange={updateField} />
+          <ContactInfoFields data={data} onChange={updateField} t={t} />
         </CollapsibleSection>
 
         {/* Adres Bilgileri (Address Information) */}
         <CollapsibleSection
           icon={<MapPin className="w-5 h-5" />}
-          title="Address"
-          subtitle="Add your location."
+          title={t('address')}
+          subtitle={t('addressSubtitle')}
           isOpen={openSections.address}
           onToggle={() => toggleSection('address')}
         >
-          <AddressFields data={data} onChange={updateField} />
+          <AddressFields data={data} onChange={updateField} t={t} />
         </CollapsibleSection>
       </div>
 
@@ -246,7 +251,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
           >
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <QrCode className="w-5 h-5" />
-              Your QR Code
+              {t('yourQRCode')}
             </h3>
           </div>
 
@@ -262,19 +267,19 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
               />
             ) : (
               <div className="flex items-center justify-center h-48 bg-gray-50 rounded-xl">
-                <p className="text-gray-400">Loading QR Code...</p>
+                <p className="text-gray-400">{t('loadingQRCode')}</p>
               </div>
             )}
 
             {/* Bilgi metni (Info text) */}
             <p className="text-sm text-gray-500 text-center mt-4">
-              Scan this QR code to view your digital business card
+              {t('scanToView')}
             </p>
 
             {/* Landing page URL (önizleme için) - Preview URL */}
             {qrContent && (
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1 font-medium">Preview URL:</p>
+                <p className="text-xs text-gray-500 mb-1 font-medium">{t('previewUrl')}</p>
                 <div className="flex items-center gap-2">
                   <a
                     href={qrContent}
@@ -287,13 +292,12 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
                   <button
                     onClick={() => window.open(qrContent, '_blank')}
                     className="flex-shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
-                    title="Önizle / Preview"
                   >
-                    Open
+                    {t('open')}
                   </button>
                 </div>
                 <p className="text-[10px] text-gray-400 mt-2">
-                  Click to preview your digital business card
+                  {t('clickToPreview')}
                 </p>
               </div>
             )}
@@ -410,31 +414,28 @@ function FormInput({ icon, label, placeholder, value, onChange, type = 'text', r
 }
 
 // Kişisel Bilgi Alanları (Personal Information Fields)
-function PersonalInfoFields({ data, onChange }: { data: Record<string, string>; onChange: (key: string, value: string) => void }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function PersonalInfoFields({ data, onChange, t }: { data: Record<string, string>; onChange: (key: string, value: string) => void; t: any }) {
   return (
     <div className="space-y-4">
-      {/* Profil Resmi (Profile Image) */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Image <span className="text-gray-400 text-xs">(optional)</span>
-        </label>
-        <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all">
-          <ImagePlus className="w-8 h-8 text-blue-400" />
-        </div>
-      </div>
+      {/* Profil Resmi - Supabase Storage Entegrasyonlu (Profile Image - Supabase Storage Integration) */}
+      <VCardPhotoUpload
+        value={data.photo || ''}
+        onChange={(url) => onChange('photo', url)}
+      />
 
       {/* Ad Soyad (Name & Surname) */}
       <div className="grid grid-cols-2 gap-4">
         <FormInput
           icon={<User className="w-4 h-4" />}
-          label="Name"
+          label={t('name')}
           placeholder="John"
           value={data.firstName || ''}
           onChange={(v) => onChange('firstName', v)}
           required
         />
         <FormInput
-          label="Surname"
+          label={t('surname')}
           placeholder="Doe"
           value={data.lastName || ''}
           onChange={(v) => onChange('lastName', v)}
@@ -445,18 +446,19 @@ function PersonalInfoFields({ data, onChange }: { data: Record<string, string>; 
 }
 
 // İş Bilgi Alanları (Work Information Fields)
-function WorkInfoFields({ data, onChange }: { data: Record<string, string>; onChange: (key: string, value: string) => void }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function WorkInfoFields({ data, onChange, t }: { data: Record<string, string>; onChange: (key: string, value: string) => void; t: any }) {
   return (
     <div className="space-y-4">
       <FormInput
         icon={<Briefcase className="w-4 h-4" />}
-        label="Company"
+        label={t('company')}
         placeholder="Acme Inc."
         value={data.company || ''}
         onChange={(v) => onChange('company', v)}
       />
       <FormInput
-        label="Job Title"
+        label={t('jobTitle')}
         placeholder="Software Engineer"
         value={data.title || ''}
         onChange={(v) => onChange('title', v)}
@@ -466,37 +468,38 @@ function WorkInfoFields({ data, onChange }: { data: Record<string, string>; onCh
 }
 
 // İletişim Bilgi Alanları (Contact Information Fields)
-function ContactInfoFields({ data, onChange }: { data: Record<string, string>; onChange: (key: string, value: string) => void }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ContactInfoFields({ data, onChange, t }: { data: Record<string, string>; onChange: (key: string, value: string) => void; t: any }) {
   return (
     <div className="space-y-4">
       <FormInput
         icon={<Phone className="w-4 h-4" />}
-        label="Mobile Phone"
-        placeholder="+1 555 123 4567"
+        label={t('mobilePhone')}
+        placeholder="+90 555 123 4567"
         value={data.mobile || ''}
         onChange={(v) => onChange('mobile', v)}
         type="tel"
       />
       <FormInput
         icon={<Phone className="w-4 h-4" />}
-        label="Work Phone"
-        placeholder="+1 555 987 6543"
+        label={t('workPhone')}
+        placeholder="+90 555 987 6543"
         value={data.workPhone || ''}
         onChange={(v) => onChange('workPhone', v)}
         type="tel"
       />
       <FormInput
         icon={<Mail className="w-4 h-4" />}
-        label="Email"
-        placeholder="john@example.com"
+        label={t('email')}
+        placeholder="ahmet@ornek.com"
         value={data.email || ''}
         onChange={(v) => onChange('email', v)}
         type="email"
       />
       <FormInput
         icon={<Globe className="w-4 h-4" />}
-        label="Website"
-        placeholder="https://example.com"
+        label={t('website')}
+        placeholder="https://ornek.com"
         value={data.website || ''}
         onChange={(v) => onChange('website', v)}
         type="url"
@@ -506,40 +509,41 @@ function ContactInfoFields({ data, onChange }: { data: Record<string, string>; o
 }
 
 // Adres Alanları (Address Fields)
-function AddressFields({ data, onChange }: { data: Record<string, string>; onChange: (key: string, value: string) => void }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function AddressFields({ data, onChange, t }: { data: Record<string, string>; onChange: (key: string, value: string) => void; t: any }) {
   return (
     <div className="space-y-4">
       <FormInput
         icon={<MapPin className="w-4 h-4" />}
-        label="Street Address"
-        placeholder="123 Main St"
+        label={t('streetAddress')}
+        placeholder="Atatürk Cad. No: 123"
         value={data.street || ''}
         onChange={(v) => onChange('street', v)}
       />
       <div className="grid grid-cols-2 gap-4">
         <FormInput
-          label="City"
-          placeholder="New York"
+          label={t('city')}
+          placeholder="İstanbul"
           value={data.city || ''}
           onChange={(v) => onChange('city', v)}
         />
         <FormInput
-          label="State/Province"
-          placeholder="NY"
+          label={t('stateProvince')}
+          placeholder="Kadıköy"
           value={data.state || ''}
           onChange={(v) => onChange('state', v)}
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <FormInput
-          label="ZIP/Postal Code"
-          placeholder="10001"
+          label={t('zipPostalCode')}
+          placeholder="34710"
           value={data.zip || ''}
           onChange={(v) => onChange('zip', v)}
         />
         <FormInput
-          label="Country"
-          placeholder="USA"
+          label={t('country')}
+          placeholder="Türkiye"
           value={data.country || ''}
           onChange={(v) => onChange('country', v)}
         />

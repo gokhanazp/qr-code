@@ -1,72 +1,111 @@
-// QR Code Save API
-// QR kod kaydetme endpoint'i
+// QR Code Save API - Supabase entegrasyonu
+// QR kod kaydetme ve listeleme endpoint'i
 
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
+
+// QR kod kaydetme isteği tipi
+interface SaveQRRequest {
+  name: string
+  type: string
+  content: string
+  rawContent?: Record<string, string>
+  settings: {
+    foregroundColor: string
+    backgroundColor: string
+    size: number
+    errorCorrection: string
+    frame?: string
+    frameText?: string
+    frameColor?: string
+    logo?: string
+    logoSize?: number
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Oturum kontrolü
-    const session = await auth()
-    if (!session?.user?.id) {
+    // Supabase client oluştur
+    const supabase = await createClient()
+
+    // Kullanıcı kontrolü
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Unauthorized', message: 'Lütfen giriş yapın' },
         { status: 401 }
       )
     }
 
-    const body = await request.json()
-    const { name, type, content, data, imageUrl, isDynamic = false } = body
+    // İstek gövdesini al
+    const body: SaveQRRequest = await request.json()
+    const { name, type, content, rawContent, settings } = body
 
-    // Gerekli alan kontrolü
+    // Validasyon
     if (!name || !type || !content) {
       return NextResponse.json(
-        { error: 'Name, type, and content are required' },
+        { error: 'Bad Request', message: 'İsim, tip ve içerik zorunludur' },
         { status: 400 }
       )
     }
 
-    // Kullanıcının QR kod limitini kontrol et
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-      include: { plan: true },
-    })
+    // Limit kontrolü - Supabase RPC ile
+    const { data: limitCheck, error: limitError } = await supabase
+      .rpc('can_create_qr', { p_user_id: user.id })
 
-    const qrCodeCount = await prisma.qRCode.count({
-      where: { userId: session.user.id },
-    })
-
-    // Limit kontrolü (Free plan için 5 QR kod)
-    const limit = subscription?.plan?.qrCodeLimit ?? 5
-    if (limit !== -1 && qrCodeCount >= limit) {
+    if (limitError) {
+      console.error('Limit check error:', limitError)
+      // Limit kontrolü başarısız olursa devam et (fonksiyon henüz oluşturulmamış olabilir)
+    } else if (limitCheck && !limitCheck.can_create) {
       return NextResponse.json(
-        { error: 'QR code limit reached. Please upgrade your plan.' },
+        {
+          error: 'Limit Reached',
+          message: `QR kod limitinize ulaştınız (${limitCheck.current}/${limitCheck.limit}). Planınızı yükseltin.`,
+          current: limitCheck.current,
+          limit: limitCheck.limit,
+          plan: limitCheck.plan
+        },
         { status: 403 }
       )
     }
 
-    // QR kodu kaydet
-    const qrCode = await prisma.qRCode.create({
-      data: {
-        name,
-        type,
-        content,
-        data: data ? JSON.stringify(data) : null,
-        imageUrl,
-        isDynamic,
-        userId: session.user.id,
-      },
-    })
+    // QR kodunu kaydet
+    const { data: qrCode, error: insertError } = await supabase
+      .from('qr_codes')
+      .insert({
+        user_id: user.id,
+        name: name,
+        type: type.toLowerCase(),
+        content: {
+          encoded: content,
+          raw: rawContent || {}
+        },
+        settings: settings,
+        is_dynamic: false,
+        is_active: true
+      })
+      .select()
+      .single()
 
-    return NextResponse.json(
-      { message: 'QR code saved successfully', qrCode },
-      { status: 201 }
-    )
+    if (insertError) {
+      console.error('Insert error:', insertError)
+      return NextResponse.json(
+        { error: 'Database Error', message: 'QR kod kaydedilemedi: ' + insertError.message },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'QR kod başarıyla kaydedildi',
+      qrCode: qrCode
+    }, { status: 201 })
+
   } catch (error) {
-    console.error('QR save error:', error)
+    console.error('Save QR error:', error)
     return NextResponse.json(
-      { error: 'Failed to save QR code' },
+      { error: 'Server Error', message: 'Bir hata oluştu' },
       { status: 500 }
     )
   }
@@ -75,24 +114,44 @@ export async function POST(request: NextRequest) {
 // Kullanıcının QR kodlarını listele
 export async function GET() {
   try {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    const qrCodes = await prisma.qRCode.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: 'desc' },
+    // Kullanıcının QR kodlarını getir
+    const { data: qrCodes, error } = await supabase
+      .from('qr_codes')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      return NextResponse.json(
+        { error: 'Database Error', message: error.message },
+        { status: 500 }
+      )
+    }
+
+    // Limit bilgisini de getir
+    const { data: limitCheck } = await supabase
+      .rpc('can_create_qr', { p_user_id: user.id })
+
+    return NextResponse.json({
+      qrCodes,
+      limits: limitCheck || { current: qrCodes?.length || 0, limit: 2, plan: 'free', can_create: true }
     })
 
-    return NextResponse.json({ qrCodes })
   } catch (error) {
-    console.error('QR list error:', error)
+    console.error('Get QR error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch QR codes' },
+      { error: 'Server Error' },
       { status: 500 }
     )
   }

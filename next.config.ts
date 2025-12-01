@@ -5,6 +5,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
+  // React Strict Mode - development'ta performance hatalarını önlemek için kapalı
+  reactStrictMode: false,
+
   // Görsel optimizasyonu
   images: {
     remotePatterns: [

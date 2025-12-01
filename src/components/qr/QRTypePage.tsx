@@ -3,12 +3,14 @@
 
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import {
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, Image, QrCode, ArrowLeft
+  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle
 } from 'lucide-react'
 import clsx from 'clsx'
 import QRContentForm from './QRContentForm'
@@ -16,34 +18,35 @@ import QRCustomizer from './QRCustomizer'
 import QRPreview from './QRPreview'
 import VCardForm from './VCardForm'
 import { QRType } from './QRTypeSelector'
+import { createClient } from '@/lib/supabase/client'
 
-// QR tipi bilgileri - slug'dan QR type'a mapping
-const qrTypeConfig: Record<string, {
+// QR tipi bilgileri - slug'dan QR type'a mapping (sadece icon ve gradient)
+const qrTypeBaseConfig: Record<string, {
   type: QRType;
-  name: string;
-  description: string;
+  nameKey: string;
+  descKey: string;
   icon: React.ComponentType<{ className?: string }>;
   gradient: string;
 }> = {
-  url: { type: 'URL', name: 'URL / Website', description: 'Link to any website', icon: LinkIcon, gradient: 'from-blue-500 to-blue-600' },
-  wifi: { type: 'WIFI', name: 'WiFi Network', description: 'Share WiFi credentials', icon: Wifi, gradient: 'from-green-500 to-emerald-600' },
-  vcard: { type: 'VCARD', name: 'vCard / Contact', description: 'Digital business card', icon: CreditCard, gradient: 'from-purple-500 to-purple-600' },
-  email: { type: 'EMAIL', name: 'Email', description: 'Send pre-filled email', icon: Mail, gradient: 'from-red-500 to-red-600' },
-  phone: { type: 'PHONE', name: 'Phone Call', description: 'Quick dial number', icon: Phone, gradient: 'from-emerald-500 to-emerald-600' },
-  sms: { type: 'SMS', name: 'SMS Message', description: 'Send text message', icon: MessageCircle, gradient: 'from-blue-400 to-blue-500' },
-  whatsapp: { type: 'WHATSAPP', name: 'WhatsApp', description: 'Open WhatsApp chat', icon: MessageCircle, gradient: 'from-green-500 to-green-600' },
-  text: { type: 'TEXT', name: 'Plain Text', description: 'Any text content', icon: FileText, gradient: 'from-gray-500 to-gray-600' },
-  instagram: { type: 'INSTAGRAM', name: 'Instagram', description: 'Instagram profile', icon: Instagram, gradient: 'from-pink-500 to-pink-600' },
-  twitter: { type: 'TWITTER', name: 'Twitter / X', description: 'Twitter profile', icon: Twitter, gradient: 'from-sky-500 to-sky-600' },
-  linkedin: { type: 'LINKEDIN', name: 'LinkedIn', description: 'LinkedIn profile', icon: Linkedin, gradient: 'from-blue-600 to-blue-700' },
-  youtube: { type: 'YOUTUBE', name: 'YouTube', description: 'YouTube channel', icon: Youtube, gradient: 'from-red-600 to-red-700' },
-  facebook: { type: 'FACEBOOK', name: 'Facebook', description: 'Facebook page', icon: Facebook, gradient: 'from-blue-500 to-blue-600' },
-  event: { type: 'EVENT', name: 'Calendar Event', description: 'Add to calendar', icon: Calendar, gradient: 'from-orange-500 to-orange-600' },
-  location: { type: 'LOCATION', name: 'Location', description: 'Map coordinates', icon: MapPin, gradient: 'from-red-500 to-rose-600' },
-  bitcoin: { type: 'BITCOIN', name: 'Bitcoin', description: 'Crypto payment', icon: Bitcoin, gradient: 'from-amber-500 to-amber-600' },
-  app: { type: 'APP', name: 'App Store', description: 'Download app links', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600' },
-  pdf: { type: 'PDF', name: 'PDF Document', description: 'Link to PDF file', icon: FileText, gradient: 'from-red-500 to-red-600' },
-  image: { type: 'IMAGE', name: 'Image', description: 'Link to image', icon: Image, gradient: 'from-violet-500 to-violet-600' },
+  url: { type: 'URL', nameKey: 'urlWebsite', descKey: 'linkToWebsite', icon: LinkIcon, gradient: 'from-blue-500 to-blue-600' },
+  wifi: { type: 'WIFI', nameKey: 'wifiNetwork', descKey: 'shareWifi', icon: Wifi, gradient: 'from-green-500 to-emerald-600' },
+  vcard: { type: 'VCARD', nameKey: 'vcardContact', descKey: 'digitalCard', icon: CreditCard, gradient: 'from-purple-500 to-purple-600' },
+  email: { type: 'EMAIL', nameKey: 'email', descKey: 'sendEmail', icon: Mail, gradient: 'from-red-500 to-red-600' },
+  phone: { type: 'PHONE', nameKey: 'phoneCall', descKey: 'quickDial', icon: Phone, gradient: 'from-emerald-500 to-emerald-600' },
+  sms: { type: 'SMS', nameKey: 'smsMessage', descKey: 'sendTextMessage', icon: MessageCircle, gradient: 'from-blue-400 to-blue-500' },
+  whatsapp: { type: 'WHATSAPP', nameKey: 'whatsapp', descKey: 'openWhatsApp', icon: MessageCircle, gradient: 'from-green-500 to-green-600' },
+  text: { type: 'TEXT', nameKey: 'plainText', descKey: 'anyTextContent', icon: FileText, gradient: 'from-gray-500 to-gray-600' },
+  instagram: { type: 'INSTAGRAM', nameKey: 'instagram', descKey: 'instagramProfile', icon: Instagram, gradient: 'from-pink-500 to-pink-600' },
+  twitter: { type: 'TWITTER', nameKey: 'twitterX', descKey: 'twitterProfile', icon: Twitter, gradient: 'from-sky-500 to-sky-600' },
+  linkedin: { type: 'LINKEDIN', nameKey: 'linkedin', descKey: 'linkedinProfile', icon: Linkedin, gradient: 'from-blue-600 to-blue-700' },
+  youtube: { type: 'YOUTUBE', nameKey: 'youtube', descKey: 'youtubeChannel', icon: Youtube, gradient: 'from-red-600 to-red-700' },
+  facebook: { type: 'FACEBOOK', nameKey: 'facebook', descKey: 'facebookPage', icon: Facebook, gradient: 'from-blue-500 to-blue-600' },
+  event: { type: 'EVENT', nameKey: 'calendarEvent', descKey: 'addToCalendar', icon: Calendar, gradient: 'from-orange-500 to-orange-600' },
+  location: { type: 'LOCATION', nameKey: 'location', descKey: 'mapCoordinates', icon: MapPin, gradient: 'from-red-500 to-rose-600' },
+  bitcoin: { type: 'BITCOIN', nameKey: 'bitcoin', descKey: 'cryptoPayment', icon: Bitcoin, gradient: 'from-amber-500 to-amber-600' },
+  app: { type: 'APP', nameKey: 'appStore', descKey: 'downloadAppLinks', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600' },
+  pdf: { type: 'PDF', nameKey: 'pdfDocument', descKey: 'linkToPdf', icon: FileText, gradient: 'from-red-500 to-red-600' },
+  image: { type: 'IMAGE', nameKey: 'image', descKey: 'linkToImage', icon: Image, gradient: 'from-violet-500 to-violet-600' },
 }
 
 interface QRTypePageProps {
@@ -51,8 +54,9 @@ interface QRTypePageProps {
 }
 
 export default function QRTypePage({ type }: QRTypePageProps) {
-  const config = qrTypeConfig[type]
-  
+  const t = useTranslations('generator')
+  const baseConfig = qrTypeBaseConfig[type]
+
   // QR Kod durumu (QR Code state)
   const [content, setContent] = useState('')
   const [data, setData] = useState<Record<string, string>>({})
@@ -72,13 +76,116 @@ export default function QRTypePage({ type }: QRTypePageProps) {
   const [logo, setLogo] = useState<string | null>(null)
   const [logoSize, setLogoSize] = useState(20)
 
+  // Kaydetme durumu (Save state)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error' | 'warning'; text: string } | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [qrName, setQrName] = useState('')
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [limits, setLimits] = useState<{ current: number; limit: number | string; plan: string } | null>(null)
+
+  const router = useRouter()
+
+  // Kullanıcı giriş durumunu kontrol et
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setIsLoggedIn(!!user)
+
+      // Limit bilgisini al
+      if (user) {
+        try {
+          const res = await fetch('/api/qr/save')
+          const data = await res.json()
+          if (data.limits) {
+            setLimits(data.limits)
+          }
+        } catch (e) {
+          console.error('Limit fetch error:', e)
+        }
+      }
+    }
+    checkAuth()
+  }, [])
+
   // İçerik değişikliği (Content change handler)
   const handleContentChange = (newContent: string, newData?: Record<string, string>) => {
     setContent(newContent)
     if (newData) setData(newData)
   }
 
-  const IconComponent = config?.icon || QrCode
+  // QR kodunu kaydet
+  const handleSaveQR = async () => {
+    if (!content) {
+      setSaveMessage({ type: 'error', text: t('pleaseEnterContent') })
+      return
+    }
+
+    if (!qrName.trim()) {
+      setSaveMessage({ type: 'error', text: t('pleaseEnterName') })
+      return
+    }
+
+    setIsSaving(true)
+    setSaveMessage(null)
+
+    try {
+      const res = await fetch('/api/qr/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: qrName.trim(),
+          type: baseConfig?.type || 'URL',
+          content: content,
+          rawContent: data,
+          settings: {
+            foregroundColor,
+            backgroundColor,
+            size,
+            errorCorrection,
+            frame: selectedFrame,
+            frameText,
+            frameColor,
+            logo,
+            logoSize
+          }
+        })
+      })
+
+      const result = await res.json()
+
+      if (res.ok) {
+        setSaveMessage({ type: 'success', text: t('savedSuccessfully') })
+        setShowSaveModal(false)
+        setQrName('')
+        // Limitleri güncelle
+        if (limits) {
+          setLimits({ ...limits, current: (limits.current as number) + 1 })
+        }
+        // 2 saniye sonra dashboard'a yönlendir
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      } else if (res.status === 403) {
+        setSaveMessage({ type: 'warning', text: result.message || t('limitReached') })
+        setShowSaveModal(false)
+      } else if (res.status === 401) {
+        setSaveMessage({ type: 'error', text: t('pleaseLogin') })
+        setShowSaveModal(false)
+        setTimeout(() => router.push('/auth/login'), 1500)
+      } else {
+        setSaveMessage({ type: 'error', text: result.message || t('saveFailed') })
+      }
+    } catch (error) {
+      console.error('Save error:', error)
+      setSaveMessage({ type: 'error', text: t('errorOccurred') })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const IconComponent = baseConfig?.icon || QrCode
 
   // vCard için özel sayfa
   if (type === 'vcard') {
@@ -89,20 +196,20 @@ export default function QRTypePage({ type }: QRTypePageProps) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <Link href="/" className="inline-flex items-center gap-2 text-purple-200 hover:text-white mb-6 transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              Back to Home
+              {t('backToHome')}
             </Link>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
                 <CreditCard className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold">Digital Business Card</h1>
-                <p className="text-purple-200 mt-1">Create a professional vCard QR code with custom design</p>
+                <h1 className="text-3xl md:text-4xl font-bold">{t('digitalBusinessCard')}</h1>
+                <p className="text-purple-200 mt-1">{t('vcardDescription')}</p>
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* vCard Form */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <VCardForm data={data} onChange={(newData) => setData(newData)} />
@@ -115,24 +222,24 @@ export default function QRTypePage({ type }: QRTypePageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Header */}
-      <div className={clsx('bg-gradient-to-r text-white', config?.gradient || 'from-blue-600 to-blue-700')}>
+      <div className={clsx('bg-gradient-to-r text-white', baseConfig?.gradient || 'from-blue-600 to-blue-700')}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Link href="/" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            {t('backToHome')}
           </Link>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
               <IconComponent className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">{config?.name} QR Code Generator</h1>
-              <p className="text-white/80 mt-1">{config?.description}</p>
+              <h1 className="text-3xl md:text-4xl font-bold">{baseConfig ? t(baseConfig.nameKey) : ''} {t('qrCodeGenerator')}</h1>
+              <p className="text-white/80 mt-1">{baseConfig ? t(baseConfig.descKey) : ''}</p>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -140,13 +247,13 @@ export default function QRTypePage({ type }: QRTypePageProps) {
           <div className="xl:col-span-2 space-y-6">
             {/* İçerik Formu */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Enter Content</h2>
-              <QRContentForm type={config?.type || 'URL'} content={content} data={data} onChange={handleContentChange} />
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('enterContent')}</h2>
+              <QRContentForm type={baseConfig?.type || 'URL'} content={content} data={data} onChange={handleContentChange} />
             </div>
 
             {/* Özelleştirme */}
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Customize Design</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('customize')}</h2>
               <QRCustomizer
                 foregroundColor={foregroundColor}
                 backgroundColor={backgroundColor}
@@ -172,12 +279,12 @@ export default function QRTypePage({ type }: QRTypePageProps) {
 
           {/* Sağ Panel - QR Önizleme */}
           <div className="xl:col-span-1">
-            <div className="sticky top-24">
+            <div className="sticky top-24 space-y-4">
               <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
-                <div className={clsx('px-6 py-4 bg-gradient-to-r', config?.gradient || 'from-blue-600 to-purple-600')}>
+                <div className={clsx('px-6 py-4 bg-gradient-to-r', baseConfig?.gradient || 'from-blue-600 to-purple-600')}>
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                     <QrCode className="w-5 h-5" />
-                    Preview
+                    {t('preview')}
                   </h3>
                 </div>
                 <div className="p-6">
@@ -192,9 +299,106 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                     frameColor={frameColor}
                     logo={logo}
                     logoSize={logoSize}
+                    isAuthenticated={isLoggedIn}
                   />
                 </div>
               </div>
+
+              {/* Hesabıma Kaydet Butonu */}
+              {content && (
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4">
+                  {/* Mesaj Alanı */}
+                  {saveMessage && (
+                    <div className={clsx(
+                      'mb-4 p-3 rounded-lg flex items-center gap-2 text-sm',
+                      saveMessage.type === 'success' && 'bg-green-50 text-green-700 border border-green-200',
+                      saveMessage.type === 'error' && 'bg-red-50 text-red-700 border border-red-200',
+                      saveMessage.type === 'warning' && 'bg-amber-50 text-amber-700 border border-amber-200'
+                    )}>
+                      {saveMessage.type === 'success' && <CheckCircle className="w-4 h-4" />}
+                      {saveMessage.type === 'error' && <AlertCircle className="w-4 h-4" />}
+                      {saveMessage.type === 'warning' && <AlertCircle className="w-4 h-4" />}
+                      {saveMessage.text}
+                    </div>
+                  )}
+
+                  {/* Limit Bilgisi */}
+                  {isLoggedIn && limits && (
+                    <div className="mb-3 text-xs text-gray-500 flex items-center justify-between">
+                      <span>{t('plan')}: <span className="font-medium capitalize">{limits.plan}</span></span>
+                      <span>
+                        {typeof limits.limit === 'number' ? (
+                          <span className={limits.current >= limits.limit ? 'text-red-500' : ''}>
+                            {limits.current}/{limits.limit} QR
+                          </span>
+                        ) : (
+                          <span className="text-green-600">{t('unlimited')}</span>
+                        )}
+                      </span>
+                    </div>
+                  )}
+
+                  {isLoggedIn ? (
+                    showSaveModal ? (
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          placeholder={t('qrNamePlaceholder')}
+                          value={qrName}
+                          onChange={(e) => setQrName(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSaveQR}
+                            disabled={isSaving}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                          >
+                            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            {isSaving ? t('saving') : t('save')}
+                          </button>
+                          <button
+                            onClick={() => { setShowSaveModal(false); setQrName('') }}
+                            className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                          >
+                            {t('cancel')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setShowSaveModal(true)}
+                        disabled={limits && typeof limits.limit === 'number' && limits.current >= limits.limit}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Save className="w-5 h-5" />
+                        {t('saveToAccount')}
+                      </button>
+                    )
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600 text-center">
+                        {t('loginToSave')}
+                      </p>
+                      <Link
+                        href="/auth/login"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg"
+                      >
+                        {t('login')}
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Free plan uyarısı */}
+                  {isLoggedIn && limits?.plan === 'free' && (
+                    <p className="mt-3 text-xs text-gray-500 text-center">
+                      {t('freeValidityWarning')}{' '}
+                      <Link href="/pricing" className="text-blue-600 hover:underline">{t('upgrade')}</Link>
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,12 +1,14 @@
 // QR Kod Önizleme bileşeni (QR Code Preview Component)
 // Modern tasarımlı QR kodu gösterme ve indirme (Frame ve Logo destekli)
+// İndirme için üyelik gerekli (Authentication required for download)
 
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
-import { Download, Copy, Check, Image, FileType, Share2, Smartphone } from 'lucide-react'
+import { Download, Copy, Check, Image, FileType, Share2, Smartphone, LogIn, Lock } from 'lucide-react'
 import clsx from 'clsx'
 import { FRAME_TEMPLATES } from './QRFrameSelector'
 
@@ -23,6 +25,8 @@ interface QRPreviewProps {
   // Logo özellikleri (Logo properties)
   logo?: string | null
   logoSize?: number
+  // Authentication durumu (Authentication state)
+  isAuthenticated?: boolean
 }
 
 export default function QRPreview({
@@ -36,8 +40,10 @@ export default function QRPreview({
   frameColor = '#000000',
   logo = null,
   logoSize = 20,
+  isAuthenticated = false,
 }: QRPreviewProps) {
   const t = useTranslations('generator')
+  const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [copied, setCopied] = useState(false)
@@ -537,8 +543,8 @@ export default function QRPreview({
               style={{ width: 200, height: 200 }}
             >
               <Smartphone className="w-12 h-12 mb-3 text-gray-300" />
-              <span className="text-sm font-medium">QR Preview</span>
-              <span className="text-xs text-gray-400 mt-1">Enter content to generate</span>
+              <span className="text-sm font-medium">{t('qrPreview')}</span>
+              <span className="text-xs text-gray-400 mt-1">{t('enterContentToGenerate')}</span>
             </div>
           )}
         </div>
@@ -549,86 +555,130 @@ export default function QRPreview({
         <div className="text-center text-sm text-gray-500">
           <span>{size}×{size}px</span>
           <span className="mx-2">•</span>
-          <span>Error correction: {errorCorrection}</span>
+          <span>{t('errorCorrection')}: {errorCorrection}</span>
         </div>
       )}
 
       {/* İndirme Butonları (Download Buttons) */}
       {content && (
         <div className="w-full space-y-3">
-          {/* PNG İndirme (PNG Download) */}
-          <button
-            onClick={downloadPNG}
-            className={clsx(
-              'w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200',
-              'bg-gradient-to-r from-blue-600 to-blue-700 text-white',
-              'hover:from-blue-700 hover:to-blue-800 hover:shadow-lg',
-              activeDownload === 'png' && 'scale-95'
-            )}
-          >
-            <Image className="w-5 h-5" />
-            {t('downloadPNG')}
-          </button>
+          {/* Üye değilse giriş yapma uyarısı (Login prompt if not authenticated) */}
+          {!isAuthenticated ? (
+            <>
+              {/* Giriş Yap butonu (Login button) */}
+              <button
+                onClick={() => router.push('/auth/login')}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
+              >
+                <LogIn className="w-5 h-5" />
+                {t('loginToDownload') || 'İndirmek için Giriş Yap'}
+              </button>
 
-          {/* SVG İndirme (SVG Download) */}
-          <button
-            onClick={downloadSVG}
-            className={clsx(
-              'w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200',
-              'bg-white border-2 border-gray-200 text-gray-700',
-              'hover:border-gray-300 hover:bg-gray-50 hover:shadow-md',
-              activeDownload === 'svg' && 'scale-95'
-            )}
-          >
-            <FileType className="w-5 h-5" />
-            {t('downloadSVG')}
-          </button>
+              {/* Bilgi mesajı (Info message) */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <Lock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-amber-800">
+                      {t('downloadRequiresLogin') || 'İndirme için üyelik gerekli'}
+                    </p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      {t('downloadRequiresLoginDesc') || 'QR kodunuzu PNG, SVG formatlarında indirmek için ücretsiz hesap oluşturun.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          {/* Diğer seçenekler (Other options) */}
-          <div className="flex gap-2">
-            <button
-              onClick={copyToClipboard}
-              className={clsx(
-                'flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-200',
-                'bg-gray-100 text-gray-700 hover:bg-gray-200',
-                copied && 'bg-green-100 text-green-700'
-              )}
-            >
-              {copied ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </>
-              )}
-            </button>
-            <button
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
-              onClick={() => {
-                if (navigator.share && qrDataUrl) {
-                  navigator.share({
-                    title: 'QR Code',
-                    text: 'Check out my QR code!',
-                    url: qrDataUrl
-                  }).catch(() => {})
-                }
-              }}
-            >
-              <Share2 className="w-4 h-4" />
-              Share
-            </button>
-          </div>
+              {/* Kayıt ol linki (Register link) */}
+              <div className="text-center">
+                <span className="text-sm text-gray-500">
+                  {t('noAccount') || 'Hesabınız yok mu?'}{' '}
+                </span>
+                <button
+                  onClick={() => router.push('/auth/register')}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  {t('registerNow') || 'Ücretsiz Kayıt Ol'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* PNG İndirme (PNG Download) */}
+              <button
+                onClick={downloadPNG}
+                className={clsx(
+                  'w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200',
+                  'bg-gradient-to-r from-blue-600 to-blue-700 text-white',
+                  'hover:from-blue-700 hover:to-blue-800 hover:shadow-lg',
+                  activeDownload === 'png' && 'scale-95'
+                )}
+              >
+                <Image className="w-5 h-5" />
+                {t('downloadPNG')}
+              </button>
+
+              {/* SVG İndirme (SVG Download) */}
+              <button
+                onClick={downloadSVG}
+                className={clsx(
+                  'w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all duration-200',
+                  'bg-white border-2 border-gray-200 text-gray-700',
+                  'hover:border-gray-300 hover:bg-gray-50 hover:shadow-md',
+                  activeDownload === 'svg' && 'scale-95'
+                )}
+              >
+                <FileType className="w-5 h-5" />
+                {t('downloadSVG')}
+              </button>
+
+              {/* Diğer seçenekler (Other options) */}
+              <div className="flex gap-2">
+                <button
+                  onClick={copyToClipboard}
+                  className={clsx(
+                    'flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-200',
+                    'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                    copied && 'bg-green-100 text-green-700'
+                  )}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      {t('copied') || 'Kopyalandı!'}
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      {t('copy') || 'Kopyala'}
+                    </>
+                  )}
+                </button>
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  onClick={() => {
+                    if (navigator.share && qrDataUrl) {
+                      navigator.share({
+                        title: 'QR Code',
+                        text: 'Check out my QR code!',
+                        url: qrDataUrl
+                      }).catch(() => {})
+                    }
+                  }}
+                >
+                  <Share2 className="w-4 h-4" />
+                  {t('share') || 'Paylaş'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
       {/* İpucu (Tip) */}
       {!content && (
         <p className="text-xs text-gray-400 text-center px-4">
-          Select a QR type and enter your content to see a preview
+          {t('selectTypeAndEnter')}
         </p>
       )}
     </div>

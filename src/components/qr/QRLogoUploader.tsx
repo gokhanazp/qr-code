@@ -64,7 +64,7 @@ export default function QRLogoUploader({
     <div className="space-y-4">
       {/* Başlık (Title) */}
       <label className="block text-sm font-medium text-gray-700">
-        {t('logo') || 'Logo'} <span className="text-gray-400 font-normal">(optional)</span>
+        {t('logo')} <span className="text-gray-400 font-normal">({t('optional')})</span>
       </label>
 
       {/* Upload Alanı veya Logo Önizleme (Upload area or logo preview) */}

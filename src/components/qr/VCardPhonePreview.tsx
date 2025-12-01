@@ -4,6 +4,8 @@
 'use client'
 
 import { Phone, Mail, Globe, MapPin, UserPlus, Briefcase } from 'lucide-react'
+import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface VCardPhonePreviewProps {
   data: Record<string, string>
@@ -12,7 +14,8 @@ interface VCardPhonePreviewProps {
 }
 
 export default function VCardPhonePreview({ data, primaryColor, secondaryColor }: VCardPhonePreviewProps) {
-  const fullName = `${data.firstName || 'Your'} ${data.lastName || 'Name'}`.trim()
+  const t = useTranslations('generator')
+  const fullName = `${data.firstName || t('name')} ${data.lastName || t('surname')}`.trim()
   const hasContact = data.mobile || data.workPhone || data.email || data.website
 
   return (
@@ -21,7 +24,7 @@ export default function VCardPhonePreview({ data, primaryColor, secondaryColor }
       <div className="relative w-[280px] h-[580px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
         {/* Dinamik Adası (Dynamic Island) */}
         <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-7 bg-black rounded-full z-20" />
-        
+
         {/* Telefon Ekranı (Phone Screen) */}
         <div className="relative w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
           {/* Durum Çubuğu (Status Bar) */}
@@ -40,26 +43,39 @@ export default function VCardPhonePreview({ data, primaryColor, secondaryColor }
               </div>
             </div>
           </div>
-          
+
           {/* Gradyan Header */}
-          <div 
+          <div
             className="h-48 flex flex-col items-center justify-center pt-8"
             style={{
               background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`
             }}
           >
             {/* Profil Resmi / İsmin Baş Harfi (Profile Image / Initial) */}
-            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 border-2 border-white/30">
-              <span className="text-3xl font-bold text-white">
-                {(data.firstName?.[0] || 'Y').toUpperCase()}
-              </span>
+            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 border-2 border-white/30 overflow-hidden">
+              {data.photo ? (
+                // Yüklenen fotoğrafı göster (Show uploaded photo)
+                <Image
+                  src={data.photo}
+                  alt={fullName}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                  unoptimized // Supabase URL'leri için
+                />
+              ) : (
+                // Baş harfi göster (Show initial)
+                <span className="text-3xl font-bold text-white">
+                  {(data.firstName?.[0] || 'Y').toUpperCase()}
+                </span>
+              )}
             </div>
-            
+
             {/* İsim (Name) */}
             <h2 className="text-xl font-bold text-white text-center px-4">
               {fullName.toUpperCase()}
             </h2>
-            
+
             {/* Ünvan (Title) */}
             {data.title && (
               <p className="text-sm text-white/80 mt-1">{data.title}</p>
@@ -89,66 +105,66 @@ export default function VCardPhonePreview({ data, primaryColor, secondaryColor }
 
             {/* İletişim Bilgileri (Contact Info) */}
             {data.mobile && (
-              <ContactItem 
+              <ContactItem
                 icon={<Phone className="w-4 h-4" />}
-                label="Phone"
+                label={t('phone')}
                 value={data.mobile}
                 color={primaryColor}
               />
             )}
-            
+
             {data.workPhone && (
-              <ContactItem 
+              <ContactItem
                 icon={<Phone className="w-4 h-4" />}
-                label="Work"
+                label={t('work')}
                 value={data.workPhone}
                 color={primaryColor}
               />
             )}
-            
+
             {data.email && (
-              <ContactItem 
+              <ContactItem
                 icon={<Mail className="w-4 h-4" />}
-                label="Email"
+                label={t('email')}
                 value={data.email}
                 color={primaryColor}
               />
             )}
 
             {data.company && (
-              <ContactItem 
+              <ContactItem
                 icon={<Briefcase className="w-4 h-4" />}
-                label="Company"
+                label={t('company')}
                 value={data.company}
                 color={primaryColor}
               />
             )}
-            
+
             {data.website && (
-              <ContactItem 
+              <ContactItem
                 icon={<Globe className="w-4 h-4" />}
-                label="Website"
+                label={t('website')}
                 value={data.website}
                 color={primaryColor}
               />
             )}
 
             {(data.city || data.country) && (
-              <ContactItem 
+              <ContactItem
                 icon={<MapPin className="w-4 h-4" />}
-                label="Location"
+                label={t('location')}
                 value={[data.city, data.country].filter(Boolean).join(', ')}
                 color={primaryColor}
               />
             )}
-            
+
             {/* Rehbere Ekle Butonu (Add to Contacts Button) */}
             <button
               className="w-full mt-4 py-3 rounded-xl text-white font-medium flex items-center justify-center gap-2 transition-transform active:scale-95"
               style={{ backgroundColor: primaryColor }}
             >
               <UserPlus className="w-5 h-5" />
-              Add Contact
+              {t('addContact')}
             </button>
           </div>
           

@@ -118,7 +118,7 @@ export default function QRCustomizer({
     <div className="space-y-3">
       {/* FRAME Panel */}
       <AccordionPanel
-        title="FRAME"
+        title={t('frameNew')}
         icon={<Frame className="w-5 h-5" />}
         isOpen={openPanels.frame}
         onToggle={() => togglePanel('frame')}
@@ -137,7 +137,7 @@ export default function QRCustomizer({
 
       {/* SHAPE & COLOR Panel */}
       <AccordionPanel
-        title="SHAPE & COLOR"
+        title={t('shapeAndColor')}
         icon={<Palette className="w-5 h-5" />}
         isOpen={openPanels.shape}
         onToggle={() => togglePanel('shape')}

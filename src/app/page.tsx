@@ -9,6 +9,7 @@ import {
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
   Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star
 } from 'lucide-react'
+import FAQ from '@/components/FAQ'
 
 // QR tipleri - icon ve gradient bilgileri (text çeviriden gelecek)
 const qrTypesConfig = [
@@ -337,6 +338,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section - Ana sayfada 5 soru göster */}
+      <FAQ limit={5} />
 
       {/* CTA Section - Modern gradient */}
       <section className="relative py-24 lg:py-32 overflow-hidden">

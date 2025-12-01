@@ -1,13 +1,21 @@
 // Footer bileşeni
 // Site alt bilgi alanı
 
+'use client'
+
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { QrCode, Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react'
+import { getLocalizedPathname } from '@/i18n/navigation'
+import { Locale } from '@/i18n/config'
 
 export default function Footer() {
   const t = useTranslations('footer')
   const common = useTranslations('common')
+  const locale = useLocale() as Locale
+
+  // Yerelleştirilmiş link yardımcı fonksiyonu (Localized link helper)
+  const localizedHref = (path: string) => getLocalizedPathname(path, locale)
 
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -20,7 +28,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">{common('appName')}</span>
             </Link>
             <p className="text-gray-400 max-w-md">{t('description')}</p>
-            
+
             {/* Sosyal medya ikonları */}
             <div className="flex gap-4 mt-6">
               <a href="#" className="hover:text-blue-500 transition-colors" aria-label="Facebook">
@@ -46,17 +54,17 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">{t('product')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/features" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/features')} className="hover:text-white transition-colors">
                   {common('features')}
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/pricing')} className="hover:text-white transition-colors">
                   {common('pricing')}
                 </Link>
               </li>
               <li>
-                <Link href="/qr-generator" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/qr-generator')} className="hover:text-white transition-colors">
                   {t('qrGenerator')}
                 </Link>
               </li>
@@ -68,27 +76,32 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">{t('company')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/about')} className="hover:text-white transition-colors">
                   {t('about')}
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/blog')} className="hover:text-white transition-colors">
                   {t('blog')}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/faq')} className="hover:text-white transition-colors">
+                  {t('faq')}
+                </Link>
+              </li>
+              <li>
+                <Link href={localizedHref('/contact')} className="hover:text-white transition-colors">
                   {t('contact')}
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/privacy')} className="hover:text-white transition-colors">
                   {t('privacy')}
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
+                <Link href={localizedHref('/terms')} className="hover:text-white transition-colors">
                   {t('terms')}
                 </Link>
               </li>
