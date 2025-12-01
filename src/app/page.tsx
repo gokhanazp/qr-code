@@ -154,13 +154,18 @@ export default function HomePage() {
                 <div className="relative bg-white rounded-3xl shadow-2xl shadow-gray-200/50 p-8 border border-gray-100">
                   {/* QR Code placeholder */}
                   <div className="w-64 h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mb-6 relative overflow-hidden">
-                    {/* QR pattern */}
+                    {/* QR pattern - Sabit desen (Fixed pattern to prevent hydration error) */}
                     <div className="grid grid-cols-8 gap-1 p-6">
-                      {Array.from({ length: 64 }).map((_, i) => (
+                      {/* 8x8 = 64 hücreli sabit QR deseni */}
+                      {[
+                        1,1,1,1,1,1,0,0, 0,0,0,0,0,1,1,0, 1,0,1,0,1,0,1,0,
+                        0,1,0,1,0,1,0,1, 1,0,0,1,1,0,0,1, 0,1,1,0,0,1,1,0,
+                        1,1,0,0,1,1,0,0, 0,0,1,1,1,1,1,1
+                      ].map((filled, i) => (
                         <div
                           key={i}
                           className={`w-4 h-4 rounded-sm ${
-                            Math.random() > 0.5 ? 'bg-gray-900' : 'bg-transparent'
+                            filled ? 'bg-gray-900' : 'bg-transparent'
                           }`}
                         />
                       ))}

@@ -194,11 +194,12 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Dekoratif QR kod (Decorative QR code) */}
+        {/* Dekoratif QR kod - Sabit desen (Decorative QR code - Fixed pattern) */}
         <div className="absolute bottom-10 right-10 w-32 h-32 opacity-20">
           <div className="grid grid-cols-5 gap-1">
-            {[...Array(25)].map((_, i) => (
-              <div key={i} className={`w-full aspect-square rounded-sm ${Math.random() > 0.5 ? 'bg-white' : 'bg-transparent'}`} />
+            {/* Sabit QR deseni - hydration hatası önlemek için */}
+            {[0,1,1,0,1, 1,0,1,0,0, 1,1,0,1,1, 0,1,0,0,1, 1,0,1,1,0].map((filled, i) => (
+              <div key={i} className={`w-full aspect-square rounded-sm ${filled ? 'bg-white' : 'bg-transparent'}`} />
             ))}
           </div>
         </div>
