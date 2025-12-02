@@ -41,11 +41,13 @@ export default function DeleteQRButton({
       }
 
       setIsOpen(false)
-      
-      // Callback varsa çağır, yoksa sayfayı yenile
+
+      // Callback varsa çağır, yoksa QR listesine yönlendir
       if (onDeleted) {
         onDeleted()
       } else {
+        // Detay sayfasındaysak listeye yönlendir, değilse sayfayı yenile
+        router.push('/dashboard/qr')
         router.refresh()
       }
     } catch (err) {
