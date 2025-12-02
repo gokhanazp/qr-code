@@ -62,11 +62,27 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
     textColor?: string
   }
 
+  // vCard veri tipi tanımı (vCard data type definition)
+  interface VCardDataType {
+    firstName?: string
+    lastName?: string
+    title?: string
+    company?: string
+    email?: string
+    phone?: string
+    mobile?: string
+    website?: string
+    address?: string
+    city?: string
+    country?: string
+    notes?: string
+  }
+
   // APP ve vCard için özel veri parse
   const isAppType = qrCode.type === 'app'
   const isVCardType = qrCode.type === 'vcard'
   let appData: AppDataType = {}
-  let vcardData: Record<string, unknown> = {}
+  let vcardData: VCardDataType = {}
 
   // APP verileri parse - raw veya encoded'dan al
   if (isAppType && qrCode.content) {
@@ -88,7 +104,7 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
     try {
       const contentObj = qrCode.content as Record<string, unknown>
       if (contentObj.raw && typeof contentObj.raw === 'object') {
-        vcardData = contentObj.raw as Record<string, unknown>
+        vcardData = contentObj.raw as VCardDataType
       }
     } catch { vcardData = {} }
   }
@@ -204,19 +220,19 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
                 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white max-w-md">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">
-                      {String(vcardData.firstName || '')[0]?.toUpperCase() || '?'}
+                      {(vcardData.firstName || '')[0]?.toUpperCase() || '?'}
                     </div>
                     <div>
                       <h4 className="text-xl font-bold">{`${vcardData.firstName || ''} ${vcardData.lastName || ''}`}</h4>
-                      {vcardData.title && <p className="text-white/80">{String(vcardData.title)}</p>}
-                      {vcardData.company && <p className="text-white/70 text-sm">{String(vcardData.company)}</p>}
+                      {vcardData.title && <p className="text-white/80">{vcardData.title}</p>}
+                      {vcardData.company && <p className="text-white/70 text-sm">{vcardData.company}</p>}
                     </div>
                   </div>
                   <div className="space-y-2 text-sm">
-                    {vcardData.phone && <p className="flex items-center gap-2">📞 {String(vcardData.phone)}</p>}
-                    {vcardData.email && <p className="flex items-center gap-2">✉️ {String(vcardData.email)}</p>}
-                    {vcardData.website && <p className="flex items-center gap-2">🌐 {String(vcardData.website)}</p>}
-                    {vcardData.address && <p className="flex items-center gap-2">📍 {String(vcardData.address)}</p>}
+                    {vcardData.phone && <p className="flex items-center gap-2">📞 {vcardData.phone}</p>}
+                    {vcardData.email && <p className="flex items-center gap-2">✉️ {vcardData.email}</p>}
+                    {vcardData.website && <p className="flex items-center gap-2">🌐 {vcardData.website}</p>}
+                    {vcardData.address && <p className="flex items-center gap-2">📍 {vcardData.address}</p>}
                   </div>
                 </div>
               </div>
