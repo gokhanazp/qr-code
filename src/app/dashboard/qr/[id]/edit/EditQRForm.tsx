@@ -47,6 +47,9 @@ export default function EditQRForm({
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
   // APP tipi için ek state'ler - rawContent'ten başlangıç değerlerini al
+  // welcomeScreenEnabled string olarak geliyor ('true' veya 'false')
+  const welcomeEnabled = initialRawContent.welcomeScreenEnabled !== 'false'
+
   const [appData, setAppData] = useState({
     appName: initialRawContent.appName || '',
     developer: initialRawContent.developer || '',
@@ -59,7 +62,7 @@ export default function EditQRForm({
     primaryColor: initialRawContent.primaryColor || '#2d8659',
     secondaryColor: initialRawContent.secondaryColor || '#a8e6cf',
     textColor: initialRawContent.textColor || '#000000',
-    welcomeScreenEnabled: initialRawContent.welcomeScreenEnabled !== 'false',
+    welcomeScreenEnabled: welcomeEnabled,
     welcomeLogo: initialRawContent.welcomeLogo || '',
   })
 

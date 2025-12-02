@@ -37,8 +37,24 @@ export default async function EditQRCodePage({ params }: PageProps) {
   }
 
   // QR içeriğini parse et (Parse QR content)
-  const qrContent = qrCode.content as { encoded?: string; raw?: Record<string, string>; originalUrl?: string } | null
-  const rawContent = qrContent?.raw || {}
+  // Content yapısı: { encoded: string, raw: object, originalUrl: string }
+  const qrContent = qrCode.content as { encoded?: string; raw?: Record<string, unknown>; originalUrl?: string } | null
+
+  // rawContent'i düzgün şekilde al - tüm değerleri string'e çevir
+  const rawContentObj = qrContent?.raw || {}
+  const rawContent: Record<string, string> = {}
+
+  // Object değerlerini string'e çevir (Convert object values to strings)
+  Object.entries(rawContentObj).forEach(([key, value]) => {
+    if (typeof value === 'string') {
+      rawContent[key] = value
+    } else if (typeof value === 'boolean') {
+      rawContent[key] = String(value)
+    } else if (value !== null && value !== undefined) {
+      rawContent[key] = String(value)
+    }
+  })
+
   const originalUrl = qrContent?.originalUrl || ''
 
   // QR ayarlarını parse et (Parse QR settings)
