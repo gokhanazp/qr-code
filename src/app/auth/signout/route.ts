@@ -13,7 +13,15 @@ export async function POST(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
 
-  // Login sayfasına yönlendir
+  // Referer'dan nereden geldiğini kontrol et
+  const referer = request.headers.get('referer') || ''
+
+  // Admin panelinden çıkış yapıyorsa admin login'e yönlendir
+  if (referer.includes('/admin')) {
+    return NextResponse.redirect(new URL('/admin/login', baseUrl))
+  }
+
+  // Normal kullanıcılar için ana login sayfasına yönlendir
   return NextResponse.redirect(new URL('/auth/login', baseUrl))
 }
 

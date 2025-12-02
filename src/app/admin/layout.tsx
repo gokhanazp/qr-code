@@ -134,13 +134,16 @@ export default async function AdminLayout({
                 </svg>
                 Siteyi Görüntüle
               </Link>
-              <Link
-                href="/auth/signout"
-                className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                Çıkış Yap
-              </Link>
+              {/* Çıkış butonu - POST metodu ile */}
+              <form action="/auth/signout" method="POST">
+                <button
+                  type="submit"
+                  className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors w-full"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Çıkış Yap
+                </button>
+              </form>
             </div>
           </div>
         </aside>
