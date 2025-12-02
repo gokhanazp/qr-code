@@ -108,8 +108,19 @@ export default async function AppLandingPage({ params }: PageProps) {
   const welcomeScreenEnabled = appData.welcomeScreenEnabled !== false // varsayılan açık
   const welcomeLogo = appData.welcomeLogo || appData.appLogo // varsayılan App Logo
 
+  // Body arka planını ayarlamak için style tag
+  const bgStyle = `
+    html, body {
+      background: linear-gradient(to bottom, ${secondaryColor}, ${primaryColor}) !important;
+      min-height: 100%;
+    }
+  `
+
   return (
     <>
+      {/* Body arka plan rengini ayarla */}
+      <style dangerouslySetInnerHTML={{ __html: bgStyle }} />
+
       {/* Welcome Screen - Logo büyüme animasyonu (sadece açıksa) */}
       {welcomeScreenEnabled && (
         <WelcomeScreen logo={welcomeLogo} primaryColor={primaryColor} secondaryColor={secondaryColor} />
