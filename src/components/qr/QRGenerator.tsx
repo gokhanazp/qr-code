@@ -26,6 +26,11 @@ export default function QRGenerator() {
   const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [size, setSize] = useState(256)
   const [errorCorrection, setErrorCorrection] = useState<'L' | 'M' | 'Q' | 'H'>('M')
+  const [selectedFrame, setSelectedFrame] = useState('none')
+  const [frameText, setFrameText] = useState('')
+  const [frameColor, setFrameColor] = useState('#000000')
+  const [logo, setLogo] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(20)
 
   // Seçili tipin bilgisini al (Get selected type info)
   const selectedTypeInfo = qrTypes.find(t => t.id === qrType)
@@ -134,10 +139,20 @@ export default function QRGenerator() {
               backgroundColor={backgroundColor}
               size={size}
               errorCorrection={errorCorrection}
+              selectedFrame={selectedFrame}
+              frameText={frameText}
+              frameColor={frameColor}
+              logo={logo}
+              logoSize={logoSize}
               onForegroundChange={setForegroundColor}
               onBackgroundChange={setBackgroundColor}
               onSizeChange={setSize}
               onErrorCorrectionChange={setErrorCorrection}
+              onFrameChange={setSelectedFrame}
+              onFrameTextChange={setFrameText}
+              onFrameColorChange={setFrameColor}
+              onLogoChange={setLogo}
+              onLogoSizeChange={setLogoSize}
             />
           </div>
         </div>
@@ -162,6 +177,11 @@ export default function QRGenerator() {
                   backgroundColor={backgroundColor}
                   size={size}
                   errorCorrection={errorCorrection}
+                  selectedFrame={selectedFrame}
+                  frameText={frameText}
+                  frameColor={frameColor}
+                  logo={logo}
+                  logoSize={logoSize}
                 />
               </div>
             </div>
