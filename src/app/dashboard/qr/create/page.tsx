@@ -9,10 +9,7 @@ import { useTranslations } from 'next-intl'
 import { ArrowLeft, Save } from 'lucide-react'
 import Link from 'next/link'
 import { Button, Card, CardHeader, CardTitle, CardContent, Input } from '@/components/ui'
-import { QRTypeSelector, QRContentForm, QRCustomizer, QRPreview } from '@/components/qr'
-
-// QR kod tipleri
-type QRType = 'URL' | 'TEXT' | 'EMAIL' | 'PHONE' | 'SMS' | 'WIFI' | 'VCARD' | 'LOCATION' | 'EVENT' | 'WHATSAPP' | 'INSTAGRAM' | 'FACEBOOK' | 'TWITTER' | 'LINKEDIN' | 'YOUTUBE' | 'APP_STORE' | 'PDF' | 'IMAGE' | 'BITCOIN'
+import { QRTypeSelector, QRContentForm, QRCustomizer, QRPreview, QRType } from '@/components/qr'
 
 export default function CreateQRPage() {
   const t = useTranslations('generator')
@@ -112,7 +109,7 @@ export default function CreateQRPage() {
             {/* QR Tipi Seçimi */}
             <QRTypeSelector
               selectedType={selectedType}
-              onSelect={(type) => setSelectedType(type as QRType)}
+              onTypeChange={(type) => setSelectedType(type)}
             />
 
             {/* İçerik Formu */}
