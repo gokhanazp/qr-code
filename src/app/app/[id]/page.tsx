@@ -119,55 +119,55 @@ export default async function AppLandingPage({ params }: PageProps) {
         className="min-h-screen"
         style={{ background: `linear-gradient(to bottom, ${secondaryColor}, ${primaryColor})` }}
       >
-        <div className="relative max-w-md mx-auto px-6 py-10">
+        <div className="relative max-w-md mx-auto px-4 py-4 sm:px-6 sm:py-6">
           {/* Share Button - Client Component */}
           <ShareButton appName={appData.appName} title={appData.title} secondaryColor={textColor} />
 
           {/* App Name & Developer - ÜSTTE */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold uppercase tracking-wider mb-1" style={{ color: textColor }}>
+          <div className="text-center mb-3 sm:mb-5">
+            <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wider mb-0.5" style={{ color: textColor }}>
               {appData.appName || 'App Name'}
             </h2>
-            <p className="text-base opacity-70" style={{ color: textColor }}>
+            <p className="text-sm opacity-70" style={{ color: textColor }}>
               {appData.developer || 'Developer Slogan'}
             </p>
           </div>
 
-          {/* App Logo - ORTADA, saydam beyaz arka plan kutu */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-white/30 rounded-3xl p-6">
+          {/* App Logo - ORTADA, saydam beyaz arka plan kutu - KÜÇÜLTÜLDÜ */}
+          <div className="flex justify-center mb-3 sm:mb-5">
+            <div className="bg-white/30 rounded-2xl p-3 sm:p-4">
               {appData.appLogo ? (
                 <img
                   src={appData.appLogo}
                   alt={appData.appName}
-                  className="max-w-[180px] max-h-[180px] object-contain"
+                  className="w-20 h-20 sm:w-28 sm:h-28 object-contain"
                 />
               ) : (
-                <span className="text-8xl">📱</span>
+                <span className="text-5xl sm:text-6xl">📱</span>
               )}
             </div>
           </div>
 
           {/* Title & Description - seçilen yazı rengi */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-3 leading-tight px-4" style={{ color: textColor }}>
+          <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-lg sm:text-xl font-bold mb-1 leading-tight px-2" style={{ color: textColor }}>
               {appData.title || 'Download Our App'}
             </h1>
 
             {/* HEMEN İNDİR! */}
-            <p className="text-lg italic mb-4 opacity-60" style={{ color: textColor }}>
+            <p className="text-sm italic mb-2 opacity-60" style={{ color: textColor }}>
               HEMEN İNDİR!
             </p>
 
             {appData.description && (
-              <p className="text-base leading-relaxed px-4 opacity-80" style={{ color: textColor }}>
+              <p className="text-sm leading-relaxed px-2 opacity-80" style={{ color: textColor }}>
                 {appData.description}
               </p>
             )}
           </div>
 
-          {/* Download Buttons - Resmi Badge Görselleri */}
-          <div className="space-y-3 mb-8">
+          {/* Download Buttons - Resmi Badge Görselleri - KÜÇÜLTÜLDÜ */}
+          <div className="space-y-2 mb-4 sm:mb-6 max-w-[260px] sm:max-w-[300px] mx-auto">
             {/* App Store Button */}
             {appData.iosUrl && (
               <a
@@ -179,7 +179,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/apple-en.png"
                   alt="Download on the App Store"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-md"
                 />
               </a>
             )}
@@ -195,7 +195,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/google-en.png"
                   alt="Get it on Google Play"
-                  className="w-full h-auto rounded-lg shadow-lg"
+                  className="w-full h-auto rounded-lg shadow-md"
                 />
               </a>
             )}
@@ -207,16 +207,16 @@ export default async function AppLandingPage({ params }: PageProps) {
               href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 transition-opacity hover:opacity-100 mt-6 opacity-60"
+              className="flex items-center justify-center gap-2 transition-opacity hover:opacity-100 mt-3 opacity-60"
               style={{ color: textColor }}
             >
-              <span className="text-base underline">{appData.website.replace(/^https?:\/\//, '')}</span>
+              <span className="text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
             </a>
           )}
 
           {/* Footer */}
-          <div className="mt-12 text-center">
-            <p className="text-sm opacity-40" style={{ color: textColor }}>
+          <div className="mt-6 sm:mt-8 text-center">
+            <p className="text-xs opacity-40" style={{ color: textColor }}>
               Powered by QR Code Generator
             </p>
           </div>
