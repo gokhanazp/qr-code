@@ -113,7 +113,7 @@ export default function QRGenerator() {
                 {selectedTypeInfo && <selectedTypeInfo.icon className="w-5 h-5" />}
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{selectedTypeInfo?.name || qrType}</h3>
+                <h3 className="font-semibold text-gray-900">{selectedTypeInfo?.id || qrType}</h3>
                 <p className="text-sm text-gray-500">{selectedTypeInfo?.description}</p>
               </div>
             </div>
