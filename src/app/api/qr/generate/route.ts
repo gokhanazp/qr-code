@@ -36,23 +36,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // QR kod seçenekleri
-    const qrOptions = {
-      errorCorrectionLevel: errorCorrection,
-      type: format === 'svg' ? 'svg' as const : 'image/png' as const,
-      width: size,
-      margin: 2,
-      color: {
-        dark: foreground,
-        light: background,
-      },
-    }
-
-    // QR kodu oluştur
+    // QR kodu oluştur (Generate QR code)
     if (format === 'svg') {
+      // SVG formatı için toString kullan
       const svg = await QRCode.toString(content, {
-        ...qrOptions,
+        errorCorrectionLevel: errorCorrection,
         type: 'svg',
+        width: size,
+        margin: 2,
+        color: {
+          dark: foreground,
+          light: background,
+        },
       })
       return new NextResponse(svg, {
         headers: {
@@ -60,8 +55,18 @@ export async function POST(request: NextRequest) {
         },
       })
     } else {
-      const dataUrl = await QRCode.toDataURL(content, qrOptions)
-      return NextResponse.json({ 
+      // PNG formatı için toDataURL kullan
+      const dataUrl = await QRCode.toDataURL(content, {
+        errorCorrectionLevel: errorCorrection,
+        type: 'image/png',
+        width: size,
+        margin: 2,
+        color: {
+          dark: foreground,
+          light: background,
+        },
+      })
+      return NextResponse.json({
         dataUrl,
         type,
         content,
