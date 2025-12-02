@@ -168,10 +168,15 @@ export default function CreateQRPage() {
             <div className="sticky top-24 space-y-4">
               <QRPreview
                 content={content}
-                foreground={foregroundColor}
-                background={backgroundColor}
+                foregroundColor={foregroundColor}
+                backgroundColor={backgroundColor}
                 size={size}
                 errorCorrection={errorCorrection}
+                selectedFrame={selectedFrame}
+                frameText={frameText}
+                frameColor={frameColor}
+                logo={logo}
+                logoSize={logoSize}
               />
 
               {/* Kaydet butonu */}
