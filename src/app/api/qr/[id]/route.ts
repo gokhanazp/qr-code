@@ -76,13 +76,26 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (is_active !== undefined) updateData.is_active = is_active
     if (settings !== undefined) updateData.settings = settings
 
-    // Content güncelleme - originalUrl'i koru (Keep originalUrl when updating content)
-    if (content !== undefined) {
+    // Content güncelleme - QR tipine göre doğru veri yapısı kullan
+    // Content update - Use correct data structure based on QR type
+    if (content !== undefined || rawContent !== undefined) {
       const existingContent = existingQR.content as Record<string, unknown> || {}
-      updateData.content = {
-        encoded: existingContent.encoded, // QR kod URL'si değişmez (redirect URL stays same)
-        raw: rawContent || existingContent.raw || {},
-        originalUrl: content // Yeni hedef URL (New target URL)
+      const qrType = existingQR.type
+
+      // APP tipi için rawContent'i raw alanına kaydet
+      if (qrType === 'APP' && rawContent) {
+        updateData.content = {
+          encoded: existingContent.encoded, // QR kod URL'si değişmez
+          raw: rawContent, // Tüm APP verileri (logo, renkler, store URL'leri vb.)
+          originalUrl: existingContent.originalUrl
+        }
+      } else {
+        // Diğer tipler için standart güncelleme
+        updateData.content = {
+          encoded: existingContent.encoded, // QR kod URL'si değişmez (redirect URL stays same)
+          raw: rawContent || existingContent.raw || {},
+          originalUrl: content || existingContent.originalUrl // Yeni hedef URL (New target URL)
+        }
       }
     }
 
