@@ -105,7 +105,11 @@ export async function POST(request: NextRequest) {
     // Dinamik QR kodlar için redirect URL oluştur (Create redirect URL for dynamic QR codes)
     // APP tipi için /app/[id], diğerleri için /r/[id] kullan
     let qrUrl = content
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://qr-code-gamma-neon.vercel.app'
+    // Base URL'yi belirle - öncelik sırası: SITE_URL > APP_URL > VERCEL_URL > hardcoded
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+      || process.env.NEXT_PUBLIC_APP_URL
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+      || 'https://qr-code-gamma-neon.vercel.app'
 
     if (isDynamic && qrCode) {
       if (type.toLowerCase() === 'app') {

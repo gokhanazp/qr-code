@@ -111,9 +111,19 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
 
   // QR içeriğini al - APP tipi için landing page URL'si kullan
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://qr-code-gamma-neon.vercel.app'
+
+  // localhost URL'lerini düzelt (Fix localhost URLs)
+  const fixLocalhostUrl = (url: string): string => {
+    if (!url) return url
+    return url
+      .replace(/http:\/\/localhost:\d+/g, baseUrl)
+      .replace(/https:\/\/localhost:\d+/g, baseUrl)
+  }
+
+  const rawContent = qrCode.content?.encoded || ''
   const qrContent = isAppType
     ? `${baseUrl}/app/${qrCode.id}`
-    : (qrCode.content?.encoded || '')
+    : fixLocalhostUrl(rawContent)
   const qrSettings = qrCode.settings || {}
 
   return (
