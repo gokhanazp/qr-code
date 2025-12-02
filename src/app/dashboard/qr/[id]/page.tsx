@@ -47,10 +47,25 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
   const remainingDays = getRemainingDays(qrCode.expires_at)
   const isExpired = remainingDays !== null && remainingDays <= 0
 
+  // APP veri tipi tanımı (App data type definition)
+  interface AppDataType {
+    appName?: string
+    developer?: string
+    appLogo?: string
+    title?: string
+    description?: string
+    website?: string
+    iosUrl?: string
+    androidUrl?: string
+    primaryColor?: string
+    secondaryColor?: string
+    textColor?: string
+  }
+
   // APP ve vCard için özel veri parse
   const isAppType = qrCode.type === 'app'
   const isVCardType = qrCode.type === 'vcard'
-  let appData: Record<string, unknown> = {}
+  let appData: AppDataType = {}
   let vcardData: Record<string, unknown> = {}
 
   // APP verileri parse - raw veya encoded'dan al
@@ -59,11 +74,11 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
       const contentObj = qrCode.content as Record<string, unknown>
       // Önce raw'dan al (rawContent olarak kaydediliyor)
       if (contentObj.raw && typeof contentObj.raw === 'object') {
-        appData = contentObj.raw as Record<string, unknown>
+        appData = contentObj.raw as AppDataType
       }
       // Yoksa encoded JSON string'den parse et
       else if (contentObj.encoded && typeof contentObj.encoded === 'string') {
-        appData = JSON.parse(contentObj.encoded)
+        appData = JSON.parse(contentObj.encoded) as AppDataType
       }
     } catch { appData = {} }
   }
@@ -138,23 +153,23 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
                           }}
                         >
                           <div className="px-3 py-4 flex flex-col items-center text-center h-full">
-                            <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color: (appData.textColor as string) || '#000000' }}>
-                              {(appData.appName as string) || 'APP NAME'}
+                            <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color: appData.textColor || '#000000' }}>
+                              {appData.appName || 'APP NAME'}
                             </p>
-                            <p className="text-[7px] mb-3 opacity-70" style={{ color: (appData.textColor as string) || '#000000' }}>
-                              {(appData.developer as string) || 'Developer'}
+                            <p className="text-[7px] mb-3 opacity-70" style={{ color: appData.textColor || '#000000' }}>
+                              {appData.developer || 'Developer'}
                             </p>
                             <div className="bg-white/30 rounded-2xl p-2 mb-2">
                               {appData.appLogo ? (
-                                <img src={appData.appLogo as string} alt="Logo" className="max-w-[60px] max-h-[60px] object-contain" />
+                                <img src={appData.appLogo} alt="Logo" className="max-w-[60px] max-h-[60px] object-contain" />
                               ) : (
                                 <span className="text-3xl">📱</span>
                               )}
                             </div>
-                            <p className="text-[9px] font-bold leading-tight mb-1" style={{ color: (appData.textColor as string) || '#000000' }}>
-                              {(appData.title as string) || 'Download Our App!'}
+                            <p className="text-[9px] font-bold leading-tight mb-1" style={{ color: appData.textColor || '#000000' }}>
+                              {appData.title || 'Download Our App!'}
                             </p>
-                            <p className="text-[7px] italic mb-2 opacity-60" style={{ color: (appData.textColor as string) || '#000000' }}>HEMEN İNDİR!</p>
+                            <p className="text-[7px] italic mb-2 opacity-60" style={{ color: appData.textColor || '#000000' }}>HEMEN İNDİR!</p>
                             <div className="space-y-1 w-full px-2">
                               {appData.iosUrl && <img src="/img/apple-en.png" alt="App Store" className="w-full h-auto rounded" />}
                               {appData.androidUrl && <img src="/img/google-en.png" alt="Google Play" className="w-full h-auto rounded" />}
