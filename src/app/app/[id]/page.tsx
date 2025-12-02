@@ -116,106 +116,101 @@ export default async function AppLandingPage({ params }: PageProps) {
       )}
 
       <div
-        className="h-[100dvh] flex flex-col overflow-hidden"
+        className="h-[100dvh] flex flex-col"
         style={{ background: `linear-gradient(to bottom, ${secondaryColor}, ${primaryColor})` }}
       >
-        {/* Share Button - Sabit pozisyon */}
-        <div className="absolute top-3 right-3 z-10">
+        {/* Share Button - Sağ üst köşe */}
+        <div className="absolute top-4 right-4 z-10">
           <ShareButton appName={appData.appName} title={appData.title} secondaryColor={textColor} />
         </div>
 
-        {/* Ana İçerik - flex-1 ile ortalanıyor, scroll yok */}
-        <div className="flex-1 flex flex-col justify-between max-w-md mx-auto w-full px-4 py-3 sm:px-5 sm:py-4">
-          {/* Üst Bölüm - App Info */}
-          <div className="text-center pt-8">
-            <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider" style={{ color: textColor }}>
+        {/* Ana İçerik Container */}
+        <div className="flex-1 flex flex-col justify-center items-center px-6 py-8">
+          {/* App Name & Developer */}
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold uppercase tracking-wider" style={{ color: textColor }}>
               {appData.appName || 'App Name'}
             </h2>
-            <p className="text-xs sm:text-sm opacity-70" style={{ color: textColor }}>
-              {appData.developer || 'Developer Slogan'}
+            <p className="text-sm opacity-70 mt-1" style={{ color: textColor }}>
+              {appData.developer || 'Developer'}
             </p>
           </div>
 
-          {/* Orta Bölüm - Logo + Title */}
-          <div className="flex-1 flex flex-col items-center justify-center -mt-4">
-            {/* App Logo - Kompakt */}
-            <div className="bg-white/30 rounded-2xl p-3 sm:p-4 shadow-lg mb-3">
-              {appData.appLogo ? (
-                <img
-                  src={appData.appLogo}
-                  alt={appData.appName}
-                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
-                />
-              ) : (
-                <span className="text-5xl">📱</span>
-              )}
-            </div>
-
-            {/* Title */}
-            <h1 className="text-base sm:text-lg font-bold text-center leading-tight px-2 mb-1" style={{ color: textColor }}>
-              {appData.title || 'Download Our App'}
-            </h1>
-
-            {/* Description - HEMEN İNDİR yerine kullanıcının description'ı */}
-            {appData.description && (
-              <p className="text-sm italic opacity-70 text-center" style={{ color: textColor }}>
-                {appData.description}
-              </p>
+          {/* App Logo */}
+          <div className="bg-white/25 rounded-3xl p-4 shadow-xl mb-4">
+            {appData.appLogo ? (
+              <img
+                src={appData.appLogo}
+                alt={appData.appName}
+                className="w-24 h-24 object-contain"
+              />
+            ) : (
+              <span className="text-6xl block">📱</span>
             )}
           </div>
 
-          {/* Alt Bölüm - Download Buttons */}
-          <div className="space-y-2 max-w-[240px] sm:max-w-[280px] mx-auto w-full mb-2">
-            {/* App Store Button */}
+          {/* Title */}
+          <h1 className="text-lg font-bold text-center leading-snug px-4 mb-2" style={{ color: textColor }}>
+            {appData.title || 'Download Our App'}
+          </h1>
+
+          {/* Description */}
+          {appData.description && (
+            <p className="text-sm italic opacity-60 text-center mb-4" style={{ color: textColor }}>
+              {appData.description}
+            </p>
+          )}
+
+          {/* Download Buttons - Büyük ve belirgin */}
+          <div className="w-full max-w-xs space-y-3 mt-2">
             {appData.iosUrl && (
               <a
                 href={appData.iosUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="block transition-transform hover:scale-105 active:scale-95"
               >
                 <img
                   src="/img/apple-en.png"
                   alt="Download on the App Store"
-                  className="w-full h-10 sm:h-12 object-contain rounded-lg shadow-md"
+                  className="w-full h-14 object-contain"
                 />
               </a>
             )}
 
-            {/* Google Play Button */}
             {appData.androidUrl && (
               <a
                 href={appData.androidUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="block transition-transform hover:scale-105 active:scale-95"
               >
                 <img
                   src="/img/google-en.png"
                   alt="Get it on Google Play"
-                  className="w-full h-10 sm:h-12 object-contain rounded-lg shadow-md"
+                  className="w-full h-14 object-contain"
                 />
               </a>
             )}
-
-            {/* Website Link - Kompakt */}
-            {appData.website && (
-              <a
-                href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center transition-opacity hover:opacity-100 opacity-70 pt-1"
-                style={{ color: textColor }}
-              >
-                <span className="text-xs sm:text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
-              </a>
-            )}
           </div>
+
+          {/* Website Link */}
+          {appData.website && (
+            <a
+              href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 opacity-70 hover:opacity-100 transition-opacity"
+              style={{ color: textColor }}
+            >
+              <span className="text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
+            </a>
+          )}
         </div>
 
-        {/* Footer - Her zaman en altta sabit */}
-        <div className="py-2 text-center shrink-0">
-          <p className="text-[10px] sm:text-xs opacity-40" style={{ color: textColor }}>
+        {/* Footer - En altta */}
+        <div className="py-3 text-center">
+          <p className="text-xs opacity-40" style={{ color: textColor }}>
             Powered by QR Code Generator
           </p>
         </div>
