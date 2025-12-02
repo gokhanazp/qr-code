@@ -116,53 +116,53 @@ export default async function AppLandingPage({ params }: PageProps) {
       )}
 
       <div
-        className="h-[100dvh] flex flex-col overflow-hidden"
+        className="min-h-[100dvh] flex flex-col"
         style={{ background: `linear-gradient(to bottom, ${secondaryColor}, ${primaryColor})` }}
       >
         {/* Share Button - Sağ üst köşe */}
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-4 right-4 z-10">
           <ShareButton appName={appData.appName} title={appData.title} secondaryColor={textColor} />
         </div>
 
-        {/* Ana İçerik Container - Kompakt aralıklar */}
-        <div className="flex-1 flex flex-col justify-center items-center px-5">
+        {/* Ana İçerik Container */}
+        <div className="flex-1 flex flex-col justify-center items-center px-6 py-10">
           {/* App Name & Developer */}
-          <div className="text-center mb-2">
-            <h2 className="text-lg font-bold uppercase tracking-wider" style={{ color: textColor }}>
+          <div className="text-center mb-5">
+            <h2 className="text-xl font-bold uppercase tracking-widest" style={{ color: textColor }}>
               {appData.appName || 'App Name'}
             </h2>
-            <p className="text-xs opacity-70" style={{ color: textColor }}>
+            <p className="text-sm opacity-70 mt-1" style={{ color: textColor }}>
               {appData.developer || 'Developer'}
             </p>
           </div>
 
           {/* App Logo */}
-          <div className="bg-white/25 rounded-2xl p-3 shadow-lg mb-2">
+          <div className="bg-white/25 rounded-3xl p-5 shadow-2xl mb-5">
             {appData.appLogo ? (
               <img
                 src={appData.appLogo}
                 alt={appData.appName}
-                className="w-20 h-20 object-contain"
+                className="w-24 h-24 object-contain"
               />
             ) : (
-              <span className="text-5xl block">📱</span>
+              <span className="text-6xl block">📱</span>
             )}
           </div>
 
           {/* Title */}
-          <h1 className="text-base font-bold text-center leading-tight px-4 mb-1" style={{ color: textColor }}>
+          <h1 className="text-xl font-bold text-center leading-snug px-6 mb-2" style={{ color: textColor }}>
             {appData.title || 'Download Our App'}
           </h1>
 
           {/* Description */}
           {appData.description && (
-            <p className="text-xs italic opacity-60 text-center mb-2" style={{ color: textColor }}>
+            <p className="text-sm italic opacity-60 text-center mb-5 max-w-xs" style={{ color: textColor }}>
               {appData.description}
             </p>
           )}
 
           {/* Download Buttons */}
-          <div className="w-full max-w-[280px] space-y-2">
+          <div className="w-full max-w-xs space-y-3">
             {appData.iosUrl && (
               <a
                 href={appData.iosUrl}
@@ -173,7 +173,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/apple-en.png"
                   alt="Download on the App Store"
-                  className="w-full h-12 object-contain"
+                  className="w-full h-14 object-contain"
                 />
               </a>
             )}
@@ -188,7 +188,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/google-en.png"
                   alt="Get it on Google Play"
-                  className="w-full h-12 object-contain"
+                  className="w-full h-14 object-contain"
                 />
               </a>
             )}
@@ -200,17 +200,17 @@ export default async function AppLandingPage({ params }: PageProps) {
               href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 opacity-70 hover:opacity-100 transition-opacity"
+              className="mt-5 opacity-70 hover:opacity-100 transition-opacity"
               style={{ color: textColor }}
             >
-              <span className="text-xs underline">{appData.website.replace(/^https?:\/\//, '')}</span>
+              <span className="text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
             </a>
           )}
         </div>
 
-        {/* Footer - En altta sabit */}
-        <div className="py-2 text-center shrink-0">
-          <p className="text-[10px] opacity-40" style={{ color: textColor }}>
+        {/* Footer - En altta */}
+        <div className="py-4 text-center shrink-0">
+          <p className="text-xs opacity-40" style={{ color: textColor }}>
             Powered by QR Code Generator
           </p>
         </div>
