@@ -36,6 +36,9 @@ export default function EditQRForm({
   const t = useTranslations('dashboard')
   const tGen = useTranslations('generator')
 
+  // QR tipini normalize et (büyük harf duyarlılığını kaldır)
+  const normalizedType = qrType.toUpperCase()
+
   // Ortak state'ler
   const [name, setName] = useState(initialName)
   const [url, setUrl] = useState(initialUrl)
@@ -77,7 +80,7 @@ export default function EditQRForm({
 
     // Güncellenmiş rawContent oluştur
     let updatedRawContent = { ...initialRawContent }
-    if (qrType === 'APP') {
+    if (normalizedType === 'APP') {
       updatedRawContent = { ...appData, welcomeScreenEnabled: String(appData.welcomeScreenEnabled) }
     }
 
@@ -86,7 +89,7 @@ export default function EditQRForm({
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
-          content: qrType === 'URL' ? url : initialUrl,
+          content: normalizedType === 'URL' ? url : initialUrl,
           rawContent: updatedRawContent,
           settings: { ...settings, foregroundColor, backgroundColor, frameText },
           is_active: isActive,
@@ -101,7 +104,7 @@ export default function EditQRForm({
     } finally { setIsSaving(false) }
   }
 
-  const getQRContent = () => qrType === 'URL' ? url : (url || initialUrl)
+  const getQRContent = () => normalizedType === 'URL' ? url : (url || initialUrl)
 
   // APP tipi için düzenleme formu
   const renderAppForm = () => (
@@ -252,9 +255,9 @@ export default function EditQRForm({
         </div>
 
         {/* QR Tipine göre form */}
-        {qrType === 'APP' ? renderAppForm() : (
+        {normalizedType === 'APP' ? renderAppForm() : (
           <>
-            {qrType === 'URL' && (
+            {normalizedType === 'URL' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">{t('targetUrl')}</label>
                 <input type="url" value={url} onChange={(e) => setUrl(e.target.value)}
@@ -308,7 +311,7 @@ export default function EditQRForm({
         <h3 className="font-semibold text-gray-900 mb-4">{t('preview')}</h3>
 
         {/* APP tipi için özel önizleme */}
-        {qrType === 'APP' ? (
+        {normalizedType === 'APP' ? (
           <div className="space-y-4">
             {/* Landing Page Önizleme */}
             <div className="border rounded-xl overflow-hidden" style={{ maxWidth: '200px', margin: '0 auto' }}>

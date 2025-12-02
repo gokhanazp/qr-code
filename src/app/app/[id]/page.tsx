@@ -116,59 +116,56 @@ export default async function AppLandingPage({ params }: PageProps) {
       )}
 
       <div
-        className="min-h-screen flex flex-col"
+        className="h-[100dvh] flex flex-col overflow-hidden"
         style={{ background: `linear-gradient(to bottom, ${secondaryColor}, ${primaryColor})` }}
       >
-        {/* Ana İçerik - flex-1 ile ortalanıyor */}
-        <div className="flex-1 flex flex-col justify-center relative max-w-md mx-auto w-full px-5 py-6 sm:px-6 sm:py-8">
-          {/* Share Button - Client Component */}
+        {/* Share Button - Sabit pozisyon */}
+        <div className="absolute top-3 right-3 z-10">
           <ShareButton appName={appData.appName} title={appData.title} secondaryColor={textColor} />
+        </div>
 
-          {/* App Name & Developer - ÜSTTE */}
-          <div className="text-center mb-5 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wider mb-1" style={{ color: textColor }}>
+        {/* Ana İçerik - flex-1 ile ortalanıyor, scroll yok */}
+        <div className="flex-1 flex flex-col justify-between max-w-md mx-auto w-full px-4 py-3 sm:px-5 sm:py-4">
+          {/* Üst Bölüm - App Info */}
+          <div className="text-center pt-8">
+            <h2 className="text-base sm:text-lg font-bold uppercase tracking-wider" style={{ color: textColor }}>
               {appData.appName || 'App Name'}
             </h2>
-            <p className="text-sm sm:text-base opacity-70" style={{ color: textColor }}>
+            <p className="text-xs sm:text-sm opacity-70" style={{ color: textColor }}>
               {appData.developer || 'Developer Slogan'}
             </p>
           </div>
 
-          {/* App Logo - ORTADA, saydam beyaz arka plan kutu */}
-          <div className="flex justify-center mb-5 sm:mb-6">
-            <div className="bg-white/30 rounded-3xl p-4 sm:p-5 shadow-lg">
+          {/* Orta Bölüm - Logo + Title */}
+          <div className="flex-1 flex flex-col items-center justify-center -mt-4">
+            {/* App Logo - Kompakt */}
+            <div className="bg-white/30 rounded-2xl p-3 sm:p-4 shadow-lg mb-3">
               {appData.appLogo ? (
                 <img
                   src={appData.appLogo}
                   alt={appData.appName}
-                  className="w-24 h-24 sm:w-32 sm:h-32 object-contain"
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
                 />
               ) : (
-                <span className="text-6xl sm:text-7xl">📱</span>
+                <span className="text-5xl">📱</span>
               )}
             </div>
-          </div>
 
-          {/* Title & Description */}
-          <div className="text-center mb-5 sm:mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold mb-2 leading-tight px-4" style={{ color: textColor }}>
+            {/* Title */}
+            <h1 className="text-base sm:text-lg font-bold text-center leading-tight px-2 mb-1" style={{ color: textColor }}>
               {appData.title || 'Download Our App'}
             </h1>
 
-            {/* HEMEN İNDİR! */}
-            <p className="text-base sm:text-lg italic mb-3 opacity-60" style={{ color: textColor }}>
-              HEMEN İNDİR!
-            </p>
-
+            {/* Description - HEMEN İNDİR yerine kullanıcının description'ı */}
             {appData.description && (
-              <p className="text-sm sm:text-base leading-relaxed px-4 opacity-80" style={{ color: textColor }}>
+              <p className="text-sm italic opacity-70 text-center" style={{ color: textColor }}>
                 {appData.description}
               </p>
             )}
           </div>
 
-          {/* Download Buttons - Resmi Badge Görselleri */}
-          <div className="space-y-3 mb-5 max-w-[280px] sm:max-w-[320px] mx-auto w-full">
+          {/* Alt Bölüm - Download Buttons */}
+          <div className="space-y-2 max-w-[240px] sm:max-w-[280px] mx-auto w-full mb-2">
             {/* App Store Button */}
             {appData.iosUrl && (
               <a
@@ -180,7 +177,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/apple-en.png"
                   alt="Download on the App Store"
-                  className="w-full h-auto rounded-xl shadow-lg"
+                  className="w-full h-10 sm:h-12 object-contain rounded-lg shadow-md"
                 />
               </a>
             )}
@@ -196,29 +193,29 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/google-en.png"
                   alt="Get it on Google Play"
-                  className="w-full h-auto rounded-xl shadow-lg"
+                  className="w-full h-10 sm:h-12 object-contain rounded-lg shadow-md"
                 />
               </a>
             )}
-          </div>
 
-          {/* Website Link */}
-          {appData.website && (
-            <a
-              href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 transition-opacity hover:opacity-100 opacity-70"
-              style={{ color: textColor }}
-            >
-              <span className="text-sm sm:text-base underline">{appData.website.replace(/^https?:\/\//, '')}</span>
-            </a>
-          )}
+            {/* Website Link - Kompakt */}
+            {appData.website && (
+              <a
+                href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center transition-opacity hover:opacity-100 opacity-70 pt-1"
+                style={{ color: textColor }}
+              >
+                <span className="text-xs sm:text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Footer - Her zaman en altta sabit */}
-        <div className="py-4 text-center">
-          <p className="text-xs sm:text-sm opacity-40" style={{ color: textColor }}>
+        <div className="py-2 text-center shrink-0">
+          <p className="text-[10px] sm:text-xs opacity-40" style={{ color: textColor }}>
             Powered by QR Code Generator
           </p>
         </div>

@@ -79,15 +79,15 @@ export default function ShareButton({ appName, title, secondaryColor = '#128f5c'
   ]
 
   return (
-    <div className="absolute top-4 right-4" ref={menuRef}>
-      {/* Ana Paylaş Butonu */}
+    <div className="relative" ref={menuRef}>
+      {/* Ana Paylaş Butonu - Kompakt */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-11 h-11 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-all active:scale-95 shadow-lg"
+        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-all active:scale-95 shadow-lg"
         style={{ backgroundColor: secondaryColor }}
         aria-label="Paylaş"
       >
-        {isOpen ? <X className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
+        {isOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />}
       </button>
 
       {/* Sosyal Medya Menüsü */}
