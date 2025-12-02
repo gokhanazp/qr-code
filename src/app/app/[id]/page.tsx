@@ -125,44 +125,44 @@ export default async function AppLandingPage({ params }: PageProps) {
         </div>
 
         {/* Ana İçerik Container */}
-        <div className="flex-1 flex flex-col justify-center items-center px-6 py-10">
+        <div className="flex-1 flex flex-col justify-center items-center px-8 py-12">
           {/* App Name & Developer */}
-          <div className="text-center mb-5">
-            <h2 className="text-xl font-bold uppercase tracking-widest" style={{ color: textColor }}>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold uppercase tracking-widest" style={{ color: textColor }}>
               {appData.appName || 'App Name'}
             </h2>
-            <p className="text-sm opacity-70 mt-1" style={{ color: textColor }}>
+            <p className="text-base opacity-70 mt-2" style={{ color: textColor }}>
               {appData.developer || 'Developer'}
             </p>
           </div>
 
           {/* App Logo */}
-          <div className="bg-white/25 rounded-3xl p-5 shadow-2xl mb-5">
+          <div className="bg-white/25 rounded-3xl p-6 shadow-2xl mb-8">
             {appData.appLogo ? (
               <img
                 src={appData.appLogo}
                 alt={appData.appName}
-                className="w-24 h-24 object-contain"
+                className="w-28 h-28 object-contain"
               />
             ) : (
-              <span className="text-6xl block">📱</span>
+              <span className="text-7xl block">📱</span>
             )}
           </div>
 
           {/* Title */}
-          <h1 className="text-xl font-bold text-center leading-snug px-6 mb-2" style={{ color: textColor }}>
+          <h1 className="text-2xl font-bold text-center leading-snug px-6 mb-3" style={{ color: textColor }}>
             {appData.title || 'Download Our App'}
           </h1>
 
           {/* Description */}
           {appData.description && (
-            <p className="text-sm italic opacity-60 text-center mb-5 max-w-xs" style={{ color: textColor }}>
+            <p className="text-base italic opacity-60 text-center mb-8 max-w-sm" style={{ color: textColor }}>
               {appData.description}
             </p>
           )}
 
           {/* Download Buttons */}
-          <div className="w-full max-w-xs space-y-3">
+          <div className="w-full max-w-sm space-y-4">
             {appData.iosUrl && (
               <a
                 href={appData.iosUrl}
@@ -173,7 +173,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/apple-en.png"
                   alt="Download on the App Store"
-                  className="w-full h-14 object-contain"
+                  className="w-full h-16 object-contain"
                 />
               </a>
             )}
@@ -188,7 +188,7 @@ export default async function AppLandingPage({ params }: PageProps) {
                 <img
                   src="/img/google-en.png"
                   alt="Get it on Google Play"
-                  className="w-full h-14 object-contain"
+                  className="w-full h-16 object-contain"
                 />
               </a>
             )}
@@ -200,10 +200,10 @@ export default async function AppLandingPage({ params }: PageProps) {
               href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 opacity-70 hover:opacity-100 transition-opacity"
+              className="mt-8 opacity-70 hover:opacity-100 transition-opacity"
               style={{ color: textColor }}
             >
-              <span className="text-sm underline">{appData.website.replace(/^https?:\/\//, '')}</span>
+              <span className="text-base underline">{appData.website.replace(/^https?:\/\//, '')}</span>
             </a>
           )}
         </div>
