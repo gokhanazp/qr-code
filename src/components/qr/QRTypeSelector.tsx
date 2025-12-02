@@ -149,12 +149,12 @@ export const qrTypes = [
     description: 'Link to YouTube channel'
   },
   {
-    id: 'APP_STORE',
+    id: 'APP',
     icon: Smartphone,
-    gradient: 'from-gray-700 to-gray-800',
-    bgLight: 'bg-gray-50',
-    borderActive: 'border-gray-700',
-    description: 'Link to app download'
+    gradient: 'from-cyan-500 to-blue-600',
+    bgLight: 'bg-cyan-50',
+    borderActive: 'border-cyan-500',
+    description: 'App download landing page'
   },
   {
     id: 'PDF',
@@ -210,7 +210,7 @@ export default function QRTypeSelector({ selectedType, onTypeChange }: QRTypeSel
       TWITTER: 'twitter',
       LINKEDIN: 'linkedin',
       YOUTUBE: 'youtube',
-      APP_STORE: 'appStore',
+      APP: 'app',
       PDF: 'pdf',
       IMAGE: 'image',
       BITCOIN: 'bitcoin',

@@ -11,9 +11,12 @@ import {
   Database,
   Globe,
   Lock,
-  Mail
+  Mail,
+  Sliders,
+  QrCode
 } from 'lucide-react'
 import LanguageSelector from './LanguageSelector'
+import PlanLimitsEditor from './PlanLimitsEditor'
 
 export default async function AdminSettingsPage() {
   const supabase = await createClient()
@@ -32,6 +35,20 @@ export default async function AdminSettingsPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Ayarlar</h1>
       <p className="text-gray-600 mb-8">Admin paneli ve site ayarları</p>
+
+      {/* Plan Limitleri - Üst kısımda tam genişlikte */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+            <Sliders className="w-5 h-5 text-indigo-600" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Plan Limitleri</h2>
+            <p className="text-sm text-gray-500">Kullanıcı planlarına göre QR kod limitleri ve özellikleri</p>
+          </div>
+        </div>
+        <PlanLimitsEditor />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Admin Kullanıcıları */}

@@ -288,8 +288,14 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                   </h3>
                 </div>
                 <div className="p-6">
+                  {/* APP tipi için özel önizleme mesajı */}
+                  {type === 'app' && content && (
+                    <div className="mb-4 p-3 bg-cyan-50 border border-cyan-200 rounded-lg text-xs text-cyan-700">
+                      📱 Kaydettiğinizde QR kod, güzel bir uygulama indirme sayfasına yönlendirecek.
+                    </div>
+                  )}
                   <QRPreview
-                    content={content}
+                    content={type === 'app' && content ? `${window?.location?.origin || ''}/app/preview` : content}
                     foregroundColor={foregroundColor}
                     backgroundColor={backgroundColor}
                     size={size}

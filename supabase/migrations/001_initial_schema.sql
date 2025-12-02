@@ -58,10 +58,13 @@ DROP POLICY IF EXISTS "Users can view own QR codes" ON public.qr_codes;
 DROP POLICY IF EXISTS "Users can create own QR codes" ON public.qr_codes;
 DROP POLICY IF EXISTS "Users can update own QR codes" ON public.qr_codes;
 DROP POLICY IF EXISTS "Users can delete own QR codes" ON public.qr_codes;
+DROP POLICY IF EXISTS "Anyone can view QR codes for scanning" ON public.qr_codes;
+DROP POLICY IF EXISTS "Anyone can update scan count" ON public.qr_codes;
 
--- Kullanıcılar sadece kendi QR kodlarını görebilir
-CREATE POLICY "Users can view own QR codes" ON public.qr_codes
-  FOR SELECT USING (auth.uid() = user_id);
+-- Herkes QR kodlarını görebilir (tarama için gerekli)
+-- Anyone can view QR codes (required for scanning)
+CREATE POLICY "Anyone can view QR codes for scanning" ON public.qr_codes
+  FOR SELECT USING (true);
 
 -- Kullanıcılar kendi QR kodlarını oluşturabilir
 CREATE POLICY "Users can create own QR codes" ON public.qr_codes
@@ -70,6 +73,12 @@ CREATE POLICY "Users can create own QR codes" ON public.qr_codes
 -- Kullanıcılar kendi QR kodlarını güncelleyebilir
 CREATE POLICY "Users can update own QR codes" ON public.qr_codes
   FOR UPDATE USING (auth.uid() = user_id);
+
+-- Herkes scan_count'u güncelleyebilir (anonim taramalar için)
+-- Anyone can update scan_count (for anonymous scans)
+CREATE POLICY "Anyone can update scan count" ON public.qr_codes
+  FOR UPDATE USING (true)
+  WITH CHECK (true);
 
 -- Kullanıcılar kendi QR kodlarını silebilir
 CREATE POLICY "Users can delete own QR codes" ON public.qr_codes

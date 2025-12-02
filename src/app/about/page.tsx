@@ -1,6 +1,25 @@
 // About sayfası - Şirket hakkında bilgi
 // About page - Company information
+
+import { Metadata } from 'next'
 import { Building2, Users, Target, Award, Globe, Zap } from 'lucide-react';
+
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+
+// SEO Metadata
+export const metadata: Metadata = {
+  title: 'Hakkımızda - QR Kod Oluşturucu',
+  description: 'QR Kod Oluşturucu hakkında. Misyonumuz, vizyonumuz ve QR kod teknolojisinde öncü çözümlerimiz. Learn about our QR code generator platform.',
+  keywords: ['qr kod hakkında', 'qr code generator about', 'karekod şirketi'],
+  openGraph: {
+    title: 'Hakkımızda - QR Kod Oluşturucu',
+    description: 'QR Kod Oluşturucu platformu hakkında bilgi edinin.',
+    url: `${siteUrl}/about`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/about`,
+  },
+}
 
 export default function AboutPage() {
   return (

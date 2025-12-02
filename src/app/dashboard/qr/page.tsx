@@ -3,8 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { QrCode, Plus, ExternalLink, Trash2, Calendar, Eye } from 'lucide-react'
+import { Plus, ExternalLink, Calendar, Eye, QrCode } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import DeleteQRButton from './DeleteQRButton'
+import QRCardPreview from './QRCardPreview'
 
 export default async function MyQRCodesPage() {
   const t = await getTranslations('dashboard')
@@ -66,9 +68,7 @@ export default async function MyQRCodesPage() {
                 >
                   {/* QR Kod Önizleme */}
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <QrCode className="w-8 h-8 text-gray-600" />
-                    </div>
+                    <QRCardPreview type={qr.type} content={qr.content} />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">
                         {qr.name || qr.type}
@@ -108,12 +108,7 @@ export default async function MyQRCodesPage() {
                       <ExternalLink className="w-4 h-4" />
                       {t('view')}
                     </Link>
-                    <button
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title={t('delete')}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <DeleteQRButton qrId={qr.id} qrName={qr.name} variant="icon" />
                   </div>
                 </div>
               )

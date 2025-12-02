@@ -12,92 +12,92 @@ const validTypes = [
   'event', 'location', 'bitcoin', 'app', 'pdf', 'image'
 ]
 
-// QR tipi SEO bilgileri
+// QR tipi SEO bilgileri - Türkçe ve İngilizce
 const qrTypeSEO: Record<string, { title: string; description: string; keywords: string[] }> = {
   url: {
-    title: 'Free URL QR Code Generator | Create Website Link QR Codes',
-    description: 'Generate QR codes for any website URL instantly. Free online URL QR code maker with custom colors and high resolution downloads.',
-    keywords: ['url qr code', 'website qr code', 'link qr code generator', 'free qr code maker']
+    title: 'URL QR Kod Oluşturucu - Ücretsiz Web Sitesi QR Kodu',
+    description: 'Ücretsiz URL QR kodu oluşturun! Web sitesi, blog, e-ticaret için anında QR kod. Free URL QR code generator with custom colors.',
+    keywords: ['url qr kod', 'web sitesi qr kod', 'link qr kod', 'url qr code', 'website qr code']
   },
   wifi: {
-    title: 'WiFi QR Code Generator | Create WiFi Network QR Codes',
-    description: 'Create WiFi QR codes for easy network sharing. Guests can join your WiFi by scanning - no password typing needed.',
-    keywords: ['wifi qr code', 'wifi network qr', 'wifi password qr code', 'wifi qr generator']
+    title: 'WiFi QR Kod Oluşturucu - Kablosuz Ağ Paylaşımı',
+    description: 'WiFi QR kodu ile şifre paylaşın! Misafirler QR kodu okutarak WiFi\'a bağlanır. Create WiFi QR codes for easy network sharing.',
+    keywords: ['wifi qr kod', 'kablosuz ağ qr', 'wifi şifre qr', 'wifi qr code', 'wifi password qr']
   },
   vcard: {
-    title: 'vCard QR Code Generator | Digital Business Card Creator',
-    description: 'Create professional digital business cards with QR codes. Share your contact info instantly with a beautiful landing page.',
-    keywords: ['vcard qr code', 'digital business card', 'contact qr code', 'business card qr']
+    title: 'vCard QR Kod - Dijital Kartvizit Oluşturucu',
+    description: 'Profesyonel dijital kartvizit QR kodu oluşturun. İletişim bilgilerinizi anında paylaşın. Digital business card QR code creator.',
+    keywords: ['vcard qr kod', 'dijital kartvizit', 'kartvizit qr', 'vcard qr code', 'digital business card']
   },
   email: {
-    title: 'Email QR Code Generator | Create Email Link QR Codes',
-    description: 'Generate QR codes that open email composer with pre-filled recipient, subject and message. Perfect for marketing.',
-    keywords: ['email qr code', 'mailto qr code', 'email link qr generator']
+    title: 'E-posta QR Kod Oluşturucu - Mail QR Kodu',
+    description: 'E-posta QR kodu ile hızlı iletişim. Alıcı, konu ve mesaj hazır açılır. Email QR code generator.',
+    keywords: ['email qr kod', 'e-posta qr', 'mail qr kod', 'email qr code', 'mailto qr']
   },
   phone: {
-    title: 'Phone Call QR Code Generator | Create Tel Link QR Codes',
-    description: 'Create QR codes that initiate phone calls when scanned. Perfect for customer service and contact information.',
-    keywords: ['phone qr code', 'tel qr code', 'call qr code generator']
+    title: 'Telefon QR Kod Oluşturucu - Arama QR Kodu',
+    description: 'Telefon numarası QR kodu oluşturun. Taratıldığında doğrudan arama başlar. Phone call QR code generator.',
+    keywords: ['telefon qr kod', 'arama qr', 'tel qr kod', 'phone qr code', 'call qr code']
   },
   sms: {
-    title: 'SMS QR Code Generator | Create Text Message QR Codes',
-    description: 'Generate QR codes that open SMS app with pre-filled number and message. Great for marketing campaigns.',
-    keywords: ['sms qr code', 'text message qr', 'sms qr generator']
+    title: 'SMS QR Kod Oluşturucu - Mesaj QR Kodu',
+    description: 'SMS QR kodu ile hazır mesaj gönderin. Pazarlama kampanyaları için ideal. SMS text message QR code.',
+    keywords: ['sms qr kod', 'mesaj qr', 'kısa mesaj qr', 'sms qr code', 'text qr code']
   },
   whatsapp: {
-    title: 'WhatsApp QR Code Generator | Create WhatsApp Link QR Codes',
-    description: 'Create QR codes that open WhatsApp chat. Perfect for customer support and business communication.',
-    keywords: ['whatsapp qr code', 'whatsapp link qr', 'wa.me qr code']
+    title: 'WhatsApp QR Kod Oluşturucu - WA QR Kodu',
+    description: 'WhatsApp QR kodu ile müşterilerinize ulaşın. Hazır mesajla sohbet başlatın. WhatsApp chat QR code generator.',
+    keywords: ['whatsapp qr kod', 'wa qr kod', 'whatsapp link qr', 'whatsapp qr code', 'wa.me qr']
   },
   text: {
-    title: 'Text QR Code Generator | Create Plain Text QR Codes',
-    description: 'Generate QR codes containing any text message. Simple and versatile QR code creation.',
-    keywords: ['text qr code', 'plain text qr', 'message qr code generator']
+    title: 'Metin QR Kod Oluşturucu - Düz Yazı QR Kodu',
+    description: 'Herhangi bir metni QR koda dönüştürün. Basit ve çok yönlü kullanım. Plain text QR code generator.',
+    keywords: ['metin qr kod', 'yazı qr', 'text qr kod', 'text qr code', 'plain text qr']
   },
   instagram: {
-    title: 'Instagram QR Code Generator | Create Instagram Profile QR Codes',
-    description: 'Create QR codes that link to your Instagram profile. Grow your followers with easy profile sharing.',
-    keywords: ['instagram qr code', 'instagram profile qr', 'ig qr code generator']
+    title: 'Instagram QR Kod Oluşturucu - IG Profil QR Kodu',
+    description: 'Instagram profil QR kodu ile takipçi kazanın. Profilinizi kolayca paylaşın. Instagram profile QR code.',
+    keywords: ['instagram qr kod', 'ig qr kod', 'instagram profil qr', 'instagram qr code', 'ig qr']
   },
   twitter: {
-    title: 'Twitter/X QR Code Generator | Create Twitter Profile QR Codes',
-    description: 'Generate QR codes for your Twitter/X profile. Share your social media presence instantly.',
-    keywords: ['twitter qr code', 'x qr code', 'twitter profile qr generator']
+    title: 'Twitter/X QR Kod Oluşturucu - Tweet QR Kodu',
+    description: 'Twitter/X profil QR kodu oluşturun. Sosyal medya varlığınızı anında paylaşın. Twitter X QR code.',
+    keywords: ['twitter qr kod', 'x qr kod', 'tweet qr', 'twitter qr code', 'x profile qr']
   },
   linkedin: {
-    title: 'LinkedIn QR Code Generator | Create LinkedIn Profile QR Codes',
-    description: 'Create QR codes for your LinkedIn profile. Perfect for networking and professional connections.',
-    keywords: ['linkedin qr code', 'linkedin profile qr', 'professional qr code']
+    title: 'LinkedIn QR Kod Oluşturucu - Profesyonel Ağ QR Kodu',
+    description: 'LinkedIn profil QR kodu ile profesyonel ağınızı genişletin. İş bağlantıları için ideal. LinkedIn profile QR code.',
+    keywords: ['linkedin qr kod', 'profesyonel qr', 'iş qr kod', 'linkedin qr code', 'professional qr']
   },
   youtube: {
-    title: 'YouTube QR Code Generator | Create YouTube Channel QR Codes',
-    description: 'Generate QR codes for YouTube channels and videos. Grow your audience with easy sharing.',
-    keywords: ['youtube qr code', 'youtube channel qr', 'video qr code generator']
+    title: 'YouTube QR Kod Oluşturucu - Video Kanal QR Kodu',
+    description: 'YouTube kanal ve video QR kodu oluşturun. Abone sayınızı artırın. YouTube channel QR code.',
+    keywords: ['youtube qr kod', 'video qr', 'kanal qr kod', 'youtube qr code', 'video channel qr']
   },
   facebook: {
-    title: 'Facebook QR Code Generator | Create Facebook Page QR Codes',
-    description: 'Create QR codes for Facebook profiles and pages. Increase your social media reach.',
-    keywords: ['facebook qr code', 'facebook page qr', 'fb qr code generator']
+    title: 'Facebook QR Kod Oluşturucu - FB Sayfa QR Kodu',
+    description: 'Facebook profil ve sayfa QR kodu oluşturun. Sosyal medya erişiminizi artırın. Facebook page QR code.',
+    keywords: ['facebook qr kod', 'fb qr kod', 'facebook sayfa qr', 'facebook qr code', 'fb page qr']
   },
   event: {
-    title: 'Event QR Code Generator | Create Calendar Event QR Codes',
-    description: 'Generate QR codes that add events to calendars. Perfect for invitations and appointments.',
-    keywords: ['event qr code', 'calendar qr code', 'icalendar qr generator']
+    title: 'Etkinlik QR Kod Oluşturucu - Takvim QR Kodu',
+    description: 'Etkinlik ve toplantı QR kodu oluşturun. Takvime otomatik eklensin. Calendar event QR code.',
+    keywords: ['etkinlik qr kod', 'takvim qr', 'toplantı qr', 'event qr code', 'calendar qr']
   },
   location: {
-    title: 'Location QR Code Generator | Create Map & GPS QR Codes',
-    description: 'Create QR codes for locations and addresses. Open maps app directly when scanned.',
-    keywords: ['location qr code', 'gps qr code', 'map qr code generator', 'geo qr code']
+    title: 'Konum QR Kod Oluşturucu - Harita GPS QR Kodu',
+    description: 'Konum ve adres QR kodu oluşturun. Haritalar uygulamasında açılır. Location map GPS QR code.',
+    keywords: ['konum qr kod', 'harita qr', 'adres qr kod', 'location qr code', 'gps qr', 'map qr']
   },
   bitcoin: {
-    title: 'Bitcoin QR Code Generator | Create Crypto Payment QR Codes',
-    description: 'Generate QR codes for Bitcoin payments. Easy cryptocurrency transactions with scannable codes.',
-    keywords: ['bitcoin qr code', 'crypto qr code', 'btc qr code generator']
+    title: 'Bitcoin QR Kod Oluşturucu - Kripto Ödeme QR Kodu',
+    description: 'Bitcoin ve kripto para QR kodu oluşturun. Kolay ödeme alın. Bitcoin crypto payment QR code.',
+    keywords: ['bitcoin qr kod', 'kripto qr', 'btc qr kod', 'bitcoin qr code', 'crypto qr']
   },
   app: {
-    title: 'App Store QR Code Generator | Create App Download QR Codes',
-    description: 'Create QR codes that link to App Store and Play Store. Promote your mobile applications.',
-    keywords: ['app qr code', 'app store qr', 'play store qr code', 'app download qr']
+    title: 'Uygulama QR Kod Oluşturucu - App Store Play Store QR',
+    description: 'Mobil uygulama indirme QR kodu oluşturun. App Store ve Play Store linkli. App download QR code.',
+    keywords: ['uygulama qr kod', 'app store qr', 'play store qr', 'app qr code', 'app download qr']
   },
   pdf: {
     title: 'PDF QR Code Generator | Create Document QR Codes',

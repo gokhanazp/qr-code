@@ -70,6 +70,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Tarama takibi gereken tüm tipler için is_dynamic = true
+    // URL tipi de dahil - böylece tarama sayısı takip edilebilir
+    // Dynamic types that need tracking - includes URL for scan tracking
+    const dynamicTypes = ['app', 'vcard', 'url', 'wifi', 'email', 'sms', 'phone', 'location']
+    const isDynamic = dynamicTypes.includes(type.toLowerCase())
+
     // QR kodunu kaydet
     const { data: qrCode, error: insertError } = await supabase
       .from('qr_codes')
@@ -82,7 +88,7 @@ export async function POST(request: NextRequest) {
           raw: rawContent || {}
         },
         settings: settings,
-        is_dynamic: false,
+        is_dynamic: isDynamic,
         is_active: true
       })
       .select()
@@ -96,10 +102,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Dinamik QR kodlar için redirect URL oluştur (Create redirect URL for dynamic QR codes)
+    // APP tipi için /app/[id], diğerleri için /r/[id] kullan
+    let qrUrl = content
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+    if (isDynamic && qrCode) {
+      if (type.toLowerCase() === 'app') {
+        qrUrl = `${baseUrl}/app/${qrCode.id}`
+      } else if (type.toLowerCase() === 'vcard') {
+        // vCard için mevcut /v/[encoded] yapısını koru veya /r/[id] kullan
+        qrUrl = `${baseUrl}/r/${qrCode.id}`
+      } else {
+        qrUrl = `${baseUrl}/r/${qrCode.id}`
+      }
+
+      // Content.encoded alanını redirect URL ile güncelle
+      // Update content.encoded with redirect URL so QR code points to tracking page
+      await supabase
+        .from('qr_codes')
+        .update({
+          content: {
+            encoded: qrUrl, // QR kod bu URL'yi gösterecek
+            raw: rawContent || {},
+            originalUrl: content // Orijinal hedef URL'yi sakla
+          }
+        })
+        .eq('id', qrCode.id)
+    }
+
     return NextResponse.json({
       success: true,
       message: 'QR kod başarıyla kaydedildi',
-      qrCode: qrCode
+      qrCode: { ...qrCode, content: { encoded: qrUrl, raw: rawContent || {}, originalUrl: content } },
+      qrUrl: qrUrl // Frontend'de QR kodu bu URL ile oluşturacak
     }, { status: 201 })
 
   } catch (error) {

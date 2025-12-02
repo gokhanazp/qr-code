@@ -1,7 +1,30 @@
 // Ana Sayfa - Home Page
 // QR Kod Generator ana sayfası - SEO optimized - Modern tasarım
 
+import { Metadata } from 'next'
 import Link from 'next/link'
+
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+
+// Sayfa özel SEO metadata
+export const metadata: Metadata = {
+  title: 'QR Kod Oluşturucu - Ücretsiz QR Code Generator | Anında İndir',
+  description: 'Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp, Instagram, YouTube için profesyonel QR kodlar. Kolay kullanım, özelleştirilebilir tasarım, anında PNG/SVG indirme. Create free QR codes online.',
+  keywords: [
+    'qr kod oluşturucu', 'ücretsiz qr kod', 'qr kod yapma', 'karekod',
+    'qr code generator', 'free qr code', 'wifi qr kod', 'whatsapp qr kod',
+    'vcard qr kod', 'instagram qr kod', 'dinamik qr kod'
+  ],
+  openGraph: {
+    title: 'QR Kod Oluşturucu - Ücretsiz QR Code Generator',
+    description: 'Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp için profesyonel QR kodlar.',
+    url: siteUrl,
+    type: 'website',
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+}
 import { useTranslations } from 'next-intl'
 import {
   QrCode, Zap, Shield, Globe, Smartphone, BarChart3, Sparkles, Play,
@@ -29,6 +52,7 @@ const qrTypesConfig = [
   { type: 'event', icon: Calendar, gradient: 'from-orange-500 to-orange-600', color: 'bg-orange-500' },
   { type: 'location', icon: MapPin, gradient: 'from-red-500 to-rose-600', color: 'bg-red-500' },
   { type: 'bitcoin', icon: Bitcoin, gradient: 'from-amber-500 to-amber-600', color: 'bg-amber-500' },
+  { type: 'app', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600', color: 'bg-indigo-500', popular: true },
 ]
 
 // Özellikler config - text çeviriden gelecek

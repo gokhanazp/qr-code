@@ -1,9 +1,27 @@
 // Fiyatlandırma Sayfası
 // Paket planları ve fiyatları - Supabase'den dinamik çekme
 
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { getTranslations } from 'next-intl/server'
 import PricingClient from './PricingClient'
+
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+
+// SEO Metadata
+export const metadata: Metadata = {
+  title: 'Fiyatlandırma - QR Kod Paketleri ve Fiyatları',
+  description: 'QR kod oluşturucu fiyatları. Ücretsiz, Pro ve Kurumsal paketler. Dinamik QR kodlar, analitik takip, logo ekleme özellikleri. Compare QR code generator pricing plans.',
+  keywords: ['qr kod fiyat', 'qr kod paket', 'qr code pricing', 'dinamik qr kod fiyat', 'kurumsal qr kod'],
+  openGraph: {
+    title: 'QR Kod Fiyatlandırma - Paketler ve Özellikler',
+    description: 'Ücretsiz, Pro ve Kurumsal QR kod paketlerini karşılaştırın.',
+    url: `${siteUrl}/pricing`,
+  },
+  alternates: {
+    canonical: `${siteUrl}/pricing`,
+  },
+}
 
 // Fiyatlandırma planı tipi (Pricing plan type)
 interface PricingPlan {

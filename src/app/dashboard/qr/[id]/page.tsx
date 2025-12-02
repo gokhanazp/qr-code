@@ -3,9 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Eye, Trash2, Download, ExternalLink, QrCode } from 'lucide-react'
+import { ArrowLeft, Calendar, Eye, Download, ExternalLink, QrCode } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import QRPreviewClient from './QRPreviewClient'
+import DeleteQRButton from '../DeleteQRButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -46,8 +47,42 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
   const remainingDays = getRemainingDays(qrCode.expires_at)
   const isExpired = remainingDays !== null && remainingDays <= 0
 
-  // QR içeriğini al
-  const qrContent = qrCode.content?.encoded || ''
+  // APP ve vCard için özel veri parse
+  const isAppType = qrCode.type === 'app'
+  const isVCardType = qrCode.type === 'vcard'
+  let appData: Record<string, unknown> = {}
+  let vcardData: Record<string, unknown> = {}
+
+  // APP verileri parse - raw veya encoded'dan al
+  if (isAppType && qrCode.content) {
+    try {
+      const contentObj = qrCode.content as Record<string, unknown>
+      // Önce raw'dan al (rawContent olarak kaydediliyor)
+      if (contentObj.raw && typeof contentObj.raw === 'object') {
+        appData = contentObj.raw as Record<string, unknown>
+      }
+      // Yoksa encoded JSON string'den parse et
+      else if (contentObj.encoded && typeof contentObj.encoded === 'string') {
+        appData = JSON.parse(contentObj.encoded)
+      }
+    } catch { appData = {} }
+  }
+
+  // vCard verileri parse
+  if (isVCardType && qrCode.content) {
+    try {
+      const contentObj = qrCode.content as Record<string, unknown>
+      if (contentObj.raw && typeof contentObj.raw === 'object') {
+        vcardData = contentObj.raw as Record<string, unknown>
+      }
+    } catch { vcardData = {} }
+  }
+
+  // QR içeriğini al - APP tipi için landing page URL'si kullan
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const qrContent = isAppType
+    ? `${baseUrl}/app/${qrCode.id}`
+    : (qrCode.content?.encoded || '')
   const qrSettings = qrCode.settings || {}
 
   return (
@@ -84,6 +119,94 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
           </div>
 
           <div className="p-6">
+            {/* APP Tipi - Telefon Mockup Önizleme */}
+            {isAppType && (
+              <div className="mb-8">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  📱 Landing Page Önizleme
+                </h3>
+                <div className="flex flex-col lg:flex-row gap-6 items-start">
+                  {/* Telefon Mockup */}
+                  <div className="flex justify-center mx-auto lg:mx-0">
+                    <div className="relative w-[200px]">
+                      <div className="relative bg-black rounded-[2rem] p-2 shadow-2xl">
+                        <div
+                          className="relative rounded-[1.5rem] overflow-hidden"
+                          style={{
+                            background: `linear-gradient(to bottom, ${appData.secondaryColor || '#a8e6cf'}, ${appData.primaryColor || '#2d8659'})`,
+                            aspectRatio: '9/16'
+                          }}
+                        >
+                          <div className="px-3 py-4 flex flex-col items-center text-center h-full">
+                            <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color: (appData.textColor as string) || '#000000' }}>
+                              {(appData.appName as string) || 'APP NAME'}
+                            </p>
+                            <p className="text-[7px] mb-3 opacity-70" style={{ color: (appData.textColor as string) || '#000000' }}>
+                              {(appData.developer as string) || 'Developer'}
+                            </p>
+                            <div className="bg-white/30 rounded-2xl p-2 mb-2">
+                              {appData.appLogo ? (
+                                <img src={appData.appLogo as string} alt="Logo" className="max-w-[60px] max-h-[60px] object-contain" />
+                              ) : (
+                                <span className="text-3xl">📱</span>
+                              )}
+                            </div>
+                            <p className="text-[9px] font-bold leading-tight mb-1" style={{ color: (appData.textColor as string) || '#000000' }}>
+                              {(appData.title as string) || 'Download Our App!'}
+                            </p>
+                            <p className="text-[7px] italic mb-2 opacity-60" style={{ color: (appData.textColor as string) || '#000000' }}>HEMEN İNDİR!</p>
+                            <div className="space-y-1 w-full px-2">
+                              {appData.iosUrl && <img src="/img/apple-en.png" alt="App Store" className="w-full h-auto rounded" />}
+                              {appData.androidUrl && <img src="/img/google-en.png" alt="Google Play" className="w-full h-auto rounded" />}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Landing Page Link */}
+                  <div className="flex-1 space-y-3">
+                    <a
+                      href={`/app/${qrCode.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Landing Page&apos;i Görüntüle
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* vCard Tipi - Kartvizit Önizleme */}
+            {isVCardType && (
+              <div className="mb-8">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  👤 Kartvizit Önizleme
+                </h3>
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white max-w-md">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold">
+                      {String(vcardData.firstName || '')[0]?.toUpperCase() || '?'}
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold">{`${vcardData.firstName || ''} ${vcardData.lastName || ''}`}</h4>
+                      {vcardData.title && <p className="text-white/80">{String(vcardData.title)}</p>}
+                      {vcardData.company && <p className="text-white/70 text-sm">{String(vcardData.company)}</p>}
+                    </div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {vcardData.phone && <p className="flex items-center gap-2">📞 {String(vcardData.phone)}</p>}
+                    {vcardData.email && <p className="flex items-center gap-2">✉️ {String(vcardData.email)}</p>}
+                    {vcardData.website && <p className="flex items-center gap-2">🌐 {String(vcardData.website)}</p>}
+                    {vcardData.address && <p className="flex items-center gap-2">📍 {String(vcardData.address)}</p>}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-8">
               {/* Sol: QR Kod Önizleme */}
               <div className="flex flex-col items-center">
@@ -168,10 +291,11 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
 
                 {/* Aksiyonlar */}
                 <div className="flex gap-3 pt-4 border-t border-gray-200">
-                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                    {t('delete')}
-                  </button>
+                  <DeleteQRButton
+                    qrId={qrCode.id}
+                    qrName={qrCode.name}
+                    variant="full"
+                  />
                 </div>
               </div>
             </div>
