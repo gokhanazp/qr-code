@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Eye, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Calendar, Eye, ExternalLink, Edit } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 import QRDownloadWrapper from './QRDownloadWrapper'
 import DeleteQRButton from '../DeleteQRButton'
@@ -318,6 +318,13 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
 
                 {/* Aksiyonlar */}
                 <div className="flex gap-3 pt-4 border-t border-gray-200">
+                  <Link
+                    href={`/dashboard/qr/${qrCode.id}/edit`}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  >
+                    <Edit className="w-4 h-4" />
+                    {t('edit')}
+                  </Link>
                   <DeleteQRButton
                     qrId={qrCode.id}
                     qrName={qrCode.name}
