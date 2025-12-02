@@ -3,7 +3,7 @@
 
 import { MetadataRoute } from 'next'
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
 // QR kod tipleri - her biri için ayrı sayfa
 const qrTypes = [

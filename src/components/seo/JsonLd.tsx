@@ -1,7 +1,7 @@
 // JSON-LD Structured Data Component
 // SEO için schema.org yapılandırılmış veriler
 
-const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
 // Organization Schema
 export function OrganizationJsonLd() {

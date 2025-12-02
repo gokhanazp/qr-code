@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 // Site URL'si
-const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
 // SEO Meta verileri - Türkiye ve Dünya için optimize edilmiş
 export const metadata: Metadata = {

@@ -4,7 +4,7 @@
 import { Metadata } from 'next'
 import { Building2, Users, Target, Award, Globe, Zap } from 'lucide-react';
 
-const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodegenerator.com'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
 // SEO Metadata
 export const metadata: Metadata = {
