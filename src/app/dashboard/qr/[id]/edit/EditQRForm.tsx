@@ -279,9 +279,9 @@ export default function EditQRForm({
   }
 
   return (
-    <div className="grid lg:grid-cols-5 gap-6">
+    <div className="grid md:grid-cols-5 gap-4">
       {/* Sol Panel - Form (3/5 genişlik) */}
-      <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+      <div className="md:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-4 max-h-[85vh] overflow-y-auto">
         {/* QR Kod Adı - Tüm tipler için ortak */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('qrName')}</label>
@@ -385,12 +385,12 @@ export default function EditQRForm({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {/* Hazır Logolar */}
+                  {/* Hazır Logolar - SVG zaten data:image formatında */}
                   <div className="grid grid-cols-8 gap-1.5">
                     {PRESET_LOGOS.slice(0, 16).map((preset) => (
                       <button key={preset.id} type="button" onClick={() => setLogo(preset.svg)}
                         className="w-8 h-8 rounded border bg-white p-1 hover:border-blue-400 hover:bg-blue-50">
-                        <img src={`data:image/svg+xml,${encodeURIComponent(preset.svg)}`} alt={preset.name} className="w-full h-full object-contain" />
+                        <img src={preset.svg} alt={preset.name} className="w-full h-full object-contain" />
                       </button>
                     ))}
                   </div>
@@ -446,8 +446,8 @@ export default function EditQRForm({
         </button>
       </div>
 
-      {/* Sağ Panel - Önizleme (2/5 genişlik) */}
-      <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-4 h-fit">
+      {/* Sağ Panel - Önizleme (2/5 genişlik) - Her zaman sağda sabit */}
+      <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:sticky md:top-4 h-fit order-first md:order-last">
         <h3 className="font-semibold text-gray-900 mb-4">{t('preview')}</h3>
 
         {/* APP tipi için özel önizleme */}
