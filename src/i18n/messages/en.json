@@ -148,6 +148,8 @@
     "colors": "Colors",
     "foreground": "Foreground",
     "background": "Background",
+    "foregroundColor": "Foreground Color",
+    "backgroundColor": "Background Color",
     "size": "Size",
     "errorCorrection": "Error Correction",
     "downloadPNG": "Download PNG",

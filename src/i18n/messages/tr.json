@@ -148,6 +148,8 @@
     "colors": "Renkler",
     "foreground": "Ön Plan",
     "background": "Arka Plan",
+    "foregroundColor": "Ön Plan Rengi",
+    "backgroundColor": "Arka Plan Rengi",
     "size": "Boyut",
     "errorCorrection": "Hata Düzeltme",
     "downloadPNG": "PNG İndir",
