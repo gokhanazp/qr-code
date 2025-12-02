@@ -1,12 +1,14 @@
 'use client'
 
 // QR Kod Düzenleme Formu (QR Code Edit Form)
-// Tüm QR tipleri için tam düzenleme desteği
-import { useState } from 'react'
+// Tüm QR tipleri için tam düzenleme desteği - Frame, Logo, Renkler dahil
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Save, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { Save, Loader2, CheckCircle, XCircle, Upload, X } from 'lucide-react'
 import QRDownloadWrapper from '../QRDownloadWrapper'
+import { FRAME_TEMPLATES } from '@/components/qr/QRFrameSelector'
+import { PRESET_LOGOS } from '@/components/qr/QRLogoUploader'
 
 interface EditQRFormProps {
   qrId: string
@@ -28,6 +30,10 @@ const colorPresets = [
   { id: 'orange', primary: '#e65100', secondary: '#ffb74d', text: '#000000' },
 ]
 
+// Preset renkler (Preset colors)
+const presetColors = ['#000000', '#1e40af', '#059669', '#dc2626', '#7c3aed', '#ea580c', '#0891b2', '#be185d']
+const bgPresetColors = ['#ffffff', '#f3f4f6', '#fef3c7', '#dbeafe', '#fce7f3', '#d1fae5']
+
 export default function EditQRForm({
   qrId, qrName: initialName, qrType, originalUrl: initialUrl,
   rawContent: initialRawContent, settings, isActive: initialIsActive,
@@ -35,6 +41,7 @@ export default function EditQRForm({
   const router = useRouter()
   const t = useTranslations('dashboard')
   const tGen = useTranslations('generator')
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
   // QR tipini normalize et (büyük harf duyarlılığını kaldır)
   const normalizedType = qrType.toUpperCase()
@@ -45,7 +52,13 @@ export default function EditQRForm({
   const [isActive, setIsActive] = useState(initialIsActive)
   const [foregroundColor, setForegroundColor] = useState(settings.foregroundColor as string || '#000000')
   const [backgroundColor, setBackgroundColor] = useState(settings.backgroundColor as string || '#ffffff')
+  const [selectedFrame, setSelectedFrame] = useState(settings.frame as string || 'none')
   const [frameText, setFrameText] = useState(settings.frameText as string || '')
+  const [frameColor, setFrameColor] = useState(settings.frameColor as string || '#000000')
+  const [logo, setLogo] = useState<string | null>(settings.logo as string || null)
+  const [logoSize, setLogoSize] = useState(settings.logoSize as number || 20)
+  const [size, setSize] = useState(settings.size as number || 256)
+  const [errorCorrection, setErrorCorrection] = useState(settings.errorCorrection as string || 'M')
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
@@ -91,7 +104,18 @@ export default function EditQRForm({
           name: name.trim(),
           content: normalizedType === 'URL' ? url : initialUrl,
           rawContent: updatedRawContent,
-          settings: { ...settings, foregroundColor, backgroundColor, frameText },
+          settings: {
+            ...settings,
+            foregroundColor,
+            backgroundColor,
+            frame: selectedFrame,
+            frameText,
+            frameColor,
+            logo,
+            logoSize,
+            size,
+            errorCorrection,
+          },
           is_active: isActive,
         }),
       })
@@ -244,9 +268,20 @@ export default function EditQRForm({
     </div>
   )
 
+  // Logo yükleme işlevi
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) { alert('Logo 2MB\'dan küçük olmalı'); return }
+    const reader = new FileReader()
+    reader.onload = (ev) => setLogo(ev.target?.result as string)
+    reader.readAsDataURL(file)
+  }
+
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+    <div className="grid lg:grid-cols-5 gap-6">
+      {/* Sol Panel - Form (3/5 genişlik) */}
+      <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6 max-h-[85vh] overflow-y-auto">
         {/* QR Kod Adı - Tüm tipler için ortak */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">{t('qrName')}</label>
@@ -257,6 +292,7 @@ export default function EditQRForm({
         {/* QR Tipine göre form */}
         {normalizedType === 'APP' ? renderAppForm() : (
           <>
+            {/* URL içeriği */}
             {normalizedType === 'URL' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">{t('targetUrl')}</label>
@@ -265,25 +301,129 @@ export default function EditQRForm({
                 <p className="text-xs text-gray-500 mt-1">{t('targetUrlDesc')}</p>
               </div>
             )}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{tGen('foregroundColor')}</label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={foregroundColor} onChange={(e) => setForegroundColor(e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" />
-                  <input type="text" value={foregroundColor} onChange={(e) => setForegroundColor(e.target.value)} className="flex-1 px-3 py-2 border rounded-lg text-sm" />
+
+            {/* 🎨 RENKLER BÖLÜMÜ */}
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+              <h4 className="font-medium text-gray-900 flex items-center gap-2">🎨 {tGen('colors')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-2">{tGen('foregroundColor')}</label>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {presetColors.map(c => (
+                      <button key={c} type="button" onClick={() => setForegroundColor(c)}
+                        className={`w-6 h-6 rounded border-2 ${foregroundColor === c ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+                        style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={foregroundColor} onChange={(e) => setForegroundColor(e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                    <input type="text" value={foregroundColor} onChange={(e) => setForegroundColor(e.target.value)} className="flex-1 px-2 py-1.5 border rounded text-xs font-mono" />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">{tGen('backgroundColor')}</label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" />
-                  <input type="text" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="flex-1 px-3 py-2 border rounded-lg text-sm" />
+                <div>
+                  <label className="block text-xs text-gray-600 mb-2">{tGen('backgroundColor')}</label>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {bgPresetColors.map(c => (
+                      <button key={c} type="button" onClick={() => setBackgroundColor(c)}
+                        className={`w-6 h-6 rounded border-2 ${backgroundColor === c ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+                        style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                    <input type="text" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="flex-1 px-2 py-1.5 border rounded text-xs font-mono" />
+                  </div>
                 </div>
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{tGen('frameText')}</label>
-              <input type="text" value={frameText} onChange={(e) => setFrameText(e.target.value)} className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-blue-500" />
+
+            {/* 🖼️ FRAME BÖLÜMÜ */}
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+              <h4 className="font-medium text-gray-900 flex items-center gap-2">🖼️ {tGen('frame')}</h4>
+              <div className="grid grid-cols-5 gap-2">
+                {FRAME_TEMPLATES.map((frame) => (
+                  <button key={frame.id} type="button"
+                    onClick={() => { setSelectedFrame(frame.id); if (frame.hasText && !frameText) setFrameText(frame.defaultText) }}
+                    className={`p-2 rounded-lg border-2 transition-all hover:scale-105 ${selectedFrame === frame.id ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200 bg-white'}`}>
+                    <div className="text-[10px] text-gray-600 text-center">{frame.name}</div>
+                  </button>
+                ))}
+              </div>
+              {selectedFrame !== 'none' && (
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">{tGen('frameText')}</label>
+                    <input type="text" value={frameText} onChange={(e) => setFrameText(e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="SCAN ME" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Frame Rengi</label>
+                    <div className="flex items-center gap-2">
+                      <input type="color" value={frameColor} onChange={(e) => setFrameColor(e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                      <input type="text" value={frameColor} onChange={(e) => setFrameColor(e.target.value)} className="flex-1 px-2 py-1.5 border rounded text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 📷 LOGO BÖLÜMÜ */}
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+              <h4 className="font-medium text-gray-900 flex items-center gap-2">📷 {tGen('logo')}</h4>
+              {logo ? (
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <img src={logo} alt="Logo" className="w-16 h-16 rounded-lg border object-contain bg-white" />
+                    <button type="button" onClick={() => setLogo(null)}
+                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center"><X className="w-3 h-3" /></button>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs text-gray-600 mb-1">{tGen('logoSize')}</label>
+                    <input type="range" min="10" max="35" value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} className="w-full" />
+                    <div className="flex justify-between text-[10px] text-gray-400"><span>{tGen('small')}</span><span>{logoSize}%</span><span>{tGen('large')}</span></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* Hazır Logolar */}
+                  <div className="grid grid-cols-8 gap-1.5">
+                    {PRESET_LOGOS.slice(0, 16).map((preset) => (
+                      <button key={preset.id} type="button" onClick={() => setLogo(preset.svg)}
+                        className="w-8 h-8 rounded border bg-white p-1 hover:border-blue-400 hover:bg-blue-50">
+                        <img src={`data:image/svg+xml,${encodeURIComponent(preset.svg)}`} alt={preset.name} className="w-full h-full object-contain" />
+                      </button>
+                    ))}
+                  </div>
+                  {/* Logo Yükle */}
+                  <button type="button" onClick={() => logoInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-gray-300 rounded-lg p-3 text-center hover:border-blue-400 hover:bg-blue-50/50">
+                    <Upload className="w-5 h-5 mx-auto text-gray-400 mb-1" />
+                    <p className="text-xs text-gray-600">{tGen('uploadLogo')}</p>
+                  </button>
+                  <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                </div>
+              )}
+            </div>
+
+            {/* ⚙️ BOYUT & HATA DÜZELTME */}
+            <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+              <h4 className="font-medium text-gray-900 flex items-center gap-2">⚙️ {tGen('advancedOptions')}</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">{tGen('size')}</label>
+                  <input type="range" min="128" max="512" step="32" value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-full" />
+                  <div className="text-center text-xs text-gray-500">{size}px</div>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">{tGen('errorCorrection')}</label>
+                  <select value={errorCorrection} onChange={(e) => setErrorCorrection(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm">
+                    <option value="L">L - Low (7%)</option>
+                    <option value="M">M - Medium (15%)</option>
+                    <option value="Q">Q - Quartile (25%)</option>
+                    <option value="H">H - High (30%)</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </>
         )}
@@ -306,25 +446,25 @@ export default function EditQRForm({
         </button>
       </div>
 
-      {/* Önizleme Bölümü */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      {/* Sağ Panel - Önizleme (2/5 genişlik) */}
+      <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-4 h-fit">
         <h3 className="font-semibold text-gray-900 mb-4">{t('preview')}</h3>
 
         {/* APP tipi için özel önizleme */}
         {normalizedType === 'APP' ? (
           <div className="space-y-4">
             {/* Landing Page Önizleme */}
-            <div className="border rounded-xl overflow-hidden" style={{ maxWidth: '200px', margin: '0 auto' }}>
-              <div className="h-[320px] flex flex-col" style={{ background: `linear-gradient(to bottom, ${appData.secondaryColor}, ${appData.primaryColor})` }}>
+            <div className="border rounded-xl overflow-hidden mx-auto" style={{ maxWidth: '220px' }}>
+              <div className="h-[360px] flex flex-col" style={{ background: `linear-gradient(to bottom, ${appData.secondaryColor}, ${appData.primaryColor})` }}>
                 <div className="p-3 flex flex-col items-center text-center flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5" style={{ color: appData.textColor }}>{appData.appName || 'APP NAME'}</p>
-                  <p className="text-[8px] mb-2 opacity-70" style={{ color: appData.textColor }}>{appData.developer || 'Developer'}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: appData.textColor }}>{appData.appName || 'APP NAME'}</p>
+                  <p className="text-[9px] mb-2 opacity-70" style={{ color: appData.textColor }}>{appData.developer || 'Developer'}</p>
                   <div className="bg-white/30 rounded-xl p-2 mb-2">
-                    {appData.appLogo ? <img src={appData.appLogo} alt="Logo" className="w-12 h-12 object-contain" /> : <span className="text-3xl">📱</span>}
+                    {appData.appLogo ? <img src={appData.appLogo} alt="Logo" className="w-14 h-14 object-contain" /> : <span className="text-4xl">📱</span>}
                   </div>
-                  <p className="text-[9px] font-bold leading-tight mb-1" style={{ color: appData.textColor }}>{appData.title || 'Download Our App'}</p>
-                  <p className="text-[7px] italic mb-2 opacity-60" style={{ color: appData.textColor }}>HEMEN İNDİR!</p>
-                  <div className="space-y-1 w-full px-2">
+                  <p className="text-[10px] font-bold leading-tight mb-1" style={{ color: appData.textColor }}>{appData.title || 'Download Our App'}</p>
+                  <p className="text-[8px] italic mb-2 opacity-60" style={{ color: appData.textColor }}>{appData.description || 'HEMEN İNDİR!'}</p>
+                  <div className="space-y-1.5 w-full px-2">
                     {appData.iosUrl && <img src="/img/apple-en.png" alt="App Store" className="w-full h-auto rounded" />}
                     {appData.androidUrl && <img src="/img/google-en.png" alt="Google Play" className="w-full h-auto rounded" />}
                   </div>
@@ -334,11 +474,22 @@ export default function EditQRForm({
             <p className="text-xs text-gray-500 text-center">Landing Page Önizleme</p>
           </div>
         ) : (
-          <QRDownloadWrapper content={getQRContent()} foregroundColor={foregroundColor} backgroundColor={backgroundColor}
-            size={(settings.size as number) || 256} errorCorrection={(settings.errorCorrection as string) || 'M'}
-            selectedFrame={(settings.frame as string) || 'none'} frameText={frameText} frameColor={(settings.frameColor as string) || '#000000'}
-            logo={(settings.logo as string) || null} logoSize={(settings.logoSize as number) || 20} qrName={name || 'qr-code'}
-            isExpired={false} downloadPNGLabel={t('downloadPNG')} downloadSVGLabel={t('downloadSVG')} />
+          <QRDownloadWrapper
+            content={getQRContent()}
+            foregroundColor={foregroundColor}
+            backgroundColor={backgroundColor}
+            size={size}
+            errorCorrection={errorCorrection}
+            selectedFrame={selectedFrame}
+            frameText={frameText}
+            frameColor={frameColor}
+            logo={logo}
+            logoSize={logoSize}
+            qrName={name || 'qr-code'}
+            isExpired={false}
+            downloadPNGLabel={t('downloadPNG')}
+            downloadSVGLabel={t('downloadSVG')}
+          />
         )}
       </div>
     </div>

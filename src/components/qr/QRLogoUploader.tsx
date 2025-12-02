@@ -16,8 +16,8 @@ interface PresetLogo {
   color: string // Logo ana rengi (icon rengi için)
 }
 
-// SVG logoları (SVG logos)
-const PRESET_LOGOS: PresetLogo[] = [
+// SVG logoları (SVG logos) - Export edildi (Exported)
+export const PRESET_LOGOS: PresetLogo[] = [
   // Sosyal Medya (Social Media)
   {
     id: 'instagram',
