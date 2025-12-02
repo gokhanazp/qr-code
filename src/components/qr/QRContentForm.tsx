@@ -702,19 +702,19 @@ END:VEVENT`
                 <label className="text-sm text-gray-600">Enable Welcome Screen</label>
                 <button
                   type="button"
-                  onClick={() => handleDataChange('welcomeScreenEnabled', !data.welcomeScreenEnabled)}
+                  onClick={() => handleDataChange('welcomeScreenEnabled', data.welcomeScreenEnabled === 'true' ? 'false' : 'true')}
                   className={`relative w-12 h-6 rounded-full transition-colors ${
-                    data.welcomeScreenEnabled !== false ? 'bg-blue-500' : 'bg-gray-300'
+                    data.welcomeScreenEnabled !== 'false' ? 'bg-blue-500' : 'bg-gray-300'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                    data.welcomeScreenEnabled !== false ? 'translate-x-7' : 'translate-x-1'
+                    data.welcomeScreenEnabled !== 'false' ? 'translate-x-7' : 'translate-x-1'
                   }`} />
                 </button>
               </div>
 
               {/* Welcome Logo - sadece açıksa göster */}
-              {data.welcomeScreenEnabled !== false && (
+              {data.welcomeScreenEnabled !== 'false' && (
                 <div className="space-y-2">
                   <label className="text-sm text-gray-600 flex items-center gap-1">
                     Image: <span className="text-gray-400 text-xs">ⓘ</span>
