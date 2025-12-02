@@ -14,10 +14,11 @@ import { QRTypeSelector, QRContentForm, QRCustomizer, QRPreview, QRType } from '
 export default function CreateQRPage() {
   const t = useTranslations('generator')
   const router = useRouter()
-  
+
   const [name, setName] = useState('')
   const [selectedType, setSelectedType] = useState<QRType>('URL')
   const [content, setContent] = useState('')
+  const [data, setData] = useState<Record<string, string>>({})
   const [foreground, setForeground] = useState('#000000')
   const [background, setBackground] = useState('#ffffff')
   const [size, setSize] = useState(256)
@@ -116,7 +117,11 @@ export default function CreateQRPage() {
             <QRContentForm
               type={selectedType}
               content={content}
-              onChange={setContent}
+              data={data}
+              onChange={(newContent, newData) => {
+                setContent(newContent)
+                if (newData) setData(newData)
+              }}
             />
 
             {/* Özelleştirme */}
