@@ -22,13 +22,13 @@ export function getLocalizedPathname(pathname: string, locale: Locale): string {
           // Eşleşme bulundu, dinamik değerleri al
           const dynamicValues = match.slice(1)
           const localizedPattern = typeof value === 'string' ? value : value[locale]
-          
+
           // Dinamik değerleri yerelleştirilmiş pattern'e yerleştir
-          let result = localizedPattern
+          let result: string = localizedPattern
           dynamicValues.forEach((val) => {
             result = result.replace(/\[.*?\]/, val)
           })
-          return result
+          return result as string
         }
       }
     }
