@@ -89,23 +89,38 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
     app: '📱 App Download',
   }
 
+  // APP tipi veri yapısı (App data interface)
+  interface AppDataType {
+    appName?: string
+    developer?: string
+    appLogo?: string
+    title?: string
+    description?: string
+    website?: string
+    iosUrl?: string
+    androidUrl?: string
+    primaryColor?: string
+    secondaryColor?: string
+    textColor?: string
+  }
+
   // APP tipi için verileri parse et (Parse APP data)
   const isAppType = qrCode.type === 'app'
-  let appData: Record<string, unknown> = {}
+  let appData: AppDataType = {}
   if (isAppType && qrCode.content) {
     try {
       const contentObj = qrCode.content as Record<string, unknown>
       // Önce raw'dan al (rawContent olarak kaydediliyor)
       if (contentObj.raw && typeof contentObj.raw === 'object') {
-        appData = contentObj.raw as Record<string, unknown>
+        appData = contentObj.raw as AppDataType
       }
       // Yoksa encoded JSON string'den parse et
       else if (contentObj.encoded && typeof contentObj.encoded === 'string') {
-        appData = JSON.parse(contentObj.encoded)
+        appData = JSON.parse(contentObj.encoded) as AppDataType
       }
       // String ise doğrudan parse et
       else if (typeof qrCode.content === 'string') {
-        appData = JSON.parse(qrCode.content)
+        appData = JSON.parse(qrCode.content) as AppDataType
       }
     } catch {
       appData = {}
@@ -249,36 +264,36 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
                   >
                     {/* Paylaş ikonu */}
                     <div className="absolute top-3 right-3 z-10">
-                      <svg className="w-4 h-4 opacity-80" style={{ color: (appData.textColor as string) || '#000000' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 opacity-80" style={{ color: appData.textColor || '#000000' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                       </svg>
                     </div>
 
                     <div className="px-3 py-4 flex flex-col items-center text-center h-full">
                       {/* App Name & Developer */}
-                      <p className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: (appData.textColor as string) || '#000000' }}>
-                        {(appData.appName as string) || 'APP NAME'}
+                      <p className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: appData.textColor || '#000000' }}>
+                        {appData.appName || 'APP NAME'}
                       </p>
-                      <p className="text-[8px] mb-3 opacity-70" style={{ color: (appData.textColor as string) || '#000000' }}>
-                        {(appData.developer as string) || 'Developer'}
+                      <p className="text-[8px] mb-3 opacity-70" style={{ color: appData.textColor || '#000000' }}>
+                        {appData.developer || 'Developer'}
                       </p>
 
                       {/* Logo */}
                       <div className="bg-white/30 rounded-2xl p-3 mb-3">
                         {appData.appLogo ? (
-                          <img src={appData.appLogo as string} alt="Logo" className="max-w-[70px] max-h-[70px] object-contain" />
+                          <img src={appData.appLogo} alt="Logo" className="max-w-[70px] max-h-[70px] object-contain" />
                         ) : (
                           <span className="text-4xl">📱</span>
                         )}
                       </div>
 
                       {/* Title */}
-                      <p className="text-[10px] font-bold leading-tight mb-1 px-1" style={{ color: (appData.textColor as string) || '#000000' }}>
-                        {(appData.title as string) || 'Download Our App!'}
+                      <p className="text-[10px] font-bold leading-tight mb-1 px-1" style={{ color: appData.textColor || '#000000' }}>
+                        {appData.title || 'Download Our App!'}
                       </p>
 
                       {/* HEMEN İNDİR */}
-                      <p className="text-[8px] italic mb-2 opacity-60" style={{ color: (appData.textColor as string) || '#000000' }}>HEMEN İNDİR!</p>
+                      <p className="text-[8px] italic mb-2 opacity-60" style={{ color: appData.textColor || '#000000' }}>HEMEN İNDİR!</p>
 
                       {/* Store Buttons */}
                       <div className="space-y-1 w-full px-2">
@@ -292,8 +307,8 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
 
                       {/* Website */}
                       {appData.website && (
-                        <p className="text-[7px] mt-auto pt-1 opacity-60" style={{ color: (appData.textColor as string) || '#000000' }}>
-                          {(appData.website as string).replace(/^https?:\/\//, '')}
+                        <p className="text-[7px] mt-auto pt-1 opacity-60" style={{ color: appData.textColor || '#000000' }}>
+                          {appData.website.replace(/^https?:\/\//, '')}
                         </p>
                       )}
                     </div>
@@ -307,29 +322,29 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <p className="text-xs text-gray-500 mb-1">App Adı</p>
-                  <p className="text-sm font-medium">{String(appData.appName) || '-'}</p>
+                  <p className="text-sm font-medium">{appData.appName || '-'}</p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <p className="text-xs text-gray-500 mb-1">Geliştirici</p>
-                  <p className="text-sm font-medium">{String(appData.developer) || '-'}</p>
+                  <p className="text-sm font-medium">{appData.developer || '-'}</p>
                 </div>
                 <div className="p-3 bg-gray-50 rounded-lg col-span-2">
                   <p className="text-xs text-gray-500 mb-1">Başlık</p>
-                  <p className="text-sm font-medium">{String(appData.title) || '-'}</p>
+                  <p className="text-sm font-medium">{appData.title || '-'}</p>
                 </div>
                 {appData.iosUrl && (
                   <div className="p-3 bg-gray-50 rounded-lg col-span-2">
                     <p className="text-xs text-gray-500 mb-1">App Store URL</p>
-                    <a href={String(appData.iosUrl)} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
-                      {String(appData.iosUrl)}
+                    <a href={appData.iosUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                      {appData.iosUrl}
                     </a>
                   </div>
                 )}
                 {appData.androidUrl && (
                   <div className="p-3 bg-gray-50 rounded-lg col-span-2">
                     <p className="text-xs text-gray-500 mb-1">Google Play URL</p>
-                    <a href={String(appData.androidUrl)} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
-                      {String(appData.androidUrl)}
+                    <a href={appData.androidUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                      {appData.androidUrl}
                     </a>
                   </div>
                 )}
@@ -337,12 +352,12 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
                   <div className="p-3 bg-gray-50 rounded-lg col-span-2">
                     <p className="text-xs text-gray-500 mb-1">Website</p>
                     <a
-                      href={String(appData.website).startsWith('http') ? String(appData.website) : `https://${appData.website}`}
+                      href={appData.website.startsWith('http') ? appData.website : `https://${appData.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-blue-600 hover:underline"
                     >
-                      {String(appData.website)}
+                      {appData.website}
                     </a>
                   </div>
                 )}
@@ -353,15 +368,15 @@ export default async function AdminQRCodeDetailPage({ params }: PageProps) {
                 <p className="text-xs text-gray-500 mb-2">Renk Şeması</p>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
-                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: (appData.primaryColor as string) || '#2d8659' }} />
+                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: appData.primaryColor || '#2d8659' }} />
                     <span className="text-xs">Primary</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: (appData.secondaryColor as string) || '#a8e6cf' }} />
+                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: appData.secondaryColor || '#a8e6cf' }} />
                     <span className="text-xs">Secondary</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: (appData.textColor as string) || '#000000' }} />
+                    <div className="w-5 h-5 rounded border" style={{ backgroundColor: appData.textColor || '#000000' }} />
                     <span className="text-xs">Text</span>
                   </div>
                 </div>
