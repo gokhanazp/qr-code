@@ -385,9 +385,9 @@ export default function Header({ user }: HeaderProps) {
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown menü - Ultra modern */}
+                {/* Dropdown menü - Dashboard linkleri ile genişletilmiş */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                  <div className="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
                     {/* Üst gradyan */}
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
 
@@ -395,48 +395,87 @@ export default function Header({ user }: HeaderProps) {
                       <p className="font-semibold text-gray-900">{user.name || 'User'}</p>
                       <p className="text-xs text-gray-500 truncate">{user.email}</p>
                     </div>
-                    <div className="py-2">
+
+                    {/* Dashboard Menü Öğeleri */}
+                    <div className="py-2 border-b border-gray-100">
+                      <p className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Dashboard</p>
                       <Link
                         href={localizedHref('/dashboard')}
-                        className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                          <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                        <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                          <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
                         </div>
                         <span className="text-sm font-medium">{t('dashboard')}</span>
                       </Link>
                       <Link
-                        href={localizedHref('/settings')}
-                        className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-all group"
+                        href={localizedHref('/dashboard/qr')}
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                          <Settings className="w-4 h-4 text-gray-600" />
+                        <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                          <QrCode className="w-3.5 h-3.5 text-indigo-600" />
+                        </div>
+                        <span className="text-sm font-medium">{tHeader('myQRCodes') || 'QR Kodlarım'}</span>
+                      </Link>
+                      <Link
+                        href={localizedHref('/dashboard/analytics')}
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                          <Zap className="w-3.5 h-3.5 text-green-600" />
+                        </div>
+                        <span className="text-sm font-medium">{tHeader('analytics') || 'Analizler'}</span>
+                      </Link>
+                      <Link
+                        href={localizedHref('/dashboard/subscription')}
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                          <CreditCard className="w-3.5 h-3.5 text-purple-600" />
+                        </div>
+                        <span className="text-sm font-medium">{tHeader('subscription') || 'Abonelik'}</span>
+                      </Link>
+                    </div>
+
+                    {/* Ayarlar */}
+                    <div className="py-2">
+                      <Link
+                        href={localizedHref('/settings')}
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-all group"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                          <Settings className="w-3.5 h-3.5 text-gray-600" />
                         </div>
                         <span className="text-sm font-medium">{t('settings')}</span>
                       </Link>
                       {user.role === 'ADMIN' && (
                         <Link
                           href="/admin"
-                          className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all group"
+                          className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all group"
                           onClick={() => setUserMenuOpen(false)}
                         >
-                          <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                            <User className="w-4 h-4 text-purple-600" />
+                          <div className="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                            <User className="w-3.5 h-3.5 text-purple-600" />
                           </div>
                           <span className="text-sm font-medium">{t('admin')}</span>
                         </Link>
                       )}
                     </div>
+
+                    {/* Çıkış */}
                     <div className="border-t border-gray-100 pt-2 px-2">
                       <form action="/auth/signout" method="POST">
                         <button
                           type="submit"
-                          className="flex items-center gap-3 px-3 py-2.5 text-red-600 hover:bg-red-50 w-full rounded-lg transition-all group"
+                          className="flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 w-full rounded-lg transition-all group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                            <LogOut className="w-4 h-4" />
+                          <div className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                            <LogOut className="w-3.5 h-3.5" />
                           </div>
                           <span className="text-sm font-medium">{t('logout')}</span>
                         </button>

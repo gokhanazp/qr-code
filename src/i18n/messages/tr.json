@@ -577,7 +577,10 @@
     "addToCalendar": "Takvime ekle",
     "gpsCoordinates": "GPS koordinatları",
     "cryptoPayment": "Kripto ödeme",
-    "appDownload": "Uygulama indirme linkleri"
+    "appDownload": "Uygulama indirme linkleri",
+    "myQRCodes": "QR Kodlarım",
+    "analytics": "Analizler",
+    "subscription": "Abonelik"
   }
 }
 

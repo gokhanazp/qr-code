@@ -577,7 +577,10 @@
     "addToCalendar": "Add to calendar",
     "gpsCoordinates": "GPS coordinates",
     "cryptoPayment": "Crypto payment",
-    "appDownload": "App download links"
+    "appDownload": "App download links",
+    "myQRCodes": "My QR Codes",
+    "analytics": "Analytics",
+    "subscription": "Subscription"
   }
 }
 

@@ -1,9 +1,9 @@
 // Dashboard Layout
 // Supabase Auth ile kullanıcı paneli layout
+// Sol menü kaldırıldı - Header kullanıcı menüsüne taşındı
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar'
 
 export default async function DashboardLayout({
   children,
@@ -19,16 +19,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="flex">
-        {/* Sidebar - Client Component (çeviri destekli) */}
-        <DashboardSidebar />
-
-        {/* Ana içerik - Sidebar genişliği kadar sol margin */}
-        <main className="ml-64 flex-1 pt-4 pb-8 px-4">
-          {children}
-        </main>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Ana içerik - Tam genişlik, site ile aynı container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {children}
+      </main>
     </div>
   )
 }
