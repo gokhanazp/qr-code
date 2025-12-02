@@ -19,10 +19,15 @@ export default function CreateQRPage() {
   const [selectedType, setSelectedType] = useState<QRType>('URL')
   const [content, setContent] = useState('')
   const [data, setData] = useState<Record<string, string>>({})
-  const [foreground, setForeground] = useState('#000000')
-  const [background, setBackground] = useState('#ffffff')
+  const [foregroundColor, setForegroundColor] = useState('#000000')
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff')
   const [size, setSize] = useState(256)
   const [errorCorrection, setErrorCorrection] = useState<'L' | 'M' | 'Q' | 'H'>('M')
+  const [selectedFrame, setSelectedFrame] = useState('none')
+  const [frameText, setFrameText] = useState('')
+  const [frameColor, setFrameColor] = useState('#000000')
+  const [logo, setLogo] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(20)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -48,6 +53,17 @@ export default function CreateQRPage() {
           name,
           type: selectedType,
           content,
+          settings: {
+            foregroundColor,
+            backgroundColor,
+            size,
+            errorCorrection,
+            frame: selectedFrame,
+            frameText,
+            frameColor,
+            logo,
+            logoSize,
+          },
         }),
       })
 
@@ -126,14 +142,24 @@ export default function CreateQRPage() {
 
             {/* Özelleştirme */}
             <QRCustomizer
-              foreground={foreground}
-              background={background}
+              foregroundColor={foregroundColor}
+              backgroundColor={backgroundColor}
               size={size}
               errorCorrection={errorCorrection}
-              onForegroundChange={setForeground}
-              onBackgroundChange={setBackground}
+              selectedFrame={selectedFrame}
+              frameText={frameText}
+              frameColor={frameColor}
+              logo={logo}
+              logoSize={logoSize}
+              onForegroundChange={setForegroundColor}
+              onBackgroundChange={setBackgroundColor}
               onSizeChange={setSize}
               onErrorCorrectionChange={setErrorCorrection}
+              onFrameChange={setSelectedFrame}
+              onFrameTextChange={setFrameText}
+              onFrameColorChange={setFrameColor}
+              onLogoChange={setLogo}
+              onLogoSizeChange={setLogoSize}
             />
           </div>
 
@@ -142,8 +168,8 @@ export default function CreateQRPage() {
             <div className="sticky top-24 space-y-4">
               <QRPreview
                 content={content}
-                foreground={foreground}
-                background={background}
+                foreground={foregroundColor}
+                background={backgroundColor}
                 size={size}
                 errorCorrection={errorCorrection}
               />
