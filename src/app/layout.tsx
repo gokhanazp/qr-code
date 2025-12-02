@@ -132,10 +132,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // URL yolunu kontrol et (admin sayfaları için header/footer gizle)
+  // URL yolunu kontrol et
   const headersList = await headers();
-  const pathname = headersList.get('x-pathname') || headersList.get('x-invoke-path') || '';
+  const pathname = headersList.get('x-pathname') || headersList.get('x-invoke-path') || headersList.get('x-url') || '';
+
+  // Header/Footer gizlenecek sayfalar:
+  // - /admin/* : Admin sayfaları
+  // - /app/* : App landing page (QR tarama)
+  // - /r/* : QR redirect sayfası (tarama)
+  // - /v/* : vCard görüntüleme (tarama)
   const isAdminPage = pathname.startsWith('/admin');
+  const isQRLandingPage = pathname.startsWith('/app/') || pathname.startsWith('/r/') || pathname.startsWith('/v/');
+  const hideHeaderFooter = isAdminPage || isQRLandingPage;
 
   // Supabase client oluştur ve kullanıcı bilgisini al
   const supabase = await createClient();
@@ -161,16 +169,16 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider messages={messages}>
-          {/* Admin sayfalarında Header gösterme */}
-          {!isAdminPage && <Header user={headerUser} />}
+          {/* QR landing ve Admin sayfalarında Header gösterme */}
+          {!hideHeaderFooter && <Header user={headerUser} />}
 
           {/* Ana içerik */}
           <main className="flex-1">
             {children}
           </main>
 
-          {/* Admin sayfalarında Footer gösterme */}
-          {!isAdminPage && <Footer />}
+          {/* QR landing ve Admin sayfalarında Footer gösterme */}
+          {!hideHeaderFooter && <Footer />}
         </NextIntlClientProvider>
       </body>
     </html>

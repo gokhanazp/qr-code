@@ -41,14 +41,25 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Statik dosyaları ve API route'larını atla
+  // QR landing sayfaları (/app/, /r/, /v/) için sadece session güncelle ve pathname header ekle
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.startsWith('/v/') ||
     pathname.includes('.') ||
     pathname === '/favicon.ico'
   ) {
     return await updateSession(request)
+  }
+
+  // QR landing sayfaları için session güncelle ve x-pathname header'ı ekle
+  if (
+    pathname.startsWith('/app/') ||
+    pathname.startsWith('/r/') ||
+    pathname.startsWith('/v/')
+  ) {
+    const response = await updateSession(request)
+    response.headers.set('x-pathname', pathname)
+    return response
   }
 
   // Cookie'den dili al
