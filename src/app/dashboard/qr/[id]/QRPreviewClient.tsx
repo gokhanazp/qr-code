@@ -2,7 +2,7 @@
 
 // QR Kod Önizleme Client Component (Frame destekli)
 // Server component'tan gelen verileri gösterir
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react'
 import QRCode from 'qrcode'
 import { FRAME_TEMPLATES } from '@/components/qr/QRFrameSelector'
 
@@ -17,9 +17,16 @@ interface QRPreviewClientProps {
   frameColor?: string
   logo?: string | null
   logoSize?: number
+  qrName?: string
 }
 
-export default function QRPreviewClient({
+// Ref ile dışarıdan erişilebilir metodlar (Methods accessible from outside via ref)
+export interface QRPreviewClientRef {
+  downloadPNG: () => void
+  downloadSVG: () => void
+}
+
+const QRPreviewClient = forwardRef<QRPreviewClientRef, QRPreviewClientProps>(({
   content,
   foregroundColor,
   backgroundColor,
@@ -30,9 +37,42 @@ export default function QRPreviewClient({
   frameColor = '#000000',
   logo = null,
   logoSize = 20,
-}: QRPreviewClientProps) {
+  qrName = 'qr-code',
+}, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [qrDataUrl, setQrDataUrl] = useState<string>('')
+
+  // Dışarıdan erişilebilir indirme metodları (Download methods accessible from outside)
+  useImperativeHandle(ref, () => ({
+    downloadPNG: () => {
+      if (!canvasRef.current) return
+      const link = document.createElement('a')
+      link.download = `${qrName}.png`
+      link.href = canvasRef.current.toDataURL('image/png')
+      link.click()
+    },
+    downloadSVG: async () => {
+      if (!content) return
+      try {
+        const svgString = await QRCode.toString(content, {
+          type: 'svg',
+          width: size,
+          margin: 2,
+          color: { dark: foregroundColor, light: backgroundColor },
+          errorCorrectionLevel: errorCorrection as 'L' | 'M' | 'Q' | 'H',
+        })
+        const blob = new Blob([svgString], { type: 'image/svg+xml' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.download = `${qrName}.svg`
+        link.href = url
+        link.click()
+        URL.revokeObjectURL(url)
+      } catch (err) {
+        console.error('SVG download error:', err)
+      }
+    }
+  }))
 
   // Frame template'i bul
   const frameTemplate = FRAME_TEMPLATES.find(f => f.id === selectedFrame) || FRAME_TEMPLATES[0]
@@ -227,5 +267,10 @@ export default function QRPreviewClient({
       />
     </div>
   )
-}
+})
+
+// Display name for debugging (Hata ayıklama için görünen isim)
+QRPreviewClient.displayName = 'QRPreviewClient'
+
+export default QRPreviewClient
 

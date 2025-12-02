@@ -3,9 +3,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Eye, Download, ExternalLink, QrCode } from 'lucide-react'
+import { ArrowLeft, Calendar, Eye, ExternalLink } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import QRPreviewClient from './QRPreviewClient'
+import QRDownloadWrapper from './QRDownloadWrapper'
 import DeleteQRButton from '../DeleteQRButton'
 
 interface PageProps {
@@ -249,37 +249,23 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
             )}
 
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Sol: QR Kod Önizleme */}
-              <div className="flex flex-col items-center">
-                <div className={`p-4 rounded-xl ${isExpired ? 'bg-red-50 opacity-50' : 'bg-gray-50'}`}>
-                  <QRPreviewClient
-                    content={qrContent}
-                    foregroundColor={qrSettings.foregroundColor || '#000000'}
-                    backgroundColor={qrSettings.backgroundColor || '#ffffff'}
-                    size={qrSettings.size || 256}
-                    errorCorrection={qrSettings.errorCorrection || 'M'}
-                    selectedFrame={qrSettings.frame || 'none'}
-                    frameText={qrSettings.frameText || ''}
-                    frameColor={qrSettings.frameColor || '#000000'}
-                    logo={qrSettings.logo || null}
-                    logoSize={qrSettings.logoSize || 20}
-                  />
-                </div>
-
-                {/* İndirme Butonları */}
-                {!isExpired && (
-                  <div className="flex gap-3 mt-4">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                      <Download className="w-4 h-4" />
-                      {t('downloadPNG')}
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                      <Download className="w-4 h-4" />
-                      {t('downloadSVG')}
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Sol: QR Kod Önizleme ve İndirme */}
+              <QRDownloadWrapper
+                content={qrContent}
+                foregroundColor={qrSettings.foregroundColor || '#000000'}
+                backgroundColor={qrSettings.backgroundColor || '#ffffff'}
+                size={qrSettings.size || 256}
+                errorCorrection={qrSettings.errorCorrection || 'M'}
+                selectedFrame={qrSettings.frame || 'none'}
+                frameText={qrSettings.frameText || ''}
+                frameColor={qrSettings.frameColor || '#000000'}
+                logo={qrSettings.logo || null}
+                logoSize={qrSettings.logoSize || 20}
+                qrName={qrCode.name || 'qr-code'}
+                isExpired={isExpired}
+                downloadPNGLabel={t('downloadPNG')}
+                downloadSVGLabel={t('downloadSVG')}
+              />
 
               {/* Sağ: Detaylar */}
               <div className="space-y-6">
