@@ -3,29 +3,37 @@
 
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations, getLocale } from 'next-intl/server'
+import { useTranslations } from 'next-intl'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
-// Sayfa özel SEO metadata
-export const metadata: Metadata = {
-  title: 'QR Kod Oluşturucu - Ücretsiz QR Code Generator | Anında İndir',
-  description: 'Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp, Instagram, YouTube için profesyonel QR kodlar. Kolay kullanım, özelleştirilebilir tasarım, anında PNG/SVG indirme. Create free QR codes online.',
-  keywords: [
-    'qr kod oluşturucu', 'ücretsiz qr kod', 'qr kod yapma', 'karekod',
-    'qr code generator', 'free qr code', 'wifi qr kod', 'whatsapp qr kod',
-    'vcard qr kod', 'instagram qr kod', 'dinamik qr kod'
-  ],
-  openGraph: {
-    title: 'QR Kod Oluşturucu - Ücretsiz QR Code Generator',
-    description: 'Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp için profesyonel QR kodlar.',
-    url: siteUrl,
-    type: 'website',
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
+// Dinamik SEO Metadata - Dil bazlı
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('seo')
+  const locale = await getLocale()
+
+  return {
+    title: t('home.title'),
+    description: t('home.description'),
+    keywords: locale === 'tr'
+      ? ['qr kod oluşturucu', 'ücretsiz qr kod', 'qr kod yapma', 'karekod', 'wifi qr kod', 'whatsapp qr kod', 'vcard qr kod', 'dinamik qr kod']
+      : ['qr code generator', 'free qr code', 'qr code maker', 'wifi qr code', 'whatsapp qr code', 'vcard qr code', 'dynamic qr code'],
+    openGraph: {
+      title: t('home.ogTitle'),
+      description: t('home.ogDescription'),
+      url: siteUrl,
+      type: 'website',
+    },
+    alternates: {
+      canonical: siteUrl,
+      languages: {
+        'tr': '/',
+        'en': '/',
+      },
+    },
+  }
 }
-import { useTranslations } from 'next-intl'
 import {
   QrCode, Zap, Shield, Globe, Smartphone, BarChart3, Sparkles, Play,
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,

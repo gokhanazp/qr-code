@@ -3,22 +3,34 @@
 
 import { Metadata } from 'next'
 import { Building2, Users, Target, Award, Globe, Zap } from 'lucide-react';
+import { getTranslations, getLocale } from 'next-intl/server'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
-// SEO Metadata
-export const metadata: Metadata = {
-  title: 'Hakkımızda - QR Kod Oluşturucu',
-  description: 'QR Kod Oluşturucu hakkında. Misyonumuz, vizyonumuz ve QR kod teknolojisinde öncü çözümlerimiz. Learn about our QR code generator platform.',
-  keywords: ['qr kod hakkında', 'qr code generator about', 'karekod şirketi'],
-  openGraph: {
-    title: 'Hakkımızda - QR Kod Oluşturucu',
-    description: 'QR Kod Oluşturucu platformu hakkında bilgi edinin.',
-    url: `${siteUrl}/about`,
-  },
-  alternates: {
-    canonical: `${siteUrl}/about`,
-  },
+// Dinamik SEO Metadata - Dil bazlı
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('seo')
+  const locale = await getLocale()
+
+  return {
+    title: t('about.title'),
+    description: t('about.description'),
+    keywords: locale === 'tr'
+      ? ['qr kod hakkında', 'karekod şirketi', 'qr kod oluşturucu ekibi']
+      : ['about qr code generator', 'qr code company', 'qr code team'],
+    openGraph: {
+      title: t('about.title'),
+      description: t('about.description'),
+      url: `${siteUrl}/about`,
+    },
+    alternates: {
+      canonical: `${siteUrl}/about`,
+      languages: {
+        'tr': '/hakkimizda',
+        'en': '/about',
+      },
+    },
+  }
 }
 
 export default function AboutPage() {

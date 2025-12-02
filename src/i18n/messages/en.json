@@ -1,4 +1,33 @@
 {
+  "seo": {
+    "home": {
+      "title": "Free QR Code Generator - Create QR Codes Online | QR Code Maker",
+      "description": "Create free QR codes instantly! Generate QR codes for URL, WiFi, vCard, WhatsApp, Instagram, YouTube. Easy to use, customizable design, instant PNG/SVG download.",
+      "ogTitle": "Free QR Code Generator - Create QR Codes Online",
+      "ogDescription": "Create free QR codes for URL, WiFi, vCard, WhatsApp. Professional QR code maker with customizable design."
+    },
+    "features": {
+      "title": "QR Code Generator Features - Advanced QR Code Tools",
+      "description": "Explore our QR code generator features: Dynamic QR codes, custom colors, logo upload, analytics tracking, bulk creation, and more."
+    },
+    "pricing": {
+      "title": "QR Code Generator Pricing - Plans & Features",
+      "description": "Compare QR code generator pricing plans. Free, Pro, and Enterprise packages with dynamic QR codes, analytics, logo customization."
+    },
+    "about": {
+      "title": "About Us - QR Code Generator",
+      "description": "Learn about QR Code Generator. Our mission, vision, and innovative QR code technology solutions."
+    },
+    "faq": {
+      "title": "FAQ - QR Code Generator Help",
+      "description": "Frequently asked questions about QR code generator. Learn how to create, customize, and use QR codes effectively."
+    },
+    "contact": {
+      "title": "Contact Us - QR Code Generator Support",
+      "description": "Get in touch with our support team. We're here to help you with any questions about QR code generation."
+    },
+    "keywords": "qr code generator, free qr code, qr code maker, create qr code, qr code online, dynamic qr code, wifi qr code, vcard qr code, whatsapp qr code"
+  },
   "common": {
     "appName": "QR Code Generator",
     "home": "Home",

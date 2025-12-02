@@ -1,4 +1,33 @@
 {
+  "seo": {
+    "home": {
+      "title": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma | Karekod",
+      "description": "Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp, Instagram, YouTube için profesyonel QR kodlar. Kolay kullanım, özelleştirilebilir tasarım, anında PNG/SVG indirme.",
+      "ogTitle": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma",
+      "ogDescription": "Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp için profesyonel QR kodlar."
+    },
+    "features": {
+      "title": "QR Kod Özellikleri - Gelişmiş QR Kod Araçları",
+      "description": "QR kod oluşturucu özelliklerini keşfedin: Dinamik QR kodlar, özel renkler, logo yükleme, analitik takip, toplu oluşturma ve daha fazlası."
+    },
+    "pricing": {
+      "title": "QR Kod Fiyatlandırma - Paketler ve Özellikler",
+      "description": "QR kod oluşturucu fiyatlarını karşılaştırın. Ücretsiz, Pro ve Kurumsal paketler. Dinamik QR kodlar, analitik, logo özelleştirme."
+    },
+    "about": {
+      "title": "Hakkımızda - QR Kod Oluşturucu",
+      "description": "QR Kod Oluşturucu hakkında. Misyonumuz, vizyonumuz ve yenilikçi QR kod teknoloji çözümlerimiz."
+    },
+    "faq": {
+      "title": "SSS - QR Kod Oluşturucu Yardım",
+      "description": "QR kod oluşturucu hakkında sıkça sorulan sorular. QR kod oluşturma, özelleştirme ve kullanım hakkında bilgi edinin."
+    },
+    "contact": {
+      "title": "İletişim - QR Kod Oluşturucu Destek",
+      "description": "Destek ekibimizle iletişime geçin. QR kod oluşturma hakkında tüm sorularınızda yardımcı olmak için buradayız."
+    },
+    "keywords": "qr kod, qr kod oluşturucu, ücretsiz qr kod, qr kod yapma, karekod, dinamik qr kod, wifi qr kod, vcard qr kod, whatsapp qr kod"
+  },
   "common": {
     "appName": "QR Kod Oluşturucu",
     "home": "Ana Sayfa",

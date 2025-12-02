@@ -3,24 +3,35 @@
 
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
 import PricingClient from './PricingClient'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
 
-// SEO Metadata
-export const metadata: Metadata = {
-  title: 'Fiyatlandırma - QR Kod Paketleri ve Fiyatları',
-  description: 'QR kod oluşturucu fiyatları. Ücretsiz, Pro ve Kurumsal paketler. Dinamik QR kodlar, analitik takip, logo ekleme özellikleri. Compare QR code generator pricing plans.',
-  keywords: ['qr kod fiyat', 'qr kod paket', 'qr code pricing', 'dinamik qr kod fiyat', 'kurumsal qr kod'],
-  openGraph: {
-    title: 'QR Kod Fiyatlandırma - Paketler ve Özellikler',
-    description: 'Ücretsiz, Pro ve Kurumsal QR kod paketlerini karşılaştırın.',
-    url: `${siteUrl}/pricing`,
-  },
-  alternates: {
-    canonical: `${siteUrl}/pricing`,
-  },
+// Dinamik SEO Metadata - Dil bazlı
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('seo')
+  const locale = await getLocale()
+
+  return {
+    title: t('pricing.title'),
+    description: t('pricing.description'),
+    keywords: locale === 'tr'
+      ? ['qr kod fiyat', 'qr kod paket', 'dinamik qr kod fiyat', 'kurumsal qr kod', 'ücretsiz qr kod']
+      : ['qr code pricing', 'qr code plans', 'dynamic qr code price', 'enterprise qr code', 'free qr code'],
+    openGraph: {
+      title: t('pricing.title'),
+      description: t('pricing.description'),
+      url: `${siteUrl}/pricing`,
+    },
+    alternates: {
+      canonical: `${siteUrl}/pricing`,
+      languages: {
+        'tr': '/fiyatlandirma',
+        'en': '/pricing',
+      },
+    },
+  }
 }
 
 // Fiyatlandırma planı tipi (Pricing plan type)
