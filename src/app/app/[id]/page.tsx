@@ -108,17 +108,23 @@ export default async function AppLandingPage({ params }: PageProps) {
   const welcomeScreenEnabled = appData.welcomeScreenEnabled !== false // varsayılan açık
   const welcomeLogo = appData.welcomeLogo || appData.appLogo // varsayılan App Logo
 
-  // Body arka planını ayarlamak için style tag
+  // Body arka planını ve scroll'u engellemek için style tag
   const bgStyle = `
     html, body {
       background: linear-gradient(to bottom, ${secondaryColor}, ${primaryColor}) !important;
       min-height: 100%;
+      height: 100%;
+      overflow: hidden !important;
+      position: fixed !important;
+      width: 100% !important;
+      touch-action: none !important;
+      overscroll-behavior: none !important;
     }
   `
 
   return (
     <>
-      {/* Body arka plan rengini ayarla */}
+      {/* Body arka plan rengini ve scroll engelini ayarla */}
       <style dangerouslySetInnerHTML={{ __html: bgStyle }} />
 
       {/* Welcome Screen - Logo büyüme animasyonu (sadece açıksa) */}
@@ -127,7 +133,7 @@ export default async function AppLandingPage({ params }: PageProps) {
       )}
 
       <div
-        className="min-h-[100dvh] flex flex-col"
+        className="h-[100dvh] flex flex-col overflow-hidden fixed inset-0"
         style={{ background: `linear-gradient(to bottom, ${secondaryColor}, ${primaryColor})` }}
       >
         {/* Share Button - Sağ üst köşe */}
