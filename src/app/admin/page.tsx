@@ -51,37 +51,37 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-5">Admin Dashboard</h1>
 
       {/* Uyarı kartları - Bekleyen işlemler (Warning cards - Pending actions) */}
       {(stats.unreadMessages > 0 || stats.pendingOrders > 0 || stats.expiredQRCodes > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
           {stats.unreadMessages > 0 && (
             <Link href="/admin/messages" className="block">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 hover:bg-yellow-100 transition-colors">
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-5 h-5 text-yellow-600" />
-                  <span className="font-medium text-yellow-800">{stats.unreadMessages} okunmamış mesaj</span>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 hover:bg-yellow-100 transition-colors">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-yellow-600" />
+                  <span className="font-medium text-yellow-800 text-sm">{stats.unreadMessages} okunmamış mesaj</span>
                 </div>
               </div>
             </Link>
           )}
           {stats.pendingOrders > 0 && (
             <Link href="/admin/orders" className="block">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 hover:bg-blue-100 transition-colors">
-                <div className="flex items-center gap-3">
-                  <ShoppingCart className="w-5 h-5 text-blue-600" />
-                  <span className="font-medium text-blue-800">{stats.pendingOrders} bekleyen sipariş</span>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 hover:bg-blue-100 transition-colors">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4 text-blue-600" />
+                  <span className="font-medium text-blue-800 text-sm">{stats.pendingOrders} bekleyen sipariş</span>
                 </div>
               </div>
             </Link>
           )}
           {stats.expiredQRCodes > 0 && (
             <Link href="/admin/qrcodes?filter=expired" className="block">
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 hover:bg-red-100 transition-colors">
-                <div className="flex items-center gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
-                  <span className="font-medium text-red-800">{stats.expiredQRCodes} süresi dolmuş QR</span>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 hover:bg-red-100 transition-colors">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-600" />
+                  <span className="font-medium text-red-800 text-sm">{stats.expiredQRCodes} süresi dolmuş QR</span>
                 </div>
               </div>
             </Link>
@@ -90,7 +90,7 @@ export default async function AdminDashboard() {
       )}
 
       {/* İstatistik kartları (Stat cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard
           title="Toplam Kullanıcı"
           value={stats.totalUsers}
@@ -122,25 +122,25 @@ export default async function AdminDashboard() {
       </div>
 
       {/* İki sütunlu bölüm (Two column section) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Son kullanıcılar (Recent users) */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">Son Kayıt Olan Kullanıcılar</h2>
-            <Link href="/admin/users" className="text-sm text-blue-600 hover:text-blue-700">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 text-sm">Son Kayıt Olan Kullanıcılar</h2>
+            <Link href="/admin/users" className="text-xs text-blue-600 hover:text-blue-700">
               Tümünü Gör →
             </Link>
           </div>
           <div className="divide-y divide-gray-100">
             {recentUsers.length > 0 ? (
               recentUsers.map((user) => (
-                <div key={user.id} className="px-6 py-3 flex items-center justify-between hover:bg-gray-50">
+                <div key={user.id} className="px-4 py-2.5 flex items-center justify-between hover:bg-gray-50">
                   <div>
-                    <p className="font-medium text-gray-900">{user.full_name || 'İsimsiz'}</p>
-                    <p className="text-sm text-gray-500">{user.email}</p>
+                    <p className="font-medium text-gray-900 text-sm">{user.full_name || 'İsimsiz'}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
                   <div className="text-right">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
                       user.plan === 'enterprise'
                         ? 'bg-purple-100 text-purple-700'
                         : user.plan === 'pro'
@@ -149,14 +149,14 @@ export default async function AdminDashboard() {
                     }`}>
                       {user.plan || 'free'}
                     </span>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-400 mt-0.5">
                       {new Date(user.created_at).toLocaleDateString('tr-TR')}
                     </p>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="px-4 py-6 text-center text-gray-500 text-sm">
                 Henüz kullanıcı yok
               </div>
             )}
@@ -164,26 +164,26 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Son siparişler (Recent orders) */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">Son Siparişler</h2>
-            <Link href="/admin/orders" className="text-sm text-blue-600 hover:text-blue-700">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900 text-sm">Son Siparişler</h2>
+            <Link href="/admin/orders" className="text-xs text-blue-600 hover:text-blue-700">
               Tümünü Gör →
             </Link>
           </div>
           <div className="divide-y divide-gray-100">
             {recentOrders.length > 0 ? (
               recentOrders.map((order) => (
-                <div key={order.id} className="px-6 py-3 flex items-center justify-between hover:bg-gray-50">
+                <div key={order.id} className="px-4 py-2.5 flex items-center justify-between hover:bg-gray-50">
                   <div>
-                    <p className="font-medium text-gray-900">{order.user_name || order.user_email}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-gray-900 text-sm">{order.user_name || order.user_email}</p>
+                    <p className="text-xs text-gray-500">
                       {order.from_plan} → {order.to_plan}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">₺{order.amount}</p>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
+                    <p className="font-medium text-gray-900 text-sm">₺{order.amount}</p>
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
                       order.status === 'completed'
                         ? 'bg-green-100 text-green-700'
                         : order.status === 'pending'
@@ -197,7 +197,7 @@ export default async function AdminDashboard() {
                 </div>
               ))
             ) : (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="px-4 py-6 text-center text-gray-500 text-sm">
                 Henüz sipariş yok
               </div>
             )}
@@ -232,13 +232,13 @@ function StatCard({
 
   const content = (
     <Card className={href ? 'hover:shadow-md transition-shadow cursor-pointer' : ''}>
-      <CardContent className="flex items-center gap-4 pt-6">
-        <div className={`p-3 rounded-xl ${colors[color]}`}>
-          <Icon className="w-6 h-6" />
+      <CardContent className="flex items-center gap-3 p-4">
+        <div className={`p-2.5 rounded-lg ${colors[color]}`}>
+          <Icon className="w-5 h-5" />
         </div>
         <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value.toLocaleString()}</p>
+          <p className="text-xs text-gray-500">{title}</p>
+          <p className="text-xl font-bold text-gray-900">{value.toLocaleString()}</p>
         </div>
       </CardContent>
     </Card>

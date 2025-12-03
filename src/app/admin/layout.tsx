@@ -51,8 +51,10 @@ export default async function AdminLayout({
       <AdminSidebar userEmail={userEmail} userRole={userRole} />
 
       {/* Ana içerik - Mobilde tam genişlik, masaüstünde sidebar offset */}
-      <main className="lg:ml-64 min-h-screen p-4 lg:p-8 pt-20 lg:pt-8">
-        {children}
+      <main className="lg:ml-64 min-h-screen p-3 lg:p-6 pt-16 lg:pt-6">
+        <div className="max-w-6xl">
+          {children}
+        </div>
       </main>
     </div>
   )
