@@ -7,7 +7,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Mail, Lock, Eye, EyeOff, User, CheckCircle, QrCode, Sparkles, Shield, Zap, ArrowRight, Check } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, User, QrCode, Sparkles, Shield, Zap, ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 
@@ -23,7 +23,6 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
 
   // Form gönderimi - Supabase Auth (Form submission)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,8 +65,8 @@ export default function RegisterPage() {
           setError(authError.message)
         }
       } else {
-        // Başarılı kayıt - email doğrulama mesajı (Success - email verification)
-        setSuccess(true)
+        // Başarılı kayıt - direkt dashboard'a yönlendir (Success - redirect to dashboard)
+        router.push('/dashboard')
       }
     } catch {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.')
@@ -103,35 +102,6 @@ export default function RegisterPage() {
     'PNG & SVG İndirme',
     'Temel Özelleştirme',
   ]
-
-  // Başarılı kayıt mesajı (Success message)
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Kayıt Başarılı! 🎉</h2>
-          <p className="text-gray-600 mb-2">
-            Doğrulama e-postası gönderildi:
-          </p>
-          <p className="font-semibold text-gray-900 mb-6 bg-gray-100 py-2 px-4 rounded-lg">
-            {email}
-          </p>
-          <p className="text-sm text-gray-500 mb-8">
-            Hesabınızı aktifleştirmek için e-postanızdaki linke tıklayın. Spam klasörünü de kontrol etmeyi unutmayın.
-          </p>
-          <Button
-            onClick={() => router.push('/auth/login')}
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl"
-          >
-            Giriş Sayfasına Dön
-          </Button>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen flex">
