@@ -24,7 +24,12 @@ interface PricingPlan {
   features: string[]
 }
 
-export default function PricingEditor({ plan }: { plan: PricingPlan }) {
+interface PricingEditorProps {
+  plan: PricingPlan
+  currencySymbol: string
+}
+
+export default function PricingEditor({ plan, currencySymbol }: PricingEditorProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -117,7 +122,7 @@ export default function PricingEditor({ plan }: { plan: PricingPlan }) {
           {/* Fiyatlar (Prices) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Aylık Fiyat (₺)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Aylık Fiyat ({currencySymbol})</label>
               <input
                 type="number"
                 value={formData.price_monthly}
@@ -126,7 +131,7 @@ export default function PricingEditor({ plan }: { plan: PricingPlan }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Yıllık Fiyat (₺)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Yıllık Fiyat ({currencySymbol})</label>
               <input
                 type="number"
                 value={formData.price_yearly}

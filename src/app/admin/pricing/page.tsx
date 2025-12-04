@@ -5,6 +5,16 @@ import { createClient } from '@/lib/supabase/server'
 import { DollarSign, Edit, Save, Crown, Building2, Zap, Check, X } from 'lucide-react'
 import PricingEditor from './PricingEditor'
 
+// Para birimi sembolü helper fonksiyonu (Currency symbol helper)
+const getCurrencySymbol = (currency: string): string => {
+  const symbols: Record<string, string> = {
+    TRY: '₺',
+    USD: '$',
+    EUR: '€',
+  }
+  return symbols[currency] || currency
+}
+
 export default async function AdminPricingPage() {
   const supabase = await createClient()
 
@@ -13,6 +23,16 @@ export default async function AdminPricingPage() {
     .from('pricing_plans')
     .select('*')
     .order('sort_order', { ascending: true })
+
+  // Site ayarlarından para birimini al (Get currency from site settings)
+  const { data: currencySetting } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'currency')
+    .single()
+
+  const currency = currencySetting?.value || 'TRY'
+  const currencySymbol = getCurrencySymbol(currency)
 
   // Plan ikonları (Plan icons)
   const planIcons: Record<string, React.ElementType> = {
@@ -72,11 +92,11 @@ export default async function AdminPricingPage() {
               {/* Fiyat Bilgisi (Price Info) */}
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-gray-900">₺{plan.price_monthly}</span>
+                  <span className="text-4xl font-bold text-gray-900">{currencySymbol}{plan.price_monthly}</span>
                   <span className="text-gray-500">/ay</span>
                 </div>
                 <p className="text-sm text-gray-500 mt-1">
-                  Yıllık: ₺{plan.price_yearly}/yıl
+                  Yıllık: {currencySymbol}{plan.price_yearly}/yıl
                 </p>
               </div>
 
@@ -116,7 +136,7 @@ export default async function AdminPricingPage() {
 
               {/* Düzenle Butonu (Edit Button) */}
               <div className="p-6">
-                <PricingEditor plan={plan} />
+                <PricingEditor plan={plan} currencySymbol={currencySymbol} />
               </div>
             </div>
           )
