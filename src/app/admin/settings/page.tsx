@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import LanguageSelector from './LanguageSelector'
 import PlanLimitsEditor from './PlanLimitsEditor'
+import CurrencySelector from '@/components/admin/CurrencySelector'
 
 export default async function AdminSettingsPage() {
   const supabase = await createClient()
@@ -24,6 +25,15 @@ export default async function AdminSettingsPage() {
 
   // Mevcut dili al (Get current locale from cookie)
   const currentLocale = cookieStore.get('NEXT_LOCALE')?.value || 'tr'
+
+  // Para birimi ayarını al (Get currency setting)
+  const { data: currencySetting } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'currency')
+    .single()
+
+  const currentCurrency = currencySetting?.value || 'TRY'
 
   // Admin kullanıcılarını getir
   const { data: adminUsers } = await supabase
@@ -97,6 +107,9 @@ export default async function AdminSettingsPage() {
 
         {/* Dil Ayarları - Client Component */}
         <LanguageSelector currentLocale={currentLocale} />
+
+        {/* Para Birimi Ayarları - Client Component */}
+        <CurrencySelector currentCurrency={currentCurrency} />
 
         {/* Site Ayarları */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
