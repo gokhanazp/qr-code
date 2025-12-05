@@ -251,7 +251,7 @@ export default function Header({ user }: HeaderProps) {
                 {/* Brand Text */}
                 <div className="flex flex-col">
                   <span className="text-xl lg:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    QRCode<span className="text-blue-600 group-hover:text-gray-900 transition-colors">Gen</span>
+                    QRCode<span className="text-blue-600 group-hover:text-gray-900 transition-colors">Shine</span>
                   </span>
                   <span className="text-[9px] lg:text-[10px] text-gray-400 font-medium tracking-[0.15em] uppercase -mt-1">
                     {tHeader('professionalQR')}
