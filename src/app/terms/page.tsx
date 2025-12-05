@@ -95,8 +95,8 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Contact</h2>
               <p className="text-gray-600">
                 For questions about these Terms, contact us at:{' '}
-                <a href="mailto:legal@qrcodegen.com" className="text-blue-600 hover:underline">
-                  legal@qrcodegen.com
+                <a href="mailto:legal@qrcodeshine.com" className="text-blue-600 hover:underline">
+                  legal@qrcodeshine.com
                 </a>
               </p>
             </section>

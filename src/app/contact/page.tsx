@@ -55,7 +55,7 @@ export default function ContactPage() {
 
   // İletişim bilgileri - çeviri ile
   const contactInfo = [
-    { icon: Mail, titleKey: 'email', value: 'info@qrcodegen.com', href: 'mailto:info@qrcodegen.com' },
+    { icon: Mail, titleKey: 'email', value: 'info@qrcodeshine.com', href: 'mailto:info@qrcodeshine.com' },
     { icon: Phone, titleKey: 'phone', value: '0537 510 2084', href: 'tel:+905375102084' },
     { icon: MapPin, titleKey: 'address', value: 'İstanbul, Türkiye', href: '#' },
   ];

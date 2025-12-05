@@ -33,13 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteUrl),
     title: {
       default: t('home.title'),
-      template: locale === 'tr' ? '%s | QR Kod Oluşturucu' : '%s | QR Code Generator',
+      template: locale === 'tr' ? '%s | QR Code Shine' : '%s | QR Code Shine',
     },
     description: t('home.description'),
     keywords: t('keywords'),
-    authors: [{ name: "QR Code Generator" }],
-    creator: "QR Code Generator",
-    publisher: "QR Code Generator",
+    authors: [{ name: "QR Code Shine" }],
+    creator: "QR Code Shine",
+    publisher: "QR Code Shine",
     formatDetection: {
       email: false,
       address: false,
@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: ogLocale,
       alternateLocale: alternateLocale,
       url: siteUrl,
-      siteName: locale === 'tr' ? 'QR Kod Oluşturucu' : 'QR Code Generator',
+      siteName: 'QR Code Shine',
       title: t('home.ogTitle'),
       description: t('home.ogDescription'),
       images: [
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: locale === 'tr' ? 'QR Kod Oluşturucu' : 'QR Code Generator',
+          alt: 'QR Code Shine',
           type: 'image/png',
         },
       ],
@@ -81,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t('home.ogTitle'),
       description: t('home.ogDescription'),
       images: ['/og-image.png'],
-      creator: '@qrcodegenerator',
+      creator: '@qrcodeshine',
     },
     alternates: {
       canonical: siteUrl,
@@ -99,7 +99,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     category: 'technology',
-    classification: 'QR Code Generator Tool',
+    classification: 'QR Code Shine',
     manifest: '/manifest.json',
     icons: {
       icon: [
@@ -114,13 +114,13 @@ export async function generateMetadata(): Promise<Metadata> {
     appleWebApp: {
       capable: true,
       statusBarStyle: 'default',
-      title: locale === 'tr' ? 'QR Kod Oluşturucu' : 'QR Code Generator',
+      title: 'QR Code Shine',
     },
     other: {
       'mobile-web-app-capable': 'yes',
       'apple-mobile-web-app-capable': 'yes',
-      'application-name': locale === 'tr' ? 'QR Kod Oluşturucu' : 'QR Code Generator',
-      'apple-mobile-web-app-title': locale === 'tr' ? 'QR Kod' : 'QR Code',
+      'application-name': 'QR Code Shine',
+      'apple-mobile-web-app-title': 'QR Code Shine',
       'msapplication-TileColor': '#3b82f6',
       'theme-color': '#3b82f6',
     },

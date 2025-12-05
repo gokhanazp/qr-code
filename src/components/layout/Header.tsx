@@ -21,7 +21,7 @@ import { getLocalizedPathname, getOriginalPathname } from '@/i18n/navigation'
 
 // Şirket iletişim bilgileri (Company contact information)
 const contactInfo = {
-  email: 'info@qrcodegen.com',
+  email: 'info@qrcodeshine.com',
   phone: '0537 510 2084',
   phoneRaw: '905375102084', // WhatsApp ve tel: için formatlanmış numara
   whatsapp: '905375102084'

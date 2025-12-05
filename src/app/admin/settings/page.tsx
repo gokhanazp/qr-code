@@ -128,7 +128,7 @@ export default async function AdminSettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Site Adı</label>
               <input
                 type="text"
-                defaultValue="QR Code Generator"
+                defaultValue="QR Code Shine"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled
               />
@@ -137,7 +137,7 @@ export default async function AdminSettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Site URL</label>
               <input
                 type="text"
-                defaultValue="https://qrcodegenerator.com"
+                defaultValue="https://qrcodeshine.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled
               />

@@ -1,35 +1,35 @@
 {
   "seo": {
     "home": {
-      "title": "Free QR Code Generator - Create QR Codes Online | QR Code Maker",
+      "title": "Free QR Code Generator - Create QR Codes Online | QR Code Shine",
       "description": "Create free QR codes instantly! Generate QR codes for URL, WiFi, vCard, WhatsApp, Instagram, YouTube. Easy to use, customizable design, instant PNG/SVG download.",
-      "ogTitle": "Free QR Code Generator - Create QR Codes Online",
+      "ogTitle": "Free QR Code Generator - Create QR Codes Online | QR Code Shine",
       "ogDescription": "Create free QR codes for URL, WiFi, vCard, WhatsApp. Professional QR code maker with customizable design."
     },
     "features": {
-      "title": "QR Code Generator Features - Advanced QR Code Tools",
+      "title": "QR Code Shine Features - Advanced QR Code Tools",
       "description": "Explore our QR code generator features: Dynamic QR codes, custom colors, logo upload, analytics tracking, bulk creation, and more."
     },
     "pricing": {
-      "title": "QR Code Generator Pricing - Plans & Features",
+      "title": "QR Code Shine Pricing - Plans & Features",
       "description": "Compare QR code generator pricing plans. Free, Pro, and Enterprise packages with dynamic QR codes, analytics, logo customization."
     },
     "about": {
-      "title": "About Us - QR Code Generator",
-      "description": "Learn about QR Code Generator. Our mission, vision, and innovative QR code technology solutions."
+      "title": "About Us - QR Code Shine",
+      "description": "Learn about QR Code Shine. Our mission, vision, and innovative QR code technology solutions."
     },
     "faq": {
-      "title": "FAQ - QR Code Generator Help",
+      "title": "FAQ - QR Code Shine Help",
       "description": "Frequently asked questions about QR code generator. Learn how to create, customize, and use QR codes effectively."
     },
     "contact": {
-      "title": "Contact Us - QR Code Generator Support",
+      "title": "Contact Us - QR Code Shine Support",
       "description": "Get in touch with our support team. We're here to help you with any questions about QR code generation."
     },
-    "keywords": "qr code generator, free qr code, qr code maker, create qr code, qr code online, dynamic qr code, wifi qr code, vcard qr code, whatsapp qr code"
+    "keywords": "qr code shine, qr code generator, free qr code, qr code maker, create qr code, qr code online, dynamic qr code, wifi qr code, vcard qr code, whatsapp qr code"
   },
   "common": {
-    "appName": "QR Code Generator",
+    "appName": "QR Code Shine",
     "home": "Home",
     "pricing": "Pricing",
     "features": "Features",
@@ -164,7 +164,7 @@
     "customizableDesc": "Customize colors, size, and add your logo."
   },
   "generator": {
-    "title": "QR Code Generator",
+    "title": "QR Code Shine",
     "selectType": "Select QR Code Type",
     "enterContent": "Enter Content",
     "content": "Content",

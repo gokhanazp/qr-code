@@ -100,12 +100,12 @@ const qrTypeSEO: Record<string, { title: string; description: string; keywords: 
     keywords: ['uygulama qr kod', 'app store qr', 'play store qr', 'app qr code', 'app download qr']
   },
   pdf: {
-    title: 'PDF QR Code Generator | Create Document QR Codes',
+    title: 'PDF QR Code Generator | QR Code Shine',
     description: 'Generate QR codes that link to PDF documents. Share files easily with scannable codes.',
     keywords: ['pdf qr code', 'document qr code', 'file qr code generator']
   },
   image: {
-    title: 'Image QR Code Generator | Create Image Link QR Codes',
+    title: 'Image QR Code Generator | QR Code Shine',
     description: 'Create QR codes that link to images. Share photos and graphics with scannable codes.',
     keywords: ['image qr code', 'photo qr code', 'picture qr code generator']
   }
@@ -115,10 +115,10 @@ const qrTypeSEO: Record<string, { title: string; description: string; keywords: 
 export async function generateMetadata({ params }: { params: Promise<{ type: string }> }): Promise<Metadata> {
   const { type } = await params
   const seo = qrTypeSEO[type]
-  
+
   if (!seo) {
     return {
-      title: 'QR Code Generator',
+      title: 'QR Code Shine',
       description: 'Generate QR codes for free'
     }
   }

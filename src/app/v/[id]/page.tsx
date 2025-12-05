@@ -145,7 +145,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
 
         {/* Footer */}
         <p className="text-center text-gray-400 text-sm mt-8">
-          Created with QR Code Generator
+          Created with QR Code Shine
         </p>
       </div>
     </div>

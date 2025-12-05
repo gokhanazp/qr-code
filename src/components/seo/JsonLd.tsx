@@ -1,25 +1,25 @@
 // JSON-LD Structured Data Component
 // SEO için schema.org yapılandırılmış veriler
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcodeshine.com'
 
 // Organization Schema
 export function OrganizationJsonLd() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'QR Kod Oluşturucu',
-    alternateName: ['QR Code Generator', 'QR Kod Generator'],
+    name: 'QR Code Shine',
+    alternateName: ['QR Code Shine', 'QR Kod Oluşturucu'],
     url: siteUrl,
     logo: `${siteUrl}/logo.png`,
     sameAs: [
-      'https://twitter.com/qrcodegenerator',
-      'https://facebook.com/qrcodegenerator',
-      'https://linkedin.com/company/qrcodegenerator',
+      'https://twitter.com/qrcodeshine',
+      'https://facebook.com/qrcodeshine',
+      'https://linkedin.com/company/qrcodeshine',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+90-XXX-XXX-XXXX',
+      telephone: '+90-537-510-2084',
       contactType: 'customer service',
       availableLanguage: ['Turkish', 'English'],
     },
@@ -38,11 +38,11 @@ export function WebSiteJsonLd() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'QR Kod Oluşturucu - QR Code Generator',
-    alternateName: 'QR Code Generator',
+    name: 'QR Code Shine',
+    alternateName: 'QR Kod Oluşturucu',
     url: siteUrl,
-    description: 'Ücretsiz QR kod oluşturucu. URL, WiFi, vCard, WhatsApp için profesyonel QR kodlar.',
-    inLanguage: ['tr-TR', 'en-US'],
+    description: 'Free QR code generator. Professional QR codes for URL, WiFi, vCard, WhatsApp.',
+    inLanguage: ['en-US', 'tr-TR'],
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -66,8 +66,8 @@ export function SoftwareApplicationJsonLd() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'QR Kod Oluşturucu',
-    alternateName: 'QR Code Generator',
+    name: 'QR Code Shine',
+    alternateName: 'QR Kod Oluşturucu',
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Web Browser',
     offers: {

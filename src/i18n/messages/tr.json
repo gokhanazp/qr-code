@@ -1,35 +1,35 @@
 {
   "seo": {
     "home": {
-      "title": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma | Karekod",
+      "title": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma | QR Code Shine",
       "description": "Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp, Instagram, YouTube için profesyonel QR kodlar. Kolay kullanım, özelleştirilebilir tasarım, anında PNG/SVG indirme.",
-      "ogTitle": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma",
+      "ogTitle": "Ücretsiz QR Kod Oluşturucu - Online QR Kod Yapma | QR Code Shine",
       "ogDescription": "Ücretsiz QR kod oluşturun! URL, WiFi, vCard, WhatsApp için profesyonel QR kodlar."
     },
     "features": {
-      "title": "QR Kod Özellikleri - Gelişmiş QR Kod Araçları",
+      "title": "QR Code Shine Özellikleri - Gelişmiş QR Kod Araçları",
       "description": "QR kod oluşturucu özelliklerini keşfedin: Dinamik QR kodlar, özel renkler, logo yükleme, analitik takip, toplu oluşturma ve daha fazlası."
     },
     "pricing": {
-      "title": "QR Kod Fiyatlandırma - Paketler ve Özellikler",
+      "title": "QR Code Shine Fiyatlandırma - Paketler ve Özellikler",
       "description": "QR kod oluşturucu fiyatlarını karşılaştırın. Ücretsiz, Pro ve Kurumsal paketler. Dinamik QR kodlar, analitik, logo özelleştirme."
     },
     "about": {
-      "title": "Hakkımızda - QR Kod Oluşturucu",
-      "description": "QR Kod Oluşturucu hakkında. Misyonumuz, vizyonumuz ve yenilikçi QR kod teknoloji çözümlerimiz."
+      "title": "Hakkımızda - QR Code Shine",
+      "description": "QR Code Shine hakkında. Misyonumuz, vizyonumuz ve yenilikçi QR kod teknoloji çözümlerimiz."
     },
     "faq": {
-      "title": "SSS - QR Kod Oluşturucu Yardım",
+      "title": "SSS - QR Code Shine Yardım",
       "description": "QR kod oluşturucu hakkında sıkça sorulan sorular. QR kod oluşturma, özelleştirme ve kullanım hakkında bilgi edinin."
     },
     "contact": {
-      "title": "İletişim - QR Kod Oluşturucu Destek",
+      "title": "İletişim - QR Code Shine Destek",
       "description": "Destek ekibimizle iletişime geçin. QR kod oluşturma hakkında tüm sorularınızda yardımcı olmak için buradayız."
     },
-    "keywords": "qr kod, qr kod oluşturucu, ücretsiz qr kod, qr kod yapma, karekod, dinamik qr kod, wifi qr kod, vcard qr kod, whatsapp qr kod"
+    "keywords": "qr code shine, qr kod, qr kod oluşturucu, ücretsiz qr kod, qr kod yapma, karekod, dinamik qr kod, wifi qr kod, vcard qr kod, whatsapp qr kod"
   },
   "common": {
-    "appName": "QR Kod Oluşturucu",
+    "appName": "QR Code Shine",
     "home": "Ana Sayfa",
     "pricing": "Fiyatlandırma",
     "features": "Özellikler",
@@ -164,7 +164,7 @@
     "customizableDesc": "Renkleri, boyutu özelleştirin ve logonuzu ekleyin."
   },
   "generator": {
-    "title": "QR Kod Oluşturucu",
+    "title": "QR Code Shine",
     "selectType": "QR Kod Türü Seçin",
     "enterContent": "İçerik Girin",
     "content": "İçerik",

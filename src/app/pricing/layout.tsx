@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 import { getLocale } from 'next-intl/server'
 
 // Site URL'si
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qr-code-gamma-neon.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qrcodeshine.com'
 
 // Türkçe URL'leri kontrol et
 const turkishPaths = ['/fiyatlandirma']
@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
       }
     },
     openGraph: {
-      title: locale === 'tr' ? 'Fiyatlandırma | QR Kod Oluşturucu' : 'Pricing | QR Code Generator',
+      title: locale === 'tr' ? 'Fiyatlandırma | QR Code Shine' : 'Pricing | QR Code Shine',
       description,
       url: isTurkishUrl ? `${siteUrl}/fiyatlandirma` : `${siteUrl}/pricing`,
       locale: locale === 'tr' ? 'tr_TR' : 'en_US',
@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: locale === 'tr' ? 'Fiyatlandırma | QR Kod Oluşturucu' : 'Pricing | QR Code Generator',
+      title: locale === 'tr' ? 'Fiyatlandırma | QR Code Shine' : 'Pricing | QR Code Shine',
       description,
     }
   }

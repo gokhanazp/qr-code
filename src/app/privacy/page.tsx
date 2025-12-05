@@ -82,8 +82,8 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Contact Us</h2>
               <p className="text-gray-600">
                 If you have any questions about this Privacy Policy, please contact us at:{' '}
-                <a href="mailto:privacy@qrcodegen.com" className="text-blue-600 hover:underline">
-                  privacy@qrcodegen.com
+                <a href="mailto:privacy@qrcodeshine.com" className="text-blue-600 hover:underline">
+                  privacy@qrcodeshine.com
                 </a>
               </p>
             </section>

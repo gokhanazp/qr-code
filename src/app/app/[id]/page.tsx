@@ -228,7 +228,7 @@ export default async function AppLandingPage({ params }: PageProps) {
         {/* Footer - En altta */}
         <div className="py-4 text-center shrink-0">
           <p className="text-xs opacity-40" style={{ color: textColor }}>
-            Powered by QR Code Generator
+            Powered by QR Code Shine
           </p>
         </div>
       </div>

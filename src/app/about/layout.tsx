@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 import { getLocale } from 'next-intl/server'
 
 // Site URL'si
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qr-code-gamma-neon.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qrcodeshine.com'
 
 // Türkçe URL'leri kontrol et
 const turkishPaths = ['/hakkimizda']
@@ -22,9 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = isTurkishUrl ? 'tr' : await getLocale()
   
   const title = locale === 'tr' ? 'Hakkımızda' : 'About Us'
-  const description = locale === 'tr' 
-    ? 'QR Kod Oluşturucu hakkında bilgi edinin. Misyonumuz ve vizyonumuz.'
-    : 'Learn about QR Code Generator. Our mission and vision.'
+  const description = locale === 'tr'
+    ? 'QR Code Shine hakkında bilgi edinin. Misyonumuz ve vizyonumuz.'
+    : 'Learn about QR Code Shine. Our mission and vision.'
 
   return {
     title,
@@ -37,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
       }
     },
     openGraph: {
-      title: locale === 'tr' ? 'Hakkımızda | QR Kod Oluşturucu' : 'About Us | QR Code Generator',
+      title: locale === 'tr' ? 'Hakkımızda | QR Code Shine' : 'About Us | QR Code Shine',
       description,
       url: isTurkishUrl ? `${siteUrl}/hakkimizda` : `${siteUrl}/about`,
       locale: locale === 'tr' ? 'tr_TR' : 'en_US',
@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: locale === 'tr' ? 'Hakkımızda | QR Kod Oluşturucu' : 'About Us | QR Code Generator',
+      title: locale === 'tr' ? 'Hakkımızda | QR Code Shine' : 'About Us | QR Code Shine',
       description,
     }
   }
