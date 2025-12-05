@@ -20,6 +20,21 @@ const turkishToEnglishPaths: Record<string, string> = {
   '/kayit': '/auth/register',
 }
 
+// Türkçe URL kontrolü - bu URL'ler Türkçe içerik göstermeli
+function isTurkishUrl(pathname: string): boolean {
+  // Tam eşleşme kontrol et
+  if (Object.keys(turkishToEnglishPaths).includes(pathname)) {
+    return true
+  }
+  // Dinamik route kontrol et (örn: /qr-olusturucu/url)
+  for (const trPath of Object.keys(turkishToEnglishPaths)) {
+    if (pathname.startsWith(trPath + '/')) {
+      return true
+    }
+  }
+  return false
+}
+
 // Dinamik route'ları işle (örn: /qr-olusturucu/url -> /qr-generator/url)
 function translatePath(pathname: string): string {
   // Önce tam eşleşme kontrol et
@@ -62,12 +77,18 @@ export async function middleware(request: NextRequest) {
     return response
   }
 
-  // Cookie'den dili al
-  const localeCookie = request.cookies.get('NEXT_LOCALE')?.value as Locale | undefined
-  const locale = (localeCookie && locales.includes(localeCookie)) ? localeCookie : defaultLocale
-
   // Türkçe URL ise ve dosya sisteminde karşılığı yoksa, yönlendir
   const translatedPath = translatePath(pathname)
+  const urlIsTurkish = isTurkishUrl(pathname)
+
+  // URL Türkçe ise dili Türkçe yap, değilse cookie'den veya varsayılandan al
+  let locale: Locale
+  if (urlIsTurkish) {
+    locale = 'tr'
+  } else {
+    const localeCookie = request.cookies.get('NEXT_LOCALE')?.value as Locale | undefined
+    locale = (localeCookie && locales.includes(localeCookie)) ? localeCookie : defaultLocale
+  }
 
   if (translatedPath !== pathname) {
     // Türkçe URL'i İngilizce eşdeğerine internal rewrite yap
@@ -78,6 +99,8 @@ export async function middleware(request: NextRequest) {
     // x-pathname header'ı ekle (layout'ta admin kontrolü için)
     const response = NextResponse.rewrite(url)
     response.headers.set('x-pathname', pathname)
+    // Türkçe URL'de dili Türkçe olarak ayarla
+    response.cookies.set('NEXT_LOCALE', 'tr', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     return response
   }
 
