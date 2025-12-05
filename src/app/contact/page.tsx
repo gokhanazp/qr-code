@@ -106,8 +106,8 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-green-800">WhatsApp ile İletişim</h3>
-                <p className="text-green-600">Hızlı yanıt için WhatsApp&apos;tan yazın</p>
+                <h3 className="font-semibold text-green-800">{t('whatsappTitle')}</h3>
+                <p className="text-green-600">{t('whatsappDesc')}</p>
               </div>
             </a>
 

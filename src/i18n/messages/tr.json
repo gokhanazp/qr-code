@@ -548,7 +548,9 @@
     "send": "Mesaj Gönder",
     "sending": "Gönderiliyor...",
     "successTitle": "Mesaj Gönderildi!",
-    "successDesc": "24 saat içinde size geri dönüş yapacağız."
+    "successDesc": "24 saat içinde size geri dönüş yapacağız.",
+    "whatsappTitle": "WhatsApp ile İletişim",
+    "whatsappDesc": "Hızlı yanıt için WhatsApp'tan yazın"
   },
   "faq": {
     "badge": "Sıkça Sorulan Sorular",
@@ -609,7 +611,8 @@
     "appDownload": "Uygulama indirme linkleri",
     "myQRCodes": "QR Kodlarım",
     "analytics": "Analizler",
-    "subscription": "Abonelik"
+    "subscription": "Abonelik",
+    "account": "Hesap"
   }
 }
 

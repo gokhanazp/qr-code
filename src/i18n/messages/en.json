@@ -548,7 +548,9 @@
     "send": "Send Message",
     "sending": "Sending...",
     "successTitle": "Message Sent!",
-    "successDesc": "We'll get back to you within 24 hours."
+    "successDesc": "We'll get back to you within 24 hours.",
+    "whatsappTitle": "Contact via WhatsApp",
+    "whatsappDesc": "Write us on WhatsApp for a quick response"
   },
   "faq": {
     "badge": "Frequently Asked Questions",
@@ -609,7 +611,8 @@
     "appDownload": "App download links",
     "myQRCodes": "My QR Codes",
     "analytics": "Analytics",
-    "subscription": "Subscription"
+    "subscription": "Subscription",
+    "account": "Account"
   }
 }
 

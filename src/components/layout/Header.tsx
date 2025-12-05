@@ -132,8 +132,12 @@ export default function Header({ user }: HeaderProps) {
     }))
   }))
 
-  // Aktif sayfa kontrolü
-  const isActive = (path: string) => pathname === path
+  // Aktif sayfa kontrolü - hem İngilizce hem Türkçe URL'leri kontrol et
+  // (Active page check - check both English and Turkish URLs)
+  const isActive = (path: string) => {
+    const localizedPath = getLocalizedPathname(path, currentLocale)
+    return pathname === path || pathname === localizedPath
+  }
   const isQrPage = pathname?.startsWith('/qr-generator')
 
   // Scroll durumuna göre header stilini değiştir
@@ -158,6 +162,14 @@ export default function Header({ user }: HeaderProps) {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Sayfa değiştiğinde tüm menüleri kapat (Close all menus on page change)
+  useEffect(() => {
+    setMobileMenuOpen(false)
+    setMobileQrMenuOpen(false)
+    setQrMenuOpen(false)
+    setUserMenuOpen(false)
+  }, [pathname])
 
   return (
     <>
@@ -396,7 +408,7 @@ export default function Header({ user }: HeaderProps) {
                   )}
                   <div className="hidden lg:flex flex-col items-start">
                     <span className="text-sm font-medium text-gray-700">{user.name?.split(' ')[0] || 'User'}</span>
-                    <span className="text-[10px] text-gray-400 font-medium">Account</span>
+                    <span className="text-[10px] text-gray-400 font-medium">{tHeader('account')}</span>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -414,7 +426,7 @@ export default function Header({ user }: HeaderProps) {
 
                     {/* Dashboard Menü Öğeleri */}
                     <div className="py-2 border-b border-gray-100">
-                      <p className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Dashboard</p>
+                      <p className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('dashboard')}</p>
                       <Link
                         href={localizedHref('/dashboard')}
                         className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all group"
