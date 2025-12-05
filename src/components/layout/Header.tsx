@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui'
 import LanguageSwitcher from './LanguageSwitcher'
 import { Locale, pathnames } from '@/i18n/config'
-import { getLocalizedPathname } from '@/i18n/navigation'
+import { getLocalizedPathname, getOriginalPathname } from '@/i18n/navigation'
 
 // Şirket iletişim bilgileri (Company contact information)
 const contactInfo = {
@@ -101,13 +101,21 @@ export default function Header({ user }: HeaderProps) {
   const qrMenuRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
-  // Dil değiştirme fonksiyonu
+  // Dil değiştirme fonksiyonu (Language change handler)
   const handleLanguageChange = (newLocale: Locale) => {
     // Cookie'ye kaydet (1 yıl geçerli)
     document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=${60 * 60 * 24 * 365}`
-    // Mevcut sayfanın yerelleştirilmiş URL'ini bul ve yönlendir
+
+    // Mevcut URL'i önce orijinal (İngilizce) pathname'e çevir
+    // Örn: /ozellikler -> /features, /fiyatlandirma -> /pricing
     const currentPath = pathname || '/'
-    const newPath = getLocalizedPathname(currentPath, newLocale)
+    const originalPath = getOriginalPathname(currentPath, currentLocale)
+
+    // Sonra hedef dile çevir
+    // Örn: TR seçildi -> /features -> /ozellikler
+    // Örn: EN seçildi -> /features -> /features
+    const newPath = getLocalizedPathname(originalPath, newLocale)
+
     window.location.href = newPath
   }
 

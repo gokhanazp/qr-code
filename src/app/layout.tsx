@@ -149,7 +149,7 @@ export default async function RootLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Dil bilgisi al
+  // Dil bilgisi al (URL veya cookie'den - request.ts'te belirleniyor)
   const locale = await getLocale();
   const messages = await getMessages();
 

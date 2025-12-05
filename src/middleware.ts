@@ -97,10 +97,10 @@ export async function middleware(request: NextRequest) {
     url.pathname = translatedPath
 
     // x-pathname header'ı ekle (layout'ta admin kontrolü için)
+    // x-url-locale header'ı ekle (URL'den algılanan dil)
     const response = NextResponse.rewrite(url)
     response.headers.set('x-pathname', pathname)
-    // Türkçe URL'de dili Türkçe olarak ayarla
-    response.cookies.set('NEXT_LOCALE', 'tr', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    response.headers.set('x-url-locale', 'tr') // URL Türkçe olduğunu belirt
     return response
   }
 
