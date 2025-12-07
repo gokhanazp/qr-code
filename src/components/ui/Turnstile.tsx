@@ -13,8 +13,7 @@ interface TurnstileProps {
 }
 
 // Cloudflare Turnstile Site Key - .env dosyasından alınır
-// Bu key Cloudflare Dashboard'dan alınmalı
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA' // Test key
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''
 
 export default function Turnstile({ onSuccess, onError, onExpire }: TurnstileProps) {
   return (
