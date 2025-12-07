@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Mail, Lock, Eye, EyeOff, QrCode, Sparkles, Shield, Zap, ArrowRight } from 'lucide-react'
 import { Button, Input } from '@/components/ui'
+import Turnstile from '@/components/ui/Turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -21,12 +22,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   // Form gönderimi - Supabase Auth (Form submission)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
+
+    // CAPTCHA kontrolü (CAPTCHA validation)
+    if (!captchaToken) {
+      setError('Lütfen robot olmadığınızı doğrulayın')
+      setIsLoading(false)
+      return
+    }
 
     try {
       const { error: authError } = await supabase.auth.signInWithPassword({
@@ -92,7 +101,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
               <QrCode className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">QRCodeGen</span>
+            <span className="text-2xl font-bold text-white">QRCodeShine</span>
           </Link>
 
           {/* Başlık (Title) */}
@@ -151,7 +160,7 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
               <QrCode className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">QRCodeGen</span>
+            <span className="text-2xl font-bold text-gray-900">QRCodeShine</span>
           </div>
 
           {/* Form Başlığı (Form Header) */}
@@ -245,6 +254,13 @@ export default function LoginPage() {
                 {t('forgotPassword')}
               </Link>
             </div>
+
+            {/* CAPTCHA - Cloudflare Turnstile */}
+            <Turnstile
+              onSuccess={(token) => setCaptchaToken(token)}
+              onError={() => setCaptchaToken(null)}
+              onExpire={() => setCaptchaToken(null)}
+            />
 
             {/* Giriş butonu (Login button) */}
             <Button

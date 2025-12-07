@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Mail, Lock, Eye, EyeOff, User, QrCode, Sparkles, Shield, Zap, ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui'
+import Turnstile from '@/components/ui/Turnstile'
 import { createClient } from '@/lib/supabase/client'
 
 export default function RegisterPage() {
@@ -23,6 +24,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   // Form gönderimi - Supabase Auth (Form submission)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +41,13 @@ export default function RegisterPage() {
 
     if (password.length < 6) {
       setError('Şifre en az 6 karakter olmalıdır')
+      setIsLoading(false)
+      return
+    }
+
+    // CAPTCHA kontrolü (CAPTCHA validation)
+    if (!captchaToken) {
+      setError('Lütfen robot olmadığınızı doğrulayın')
       setIsLoading(false)
       return
     }
@@ -121,7 +130,7 @@ export default function RegisterPage() {
             <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
               <QrCode className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">QRCodeGen</span>
+            <span className="text-2xl font-bold text-white">QRCodeShine</span>
           </Link>
 
           {/* Başlık (Title) */}
@@ -183,7 +192,7 @@ export default function RegisterPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
               <QrCode className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">QRCodeGen</span>
+            <span className="text-2xl font-bold text-gray-900">QRCodeShine</span>
           </div>
 
           {/* Form Başlığı (Form Header) */}
@@ -314,6 +323,13 @@ export default function RegisterPage() {
                 &apos;nı kabul ediyorum.
               </span>
             </div>
+
+            {/* CAPTCHA - Cloudflare Turnstile */}
+            <Turnstile
+              onSuccess={(token) => setCaptchaToken(token)}
+              onError={() => setCaptchaToken(null)}
+              onExpire={() => setCaptchaToken(null)}
+            />
 
             {/* Kayıt butonu (Register button) */}
             <Button

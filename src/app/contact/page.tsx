@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Mail, Phone, MapPin, Send, MessageSquare, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import Turnstile from '@/components/ui/Turnstile';
 
 export default function ContactPage() {
   const t = useTranslations('contact');
@@ -19,11 +20,19 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+
+    // CAPTCHA kontrolü (CAPTCHA validation)
+    if (!captchaToken) {
+      setError('Lütfen robot olmadığınızı doğrulayın');
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       // Supabase'e mesajı kaydet (Save message to Supabase)
@@ -190,6 +199,14 @@ export default function ContactPage() {
                       placeholder={t('messagePlaceholder')}
                     />
                   </div>
+
+                  {/* CAPTCHA - Cloudflare Turnstile */}
+                  <Turnstile
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onError={() => setCaptchaToken(null)}
+                    onExpire={() => setCaptchaToken(null)}
+                  />
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
