@@ -25,6 +25,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [emailSent, setEmailSent] = useState(false)
 
   // Form gönderimi - Supabase Auth (Form submission)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,8 +75,9 @@ export default function RegisterPage() {
           setError(authError.message)
         }
       } else {
-        // Başarılı kayıt - direkt dashboard'a yönlendir (Success - redirect to dashboard)
-        router.push('/dashboard')
+        // Başarılı kayıt - email doğrulama sayfasına yönlendir
+        // (Success - show email verification message)
+        setEmailSent(true)
       }
     } catch {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.')
@@ -195,6 +197,37 @@ export default function RegisterPage() {
             <span className="text-2xl font-bold text-gray-900">QRCodeShine</span>
           </div>
 
+          {/* Email Doğrulama Mesajı (Email Verification Message) */}
+          {emailSent ? (
+            <div className="text-center py-8">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail className="w-10 h-10 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">E-posta Gönderildi!</h2>
+              <p className="text-gray-600 mb-6">
+                <span className="font-semibold text-gray-900">{email}</span> adresine bir doğrulama e-postası gönderdik.
+              </p>
+              <p className="text-gray-500 text-sm mb-8">
+                Lütfen e-postanızdaki bağlantıya tıklayarak hesabınızı doğrulayın.
+                E-posta birkaç dakika içinde gelmezse spam klasörünü kontrol edin.
+              </p>
+              <div className="space-y-3">
+                <Link
+                  href="/auth/login"
+                  className="block w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors text-center"
+                >
+                  Giriş Sayfasına Git
+                </Link>
+                <button
+                  onClick={() => setEmailSent(false)}
+                  className="block w-full py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Farklı E-posta ile Kayıt Ol
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Form Başlığı (Form Header) */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('registerTitle')}</h2>
@@ -351,6 +384,8 @@ export default function RegisterPage() {
               {t('login')}
             </Link>
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>
