@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle
 } from 'lucide-react'
+import DeleteUserButton from './DeleteUserButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -105,10 +106,16 @@ export default async function AdminUserDetailPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-          {/* Plan Badge */}
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${planColor}`}>
-            <PlanIcon className="w-5 h-5" />
-            <span className="font-medium">{planLabel}</span>
+          {/* Plan Badge ve Silme Butonu */}
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${planColor}`}>
+              <PlanIcon className="w-5 h-5" />
+              <span className="font-medium">{planLabel}</span>
+            </div>
+            <DeleteUserButton
+              userId={user.id}
+              userName={user.full_name || user.email || 'Kullanıcı'}
+            />
           </div>
         </div>
       </div>

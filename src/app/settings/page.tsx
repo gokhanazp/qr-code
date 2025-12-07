@@ -2,8 +2,9 @@
 // Kullanıcı profil ve hesap ayarları
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { User, Mail, Lock, Bell, Shield, CreditCard } from 'lucide-react'
+import { User, Mail, Lock, Bell, Shield, CreditCard, Trash2 } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import DeleteAccountButton from '@/components/settings/DeleteAccountButton'
 
 export default async function SettingsPage() {
   const t = await getTranslations('dashboard')
@@ -131,6 +132,27 @@ export default async function SettingsPage() {
               {t('upgradePlan')}
             </a>
           </div>
+        </div>
+
+        {/* Hesabı Sil Bölümü (Delete Account Section) */}
+        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <Trash2 className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Hesabı Sil</h2>
+              <p className="text-sm text-gray-500">Hesabınızı ve tüm verilerinizi kalıcı olarak silin</p>
+            </div>
+          </div>
+
+          <div className="p-4 bg-red-50 rounded-lg mb-4">
+            <p className="text-sm text-red-600">
+              <strong>Uyarı:</strong> Hesabınızı sildiğinizde tüm QR kodlarınız, tarama verileri ve hesap bilgileriniz kalıcı olarak silinecektir. Bu işlem geri alınamaz.
+            </p>
+          </div>
+
+          <DeleteAccountButton />
         </div>
       </div>
     </div>
