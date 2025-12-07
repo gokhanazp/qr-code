@@ -2,20 +2,22 @@
 // Admin User API - User delete operations
 
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Admin kontrolü (Admin check)
 async function isAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return false
-  
-  const { data: profile } = await supabase
-    .from('profiles')
+
+  // admin_users tablosundan kontrol et
+  const { data: adminUser } = await supabase
+    .from('admin_users')
     .select('role')
-    .eq('id', user.id)
+    .eq('user_id', user.id)
     .single()
-  
-  return profile?.role === 'admin'
+
+  return !!adminUser
 }
 
 // DELETE - Kullanıcı sil (Delete user)
@@ -26,7 +28,7 @@ export async function DELETE(
   try {
     const { id } = await params
     const supabase = await createClient()
-    
+
     // Admin kontrolü (Check if admin)
     if (!await isAdmin(supabase)) {
       return NextResponse.json(
@@ -35,14 +37,17 @@ export async function DELETE(
       )
     }
 
+    // Service client ile işlemleri yap (Use service client for operations)
+    const serviceClient = createServiceClient()
+
     // Kullanıcının QR kodlarını sil (Delete user's QR codes)
-    await supabase
+    await serviceClient
       .from('qr_codes')
       .delete()
       .eq('user_id', id)
 
     // Kullanıcı profilini sil (Delete user profile)
-    const { error: profileError } = await supabase
+    const { error: profileError } = await serviceClient
       .from('profiles')
       .delete()
       .eq('id', id)
@@ -55,9 +60,16 @@ export async function DELETE(
       )
     }
 
-    // Auth kullanıcısını sil (Supabase Admin API gerekir)
-    // Not: Bu işlem için service_role key gerekli
-    // Şimdilik sadece profile siliyoruz
+    // Auth kullanıcısını sil (Delete auth user)
+    const { error: authError } = await serviceClient.auth.admin.deleteUser(id)
+
+    if (authError) {
+      console.error('Auth delete error:', authError)
+      return NextResponse.json(
+        { error: 'Auth hesabı silinemedi' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
