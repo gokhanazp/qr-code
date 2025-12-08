@@ -12,7 +12,7 @@ import {
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
   Bitcoin, AppWindow, Sparkles, ArrowRight, Zap, Globe, Clock,
-  Send, ExternalLink, Star, Shield, ChevronRight
+  Send, ExternalLink, Star, Shield, ChevronRight, Code
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -74,6 +74,7 @@ const qrCategoriesConfig = [
       { type: 'location', labelKey: 'location', icon: MapPin, color: 'bg-red-500', descKey: 'gpsCoordinates' },
       { type: 'bitcoin', labelKey: 'bitcoin', icon: Bitcoin, color: 'bg-amber-500', descKey: 'cryptoPayment' },
       { type: 'app', labelKey: 'appStore', icon: AppWindow, color: 'bg-indigo-500', descKey: 'appDownload' },
+      { type: 'html', labelKey: 'html', icon: Code, color: 'bg-pink-500', descKey: 'htmlContent' },
     ]
   }
 ]

@@ -157,7 +157,6 @@ export default async function PricingPage() {
     getStarted: t('getStarted'),
     mostPopular: t('mostPopular'),
     contactForPayment: t('contactForPayment'),
-    noPaymentSystem: t('noPaymentSystem'),
     whatsappMessage: t('whatsappMessage'),
     unlimitedDuration: t('unlimitedDuration'),
     daysValidity: t('daysValidity'),

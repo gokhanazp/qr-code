@@ -41,7 +41,6 @@ interface Translations {
   getStarted: string
   mostPopular: string
   contactForPayment: string
-  noPaymentSystem: string
   whatsappMessage: string
   unlimitedDuration: string
   daysValidity: string
@@ -191,12 +190,7 @@ export default function PricingClient({ plans, translations: t, locale }: Pricin
                     </a>
                   )}
 
-                  {/* Ödeme bilgi notu - sadece ücretli paketlerde */}
-                  {!isFree && (
-                    <p className="mt-3 text-xs text-gray-500 text-center">
-                      {t.noPaymentSystem}
-                    </p>
-                  )}
+
 
                   {/* Özellikler listesi (Features list) */}
                   <ul className="mt-8 space-y-4">

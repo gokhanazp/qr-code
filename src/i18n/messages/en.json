@@ -623,6 +623,7 @@
     "gpsCoordinates": "GPS coordinates",
     "cryptoPayment": "Crypto payment",
     "appDownload": "App download links",
+    "htmlContent": "Custom HTML content",
     "myQRCodes": "My QR Codes",
     "analytics": "Analytics",
     "subscription": "Subscription",
