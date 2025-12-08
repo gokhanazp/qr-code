@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { Mail, Phone, MapPin, Send, MessageSquare, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import Turnstile from '@/components/ui/Turnstile';
+import { trackWhatsAppClick, trackPhoneClick, trackEmailClick, trackFormSubmit } from '@/components/analytics/GoogleAnalytics';
 
 export default function ContactPage() {
   const t = useTranslations('contact');
@@ -52,6 +53,9 @@ export default function ContactPage() {
         throw new Error('Mesaj gönderilemedi');
       }
 
+      // GA Event - Form gönderildi
+      trackFormSubmit('contact_form');
+
       setSubmitted(true);
       // Formu temizle (Clear form)
       setFormData({ name: '', email: '', subject: '', message: '' });
@@ -84,12 +88,17 @@ export default function ContactPage() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Contact Info */}
+          {/* Contact Info - GA Event Tracking */}
           <div className="lg:col-span-1 space-y-6">
             {contactInfo.map((item, i) => (
               <a
                 key={i}
                 href={item.href}
+                onClick={() => {
+                  // Track email ve phone tıklamaları
+                  if (item.titleKey === 'email') trackEmailClick('contact_page');
+                  if (item.titleKey === 'phone') trackPhoneClick('contact_page');
+                }}
                 className="flex items-start gap-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -102,9 +111,10 @@ export default function ContactPage() {
               </a>
             ))}
 
-            {/* WhatsApp Butonu (WhatsApp Button) */}
+            {/* WhatsApp Butonu - GA Event Tracking */}
             <a
               href={`https://wa.me/${whatsappNumber}`}
+              onClick={() => trackWhatsAppClick('contact_page')}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-start gap-4 p-6 bg-green-50 border-2 border-green-200 rounded-xl hover:bg-green-100 hover:border-green-300 transition-all"

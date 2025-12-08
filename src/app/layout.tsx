@@ -8,6 +8,7 @@ import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { Header, Footer } from '@/components/layout';
 import { MainJsonLd } from '@/components/seo/JsonLd';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { headers } from 'next/headers';
 import "./globals.css";
 
@@ -166,6 +167,8 @@ export default async function RootLayout({
       <head>
         {/* JSON-LD Structured Data */}
         <MainJsonLd />
+        {/* Google Analytics */}
+        <GoogleAnalytics />
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
         <NextIntlClientProvider messages={messages}>
