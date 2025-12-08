@@ -1,6 +1,7 @@
 // Sitemap Generator - SEO için dinamik sitemap
 // Google, Bing ve diğer arama motorları için optimize edilmiş
 // Production domain: qrcodeshine.com
+// Hem Türkçe hem İngilizce URL'ler dahil
 
 import { MetadataRoute } from 'next'
 import { blogPosts } from '@/lib/blog-data'
@@ -14,45 +15,62 @@ const qrTypes = [
   'event', 'location', 'bitcoin', 'app', 'html'
 ]
 
+// Statik sayfalar - EN ve TR URL'leri
+const staticPages = [
+  { en: '', tr: '', priority: 1.0, changeFreq: 'daily' as const },
+  { en: '/features', tr: '/ozellikler', priority: 0.9, changeFreq: 'weekly' as const },
+  { en: '/pricing', tr: '/fiyatlandirma', priority: 0.9, changeFreq: 'weekly' as const },
+  { en: '/contact', tr: '/iletisim', priority: 0.7, changeFreq: 'monthly' as const },
+  { en: '/about', tr: '/hakkimizda', priority: 0.7, changeFreq: 'monthly' as const },
+  { en: '/faq', tr: '/faq', priority: 0.8, changeFreq: 'weekly' as const },
+  { en: '/blog', tr: '/blog', priority: 0.9, changeFreq: 'daily' as const },
+  { en: '/privacy', tr: '/gizlilik', priority: 0.3, changeFreq: 'yearly' as const },
+  { en: '/terms', tr: '/kullanim-kosullari', priority: 0.3, changeFreq: 'yearly' as const },
+]
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date()
-
-  // Statik sayfalar - öncelik ve güncelleme sıklığı ile
-  const staticPages = [
-    { path: '', priority: 1.0, changeFreq: 'daily' as const },
-    { path: '/pricing', priority: 0.9, changeFreq: 'weekly' as const },
-    { path: '/features', priority: 0.9, changeFreq: 'weekly' as const },
-    { path: '/about', priority: 0.7, changeFreq: 'monthly' as const },
-    { path: '/contact', priority: 0.7, changeFreq: 'monthly' as const },
-    { path: '/faq', priority: 0.8, changeFreq: 'weekly' as const },
-    { path: '/blog', priority: 0.9, changeFreq: 'daily' as const },
-    { path: '/privacy', priority: 0.3, changeFreq: 'yearly' as const },
-    { path: '/terms', priority: 0.3, changeFreq: 'yearly' as const },
-  ]
-
   const pages: MetadataRoute.Sitemap = []
 
-  // Ana sayfalar
-  staticPages.forEach(({ path, priority, changeFreq }) => {
+  // === STATIK SAYFALAR (TR + EN) ===
+  staticPages.forEach(({ en, tr, priority, changeFreq }) => {
+    // İngilizce sayfa
     pages.push({
-      url: `${baseUrl}${path}`,
+      url: `${baseUrl}${en}`,
       lastModified: currentDate,
       changeFrequency: changeFreq,
       priority,
     })
+    // Türkçe sayfa (farklı URL ise)
+    if (tr !== en) {
+      pages.push({
+        url: `${baseUrl}${tr}`,
+        lastModified: currentDate,
+        changeFrequency: changeFreq,
+        priority,
+      })
+    }
   })
 
-  // QR Generator sayfaları - her tip için ayrı sayfa
+  // === QR GENERATOR SAYFALARI (TR + EN) ===
   qrTypes.forEach((type) => {
+    // İngilizce: /qr-generator/url
     pages.push({
       url: `${baseUrl}/qr-generator/${type}`,
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.85,
     })
+    // Türkçe: /qr-olusturucu/url
+    pages.push({
+      url: `${baseUrl}/qr-olusturucu/${type}`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    })
   })
 
-  // Blog yazıları - Türkçe ve İngilizce slug'lar
+  // === BLOG YAZILARI (TR + EN slug'lar) ===
   blogPosts.forEach((post) => {
     // Türkçe blog sayfası
     pages.push({
