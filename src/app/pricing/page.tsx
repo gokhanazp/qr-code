@@ -142,6 +142,9 @@ export default async function PricingPage() {
 
   const plans = (dbPlans && dbPlans.length > 0 ? dbPlans : fallbackPlans) as PricingPlan[]
 
+  // Dil bilgisini al (Get locale)
+  const locale = await getLocale()
+
   // Çeviri metinlerini Client Component'e aktar
   const translations = {
     title: t('title'),
@@ -152,6 +155,14 @@ export default async function PricingPage() {
     perMonth: t('perMonth'),
     perYear: t('perYear'),
     getStarted: t('getStarted'),
+    mostPopular: t('mostPopular'),
+    contactForPayment: t('contactForPayment'),
+    noPaymentSystem: t('noPaymentSystem'),
+    whatsappMessage: t('whatsappMessage'),
+    unlimitedDuration: t('unlimitedDuration'),
+    daysValidity: t('daysValidity'),
+    addLogo: t('addLogo'),
+    svgDownload: t('svgDownload'),
     features: {
       unlimited: ft('unlimited'),
       qrCodes: ft('qrCodes'),
@@ -164,6 +175,6 @@ export default async function PricingPage() {
     }
   }
 
-  return <PricingClient plans={plans} translations={translations} />
+  return <PricingClient plans={plans} translations={translations} locale={locale} />
 }
 
