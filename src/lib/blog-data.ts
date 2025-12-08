@@ -2,7 +2,10 @@
 // Blog posts database - SEO optimized content for QR code types
 
 export interface BlogPost {
-  slug: string
+  slug: {
+    tr: string
+    en: string
+  }
   title: {
     tr: string
     en: string
@@ -26,9 +29,26 @@ export interface BlogPost {
   }
 }
 
+// Slug'dan blog post bul (Find blog post by slug - works for both TR and EN)
+export function findPostBySlug(slug: string): BlogPost | undefined {
+  return blogPosts.find(p => p.slug.tr === slug || p.slug.en === slug)
+}
+
+// Slug'ın dilini bul (Find language of slug)
+export function getSlugLocale(slug: string): 'tr' | 'en' | null {
+  const post = blogPosts.find(p => p.slug.tr === slug || p.slug.en === slug)
+  if (!post) return null
+  if (post.slug.tr === slug) return 'tr'
+  if (post.slug.en === slug) return 'en'
+  return null
+}
+
 export const blogPosts: BlogPost[] = [
   {
-    slug: 'url-qr-kod-nasil-olusturulur',
+    slug: {
+      tr: 'url-qr-kod-nasil-olusturulur',
+      en: 'how-to-create-url-qr-code'
+    },
     title: {
       tr: 'URL QR Kod Nasıl Oluşturulur? Adım Adım Rehber',
       en: 'How to Create URL QR Code? Step by Step Guide'
@@ -118,7 +138,10 @@ QR codes indirectly contribute to your SEO:
     }
   },
   {
-    slug: 'wifi-qr-kod-olusturma',
+    slug: {
+      tr: 'wifi-qr-kod-olusturma',
+      en: 'wifi-qr-code-generator'
+    },
     title: {
       tr: 'WiFi QR Kod Oluşturma - Misafirleriniz Anında Bağlansın',
       en: 'WiFi QR Code Generator - Let Your Guests Connect Instantly'
@@ -204,7 +227,10 @@ A WiFi QR code is a special QR code type that contains your wireless network inf
     }
   },
   {
-    slug: 'vcard-qr-kod-dijital-kartvizit',
+    slug: {
+      tr: 'vcard-qr-kod-dijital-kartvizit',
+      en: 'vcard-qr-code-digital-business-card'
+    },
     title: {
       tr: 'vCard QR Kod ile Dijital Kartvizit Oluşturma',
       en: 'Create Digital Business Card with vCard QR Code'
@@ -302,7 +328,10 @@ A vCard QR code is a QR code type that stores your personal or professional cont
     }
   },
   {
-    slug: 'whatsapp-qr-kod-isletmeler-icin',
+    slug: {
+      tr: 'whatsapp-qr-kod-isletmeler-icin',
+      en: 'whatsapp-qr-code-for-business'
+    },
     title: {
       tr: 'WhatsApp QR Kod - İşletmeler İçin İletişim Çözümü',
       en: 'WhatsApp QR Code - Communication Solution for Businesses'
@@ -410,7 +439,10 @@ Hello, I'd like to make a reservation. Can I get information about available dat
     }
   },
   {
-    slug: 'instagram-qr-kod-takipci-kazanma',
+    slug: {
+      tr: 'instagram-qr-kod-takipci-kazanma',
+      en: 'instagram-qr-code-gain-followers'
+    },
     title: {
       tr: 'Instagram QR Kod ile Takipçi Kazanma Stratejileri',
       en: 'Instagram QR Code Strategies to Gain Followers'
@@ -504,7 +536,10 @@ Instagram QR code is a QR code type that links directly to your Instagram profil
     }
   },
   {
-    slug: 'etkinlik-qr-kod-event-yonetimi',
+    slug: {
+      tr: 'etkinlik-qr-kod-event-yonetimi',
+      en: 'event-qr-code-calendar-integration'
+    },
     title: {
       tr: 'Etkinlik QR Kod - Event Yönetimi ve Takvim Entegrasyonu',
       en: 'Event QR Code - Event Management and Calendar Integration'
@@ -610,7 +645,10 @@ Event QR code is a QR code type that contains all event details (date, time, loc
     }
   },
   {
-    slug: 'konum-qr-kod-google-maps',
+    slug: {
+      tr: 'konum-qr-kod-google-maps',
+      en: 'location-qr-code-google-maps'
+    },
     title: {
       tr: 'Konum QR Kod - Google Maps ile Navigasyon',
       en: 'Location QR Code - Navigation with Google Maps'

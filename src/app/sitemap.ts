@@ -1,15 +1,17 @@
 // Sitemap Generator - SEO için dinamik sitemap
-// Türkiye ve dünya için optimize edilmiş
+// Google, Bing ve diğer arama motorları için optimize edilmiş
+// Production domain: qrcodeshine.com
 
 import { MetadataRoute } from 'next'
+import { blogPosts } from '@/lib/blog-data'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://qr-code-gamma-neon.vercel.app'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qrcodeshine.com'
 
-// QR kod tipleri - her biri için ayrı sayfa
+// QR kod tipleri - her biri için ayrı sayfa (HTML dahil)
 const qrTypes = [
   'url', 'vcard', 'wifi', 'email', 'phone', 'sms', 'whatsapp',
   'text', 'instagram', 'twitter', 'linkedin', 'youtube', 'facebook',
-  'event', 'location', 'bitcoin', 'app'
+  'event', 'location', 'bitcoin', 'app', 'html'
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,11 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/about', priority: 0.7, changeFreq: 'monthly' as const },
     { path: '/contact', priority: 0.7, changeFreq: 'monthly' as const },
     { path: '/faq', priority: 0.8, changeFreq: 'weekly' as const },
-    { path: '/blog', priority: 0.8, changeFreq: 'daily' as const },
+    { path: '/blog', priority: 0.9, changeFreq: 'daily' as const },
     { path: '/privacy', priority: 0.3, changeFreq: 'yearly' as const },
     { path: '/terms', priority: 0.3, changeFreq: 'yearly' as const },
-    { path: '/auth/login', priority: 0.5, changeFreq: 'monthly' as const },
-    { path: '/auth/register', priority: 0.5, changeFreq: 'monthly' as const },
   ]
 
   const pages: MetadataRoute.Sitemap = []
@@ -39,13 +39,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: changeFreq,
       priority,
-      alternates: {
-        languages: {
-          'tr-TR': `${baseUrl}${path}`,
-          'en-US': `${baseUrl}/en${path}`,
-          'x-default': `${baseUrl}${path}`,
-        },
-      },
     })
   })
 
@@ -56,13 +49,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.85,
-      alternates: {
-        languages: {
-          'tr-TR': `${baseUrl}/qr-generator/${type}`,
-          'en-US': `${baseUrl}/en/qr-generator/${type}`,
-          'x-default': `${baseUrl}/qr-generator/${type}`,
-        },
-      },
+    })
+  })
+
+  // Blog yazıları - Türkçe ve İngilizce slug'lar
+  blogPosts.forEach((post) => {
+    // Türkçe blog sayfası
+    pages.push({
+      url: `${baseUrl}/blog/${post.slug.tr}`,
+      lastModified: new Date(post.date),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    })
+    // İngilizce blog sayfası
+    pages.push({
+      url: `${baseUrl}/blog/${post.slug.en}`,
+      lastModified: new Date(post.date),
+      changeFrequency: 'monthly',
+      priority: 0.8,
     })
   })
 

@@ -1,7 +1,6 @@
 // Blog detay sayfası - SEO optimized blog post page
-import { blogPosts } from '@/lib/blog-data'
+import { blogPosts, findPostBySlug, getSlugLocale } from '@/lib/blog-data'
 import { notFound } from 'next/navigation'
-import { getLocale } from 'next-intl/server'
 import Link from 'next/link'
 import { Calendar, Clock, ArrowLeft, ArrowRight, QrCode } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -10,55 +9,67 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// Dinamik SEO metadata
+// Dinamik SEO metadata - URL slug'ından dil algıla
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = blogPosts.find(p => p.slug === slug)
-  
+  const post = findPostBySlug(slug)
+
+  // URL'deki slug'a göre dili belirle
+  const slugLocale = getSlugLocale(slug)
+  const isEnglish = slugLocale === 'en'
+
   if (!post) {
-    return { title: 'Blog Yazısı Bulunamadı' }
+    return { title: isEnglish ? 'Blog Post Not Found' : 'Blog Yazısı Bulunamadı' }
   }
 
+  const title = isEnglish ? post.title.en : post.title.tr
+  const description = isEnglish ? post.excerpt.en : post.excerpt.tr
+
   return {
-    title: `${post.title.tr} | QR Code Shine Blog`,
-    description: post.excerpt.tr,
+    title: `${title} | QR Code Shine Blog`,
+    description: description,
     keywords: [...post.keywords.tr, ...post.keywords.en],
     openGraph: {
-      title: post.title.tr,
-      description: post.excerpt.tr,
+      title: title,
+      description: description,
       type: 'article',
       publishedTime: post.date,
     },
     alternates: {
       languages: {
-        'tr': `/blog/${slug}`,
-        'en': `/en/blog/${slug}`,
+        'tr': `/blog/${post.slug.tr}`,
+        'en': `/blog/${post.slug.en}`,
       }
     }
   }
 }
 
-// Static paths oluştur (Static generation)
+// Static paths oluştur - Hem TR hem EN slugları (Static generation for both TR and EN)
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    slug: post.slug,
-  }))
+  const paths: { slug: string }[] = []
+  blogPosts.forEach((post) => {
+    paths.push({ slug: post.slug.tr })
+    paths.push({ slug: post.slug.en })
+  })
+  return paths
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params
-  const locale = await getLocale()
-  const isEnglish = locale === 'en'
-  
-  const post = blogPosts.find(p => p.slug === slug)
-  
+
+  // URL'deki slug'a göre dili belirle (Determine language from URL slug)
+  const slugLocale = getSlugLocale(slug)
+  const isEnglish = slugLocale === 'en'
+
+  const post = findPostBySlug(slug)
+
   if (!post) {
     notFound()
   }
 
   // İlgili yazıları bul (Related posts)
   const relatedPosts = blogPosts
-    .filter(p => p.slug !== slug && p.category === post.category)
+    .filter(p => p.slug.tr !== post.slug.tr && p.category === post.category)
     .slice(0, 3)
 
   const title = isEnglish ? post.title.en : post.title.tr

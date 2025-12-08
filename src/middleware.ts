@@ -3,6 +3,24 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { locales, defaultLocale, pathnames, Locale } from '@/i18n/config'
 
+// Blog slug çevirileri (TR -> EN ve EN -> TR)
+const blogSlugMap: Record<string, { tr: string; en: string }> = {
+  'url-qr-kod-nasil-olusturulur': { tr: 'url-qr-kod-nasil-olusturulur', en: 'how-to-create-url-qr-code' },
+  'how-to-create-url-qr-code': { tr: 'url-qr-kod-nasil-olusturulur', en: 'how-to-create-url-qr-code' },
+  'wifi-qr-kod-olusturma': { tr: 'wifi-qr-kod-olusturma', en: 'wifi-qr-code-generator' },
+  'wifi-qr-code-generator': { tr: 'wifi-qr-kod-olusturma', en: 'wifi-qr-code-generator' },
+  'vcard-qr-kod-dijital-kartvizit': { tr: 'vcard-qr-kod-dijital-kartvizit', en: 'vcard-qr-code-digital-business-card' },
+  'vcard-qr-code-digital-business-card': { tr: 'vcard-qr-kod-dijital-kartvizit', en: 'vcard-qr-code-digital-business-card' },
+  'whatsapp-qr-kod-isletmeler-icin': { tr: 'whatsapp-qr-kod-isletmeler-icin', en: 'whatsapp-qr-code-for-business' },
+  'whatsapp-qr-code-for-business': { tr: 'whatsapp-qr-kod-isletmeler-icin', en: 'whatsapp-qr-code-for-business' },
+  'instagram-qr-kod-takipci-kazanma': { tr: 'instagram-qr-kod-takipci-kazanma', en: 'instagram-qr-code-gain-followers' },
+  'instagram-qr-code-gain-followers': { tr: 'instagram-qr-kod-takipci-kazanma', en: 'instagram-qr-code-gain-followers' },
+  'etkinlik-qr-kod-event-yonetimi': { tr: 'etkinlik-qr-kod-event-yonetimi', en: 'event-qr-code-calendar-integration' },
+  'event-qr-code-calendar-integration': { tr: 'etkinlik-qr-kod-event-yonetimi', en: 'event-qr-code-calendar-integration' },
+  'konum-qr-kod-google-maps': { tr: 'konum-qr-kod-google-maps', en: 'location-qr-code-google-maps' },
+  'location-qr-code-google-maps': { tr: 'konum-qr-kod-google-maps', en: 'location-qr-code-google-maps' },
+}
+
 // Türkçe URL'leri İngilizce eşdeğerlerine çeviren map
 const turkishToEnglishPaths: Record<string, string> = {
   '/ozellikler': '/features',
@@ -72,6 +90,30 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/r/') ||
     pathname.startsWith('/v/')
   ) {
+    const response = await updateSession(request)
+    response.headers.set('x-pathname', pathname)
+    return response
+  }
+
+  // Blog detay sayfası - dil değiştiğinde doğru slug'a yönlendir
+  if (pathname.startsWith('/blog/')) {
+    const slug = pathname.replace('/blog/', '')
+    const slugMapping = blogSlugMap[slug]
+
+    if (slugMapping) {
+      const localeCookie = request.cookies.get('NEXT_LOCALE')?.value as Locale | undefined
+      const cookieLocale = (localeCookie && locales.includes(localeCookie)) ? localeCookie : defaultLocale
+      const targetSlug = cookieLocale === 'tr' ? slugMapping.tr : slugMapping.en
+
+      // Mevcut slug, hedef slug'dan farklıysa redirect yap
+      if (slug !== targetSlug) {
+        const url = request.nextUrl.clone()
+        url.pathname = `/blog/${targetSlug}`
+        return NextResponse.redirect(url)
+      }
+    }
+
+    // Redirect gerekmiyorsa normal işleme devam et
     const response = await updateSession(request)
     response.headers.set('x-pathname', pathname)
     return response

@@ -38,7 +38,7 @@ import {
   QrCode, Zap, Shield, Globe, Smartphone, BarChart3, Sparkles, Play,
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star
+  Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star, Code
 } from 'lucide-react'
 import FAQ from '@/components/FAQ'
 
@@ -61,6 +61,7 @@ const qrTypesConfig = [
   { type: 'location', icon: MapPin, gradient: 'from-red-500 to-rose-600', color: 'bg-red-500' },
   { type: 'bitcoin', icon: Bitcoin, gradient: 'from-amber-500 to-amber-600', color: 'bg-amber-500' },
   { type: 'app', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600', color: 'bg-indigo-500', popular: true },
+  { type: 'html', icon: Code, gradient: 'from-orange-500 to-red-500', color: 'bg-orange-500' },
 ]
 
 // Özellikler config - text çeviriden gelecek

@@ -4,7 +4,9 @@ import { Calendar, Clock, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { blogPosts } from '@/lib/blog-data'
 import { getLocale } from 'next-intl/server'
+import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
+import { Locale, locales } from '@/i18n/config'
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -38,7 +40,10 @@ const qrTypeEmojis: Record<string, string> = {
 }
 
 export default async function BlogPage() {
-  const locale = await getLocale()
+  // Cookie'den dili al (Get language from cookie)
+  const cookieStore = await cookies()
+  const localeCookie = cookieStore.get('NEXT_LOCALE')?.value as Locale | undefined
+  const locale = (localeCookie && locales.includes(localeCookie)) ? localeCookie : 'en'
   const isEnglish = locale === 'en'
 
   return (
@@ -63,7 +68,7 @@ export default async function BlogPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogPosts.map((post) => (
               <article
-                key={post.slug}
+                key={post.slug.tr}
                 className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden group"
               >
                 {/* QR tipi emoji görseli */}
@@ -97,7 +102,7 @@ export default async function BlogPage() {
                       </span>
                     </div>
                     <Link
-                      href={`/blog/${post.slug}`}
+                      href={`/blog/${isEnglish ? post.slug.en : post.slug.tr}`}
                       className="text-blue-600 font-medium flex items-center gap-1 hover:gap-2 transition-all"
                     >
                       {isEnglish ? 'Read' : 'Oku'} <ArrowRight className="w-4 h-4" />
