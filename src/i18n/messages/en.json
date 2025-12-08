@@ -125,7 +125,9 @@
     "pdf": "PDF",
     "image": "Image",
     "bitcoin": "Bitcoin",
-    "bitcoinDesc": "Cryptocurrency payment"
+    "bitcoinDesc": "Cryptocurrency payment",
+    "html": "HTML Code",
+    "htmlDesc": "HTML code snippet"
   },
   "features": {
     "pageTitle": "Powerful Features",
@@ -272,6 +274,8 @@
     "linkToPdf": "Link to PDF file",
     "image": "Image",
     "linkToImage": "Link to image",
+    "html": "HTML Code",
+    "htmlCodeSnippet": "HTML code snippet",
     "qrCodeGenerator": "QR Code Generator",
     "qrPreview": "QR Preview",
     "enterContentToGenerate": "Enter content to generate",

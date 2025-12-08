@@ -949,6 +949,51 @@ END:VEVENT`
           </div>
         )
 
+      // HTML kod QR kodu
+      case 'HTML':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('htmlCode') || 'HTML Kodu'}
+              </label>
+              <textarea
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none font-mono text-sm bg-gray-50"
+                rows={10}
+                placeholder={`<!DOCTYPE html>
+<html>
+<head>
+  <title>Sayfa Başlığı</title>
+</head>
+<body>
+  <h1>Merhaba Dünya!</h1>
+  <p>Bu bir örnek HTML sayfasıdır.</p>
+</body>
+</html>`}
+                value={content}
+                onChange={(e) => handleContentChange(e.target.value)}
+              />
+            </div>
+            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-xs text-orange-700">
+                💡 {t('htmlTip') || 'HTML kodunuz QR kod taratıldığında bir web sayfası olarak görüntülenecektir. Kodunuzun geçerli HTML olduğundan emin olun.'}
+              </p>
+            </div>
+            {/* HTML Önizleme */}
+            {content && (
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-gray-100 px-3 py-2 border-b border-gray-200">
+                  <span className="text-xs font-medium text-gray-600">Önizleme</span>
+                </div>
+                <div
+                  className="p-4 bg-white max-h-48 overflow-auto"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
+              </div>
+            )}
+          </div>
+        )
+
       default:
         return (
           <Input

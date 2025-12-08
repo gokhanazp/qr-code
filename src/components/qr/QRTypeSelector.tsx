@@ -23,6 +23,7 @@ import {
   Image as ImageIcon,
   Bitcoin,
   CheckCircle2,
+  Code,
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -180,6 +181,14 @@ export const qrTypes = [
     borderActive: 'border-amber-500',
     description: 'Bitcoin payment address'
   },
+  {
+    id: 'HTML',
+    icon: Code,
+    gradient: 'from-orange-500 to-red-600',
+    bgLight: 'bg-orange-50',
+    borderActive: 'border-orange-500',
+    description: 'HTML code snippet'
+  },
 ] as const
 
 export type QRType = typeof qrTypes[number]['id']
@@ -214,6 +223,7 @@ export default function QRTypeSelector({ selectedType, onTypeChange }: QRTypeSel
       PDF: 'pdf',
       IMAGE: 'image',
       BITCOIN: 'bitcoin',
+      HTML: 'html',
     }
     return keyMap[id] || id.toLowerCase()
   }

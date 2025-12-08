@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 import {
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle
+  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle, Code
 } from 'lucide-react'
 import clsx from 'clsx'
 import QRContentForm from './QRContentForm'
@@ -47,6 +47,7 @@ const qrTypeBaseConfig: Record<string, {
   app: { type: 'APP', nameKey: 'appStore', descKey: 'downloadAppLinks', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600' },
   pdf: { type: 'PDF', nameKey: 'pdfDocument', descKey: 'linkToPdf', icon: FileText, gradient: 'from-red-500 to-red-600' },
   image: { type: 'IMAGE', nameKey: 'image', descKey: 'linkToImage', icon: Image, gradient: 'from-violet-500 to-violet-600' },
+  html: { type: 'HTML', nameKey: 'html', descKey: 'htmlCodeSnippet', icon: Code, gradient: 'from-orange-500 to-red-600' },
 }
 
 interface QRTypePageProps {

@@ -9,7 +9,7 @@ import QRTypePage from '@/components/qr/QRTypePage'
 const validTypes = [
   'url', 'wifi', 'vcard', 'email', 'phone', 'sms', 'whatsapp',
   'text', 'instagram', 'twitter', 'linkedin', 'youtube', 'facebook',
-  'event', 'location', 'bitcoin', 'app', 'pdf', 'image'
+  'event', 'location', 'bitcoin', 'app', 'pdf', 'image', 'html'
 ]
 
 // QR tipi SEO bilgileri - Türkçe ve İngilizce
@@ -108,6 +108,11 @@ const qrTypeSEO: Record<string, { title: string; description: string; keywords: 
     title: 'Image QR Code Generator | QR Code Shine',
     description: 'Create QR codes that link to images. Share photos and graphics with scannable codes.',
     keywords: ['image qr code', 'photo qr code', 'picture qr code generator']
+  },
+  html: {
+    title: 'HTML QR Kod Oluşturucu - HTML Kod QR Kodu',
+    description: 'HTML kodunu QR koda dönüştürün. Web sayfası içeriğini kolayca paylaşın. HTML code to QR code generator.',
+    keywords: ['html qr kod', 'html kod qr', 'web sayfası qr', 'html qr code', 'code qr generator']
   }
 }
 

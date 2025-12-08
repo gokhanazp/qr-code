@@ -125,7 +125,9 @@
     "pdf": "PDF",
     "image": "Resim",
     "bitcoin": "Bitcoin",
-    "bitcoinDesc": "Kripto para ödemesi"
+    "bitcoinDesc": "Kripto para ödemesi",
+    "html": "HTML Kodu",
+    "htmlDesc": "HTML kod parçacığı"
   },
   "features": {
     "pageTitle": "Güçlü Özellikler",
@@ -272,6 +274,8 @@
     "linkToPdf": "PDF dosyasına link",
     "image": "Resim",
     "linkToImage": "Resme link",
+    "html": "HTML Kodu",
+    "htmlCodeSnippet": "HTML kod parçacığı",
     "qrCodeGenerator": "QR Kod Oluşturucu",
     "qrPreview": "QR Önizleme",
     "enterContentToGenerate": "QR oluşturmak için içerik girin",
