@@ -343,6 +343,8 @@
     "pdfUrl": "PDF URL",
     "imageUrl": "Image URL",
     "enterDirectUrl": "Enter the direct URL to your file",
+    "htmlCode": "HTML Code",
+    "htmlTip": "Your HTML code will be displayed as a web page when the QR code is scanned. Make sure your code is valid HTML.",
     "optional": "optional",
     "shapeAndColor": "SHAPE & COLOR",
     "frameNew": "FRAME",

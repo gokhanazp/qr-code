@@ -343,6 +343,8 @@
     "pdfUrl": "PDF URL",
     "imageUrl": "Resim URL",
     "enterDirectUrl": "Doğrudan URL'yi girin",
+    "htmlCode": "HTML Kodu",
+    "htmlTip": "HTML kodunuz QR kod taratıldığında bir web sayfası olarak görüntülenecektir. Kodunuzun geçerli HTML olduğundan emin olun.",
     "optional": "opsiyonel",
     "shapeAndColor": "ŞEKİL VE RENK",
     "frameNew": "ÇERÇEVE",
