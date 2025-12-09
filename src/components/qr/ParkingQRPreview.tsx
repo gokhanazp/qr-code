@@ -52,20 +52,21 @@ export default function ParkingQRPreview({
     ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
     ctx.fillRect(0, 0, width, height)
 
-    // Çapraz watermark metni
+    // Çapraz watermark metni - 3 satır
     ctx.translate(width / 2, height / 2)
     ctx.rotate(-Math.PI / 6) // -30 derece
 
-    ctx.font = 'bold 28px Arial, sans-serif'
+    ctx.font = 'bold 24px Arial, sans-serif'
     ctx.textAlign = 'center'
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
-    ctx.fillText('QRCodeShine.com', 0, -40)
-    ctx.fillText('QRCodeShine.com', 0, 40)
+    ctx.fillText('QRCodeShine.com', 0, -60)
+    ctx.fillText('QRCodeShine.com', 0, 0)
+    ctx.fillText('QRCodeShine.com', 0, 60)
 
-    // İkinci satır - "Ücretsiz İndir" mesajı
-    ctx.font = 'bold 16px Arial, sans-serif'
+    // Alt mesaj - "Ücretsiz Kayıt Ol"
+    ctx.font = 'bold 14px Arial, sans-serif'
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
-    ctx.fillText(locale === 'tr' ? 'Kayıt ol ve indir' : 'Sign up & download', 0, 0)
+    ctx.fillText(locale === 'tr' ? '★ Ücretsiz kayıt ol ve indir ★' : '★ Sign up free & download ★', 0, 90)
 
     ctx.restore()
   }

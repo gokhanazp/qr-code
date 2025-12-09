@@ -1,11 +1,12 @@
 // QR Kod Önizleme bileşeni (QR Code Preview Component)
 // Modern tasarımlı QR kodu gösterme ve indirme (Frame ve Logo destekli)
 // İndirme için üyelik gerekli (Authentication required for download)
+// Watermark koruması: Giriş yapmayan kullanıcılar için
 
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
 import { Download, Copy, Check, Image, FileType, Share2, Smartphone, LogIn, Lock } from 'lucide-react'
@@ -43,6 +44,7 @@ export default function QRPreview({
   isAuthenticated = false,
 }: QRPreviewProps) {
   const t = useTranslations('generator')
+  const locale = useLocale()
   const router = useRouter()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -52,6 +54,43 @@ export default function QRPreview({
 
   // Frame template'i bul (Find frame template)
   const frameTemplate = FRAME_TEMPLATES.find(f => f.id === selectedFrame) || FRAME_TEMPLATES[0]
+
+  // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
+  const addWatermark = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    if (isAuthenticated) return // Giriş yapmışsa watermark ekleme
+
+    ctx.save()
+
+    // Yarı saydam beyaz overlay
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+    ctx.fillRect(0, 0, width, height)
+
+    // Çapraz watermark metni - 3 satır
+    ctx.translate(width / 2, height / 2)
+    ctx.rotate(-Math.PI / 6) // -30 derece
+
+    // Font boyutunu canvas boyutuna göre ayarla
+    const fontSize = Math.max(12, Math.min(20, width / 12))
+    ctx.font = `bold ${fontSize}px Arial, sans-serif`
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+
+    const spacing = fontSize * 2.5
+    ctx.fillText('QRCodeShine.com', 0, -spacing)
+    ctx.fillText('QRCodeShine.com', 0, 0)
+    ctx.fillText('QRCodeShine.com', 0, spacing)
+
+    // Alt mesaj - "Ücretsiz Kayıt Ol"
+    ctx.font = `bold ${fontSize * 0.6}px Arial, sans-serif`
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
+    ctx.fillText(
+      locale === 'tr' ? '★ Ücretsiz kayıt ol ★' : '★ Sign up free ★',
+      0,
+      spacing * 1.6
+    )
+
+    ctx.restore()
+  }
 
   // Yuvarlak köşeli dikdörtgen çiz (Draw rounded rectangle)
   const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -309,6 +348,9 @@ export default function QRPreview({
               ctx.fillText(frameText, totalWidth / 2, qrY + qrSize + 16)
             }
           }
+
+          // Önizlemeye watermark ekle (Add watermark to preview)
+          addWatermark(ctx, canvas.width, canvas.height)
         }
         qrImg.src = qrDataUrl
 
@@ -463,7 +505,7 @@ export default function QRPreview({
     }
 
     generateQR()
-  }, [content, foregroundColor, backgroundColor, size, errorCorrection, logo, logoSize, selectedFrame, frameText, frameTemplate])
+  }, [content, foregroundColor, backgroundColor, size, errorCorrection, logo, logoSize, selectedFrame, frameText, frameTemplate, isAuthenticated])
 
   // PNG olarak indir (Download as PNG)
   const downloadPNG = () => {
@@ -536,7 +578,15 @@ export default function QRPreview({
           style={{ backgroundColor }}
         >
           {content ? (
-            <canvas ref={canvasRef} className="rounded-lg" />
+            <div className="relative">
+              <canvas ref={canvasRef} className="rounded-lg" />
+              {/* Watermark varsa önizleme badge'i */}
+              {!isAuthenticated && (
+                <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-sm">
+                  {locale === 'tr' ? 'Önizleme' : 'Preview'}
+                </div>
+              )}
+            </div>
           ) : (
             <div
               className="flex flex-col items-center justify-center bg-gray-50 text-gray-400 rounded-lg"
