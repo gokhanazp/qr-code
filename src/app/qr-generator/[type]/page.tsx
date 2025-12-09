@@ -9,7 +9,7 @@ import QRTypePage from '@/components/qr/QRTypePage'
 const validTypes = [
   'url', 'wifi', 'vcard', 'email', 'phone', 'sms', 'whatsapp',
   'text', 'instagram', 'twitter', 'linkedin', 'youtube', 'facebook',
-  'event', 'location', 'bitcoin', 'app', 'pdf', 'image', 'html'
+  'event', 'location', 'bitcoin', 'app', 'pdf', 'image', 'html', 'parking'
 ]
 
 // QR tipi SEO bilgileri - Türkçe ve İngilizce
@@ -113,6 +113,11 @@ const qrTypeSEO: Record<string, { title: string; description: string; keywords: 
     title: 'HTML QR Kod Oluşturucu - HTML Kod QR Kodu',
     description: 'HTML kodunu QR koda dönüştürün. Web sayfası içeriğini kolayca paylaşın. HTML code to QR code generator.',
     keywords: ['html qr kod', 'html kod qr', 'web sayfası qr', 'html qr code', 'code qr generator']
+  },
+  parking: {
+    title: 'Araç Park QR Kod Oluşturucu - Araç Sahibi İletişim QR Kodu',
+    description: 'Araç camına yapıştırmak için QR kod oluşturun. Telefon numarası ile araç sahibine anında ulaşım. Car parking contact QR code.',
+    keywords: ['araç qr kod', 'park qr kod', 'araç sahibi iletişim', 'car parking qr', 'vehicle contact qr', 'oto park qr']
   }
 }
 

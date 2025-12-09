@@ -106,6 +106,9 @@ END:VEVENT`
           welcomeLogo: formData.welcomeLogo || '',
           gradient: formData.gradient || 'green' // Varsayılan yeşil gradient
         })
+      case 'PARKING':
+        // PARKING QR kodu - telefon numarasına yönlendirir
+        return `tel:${formData.phone || ''}`
       default:
         return formData.url || formData.text || ''
     }
@@ -991,6 +994,53 @@ END:VEVENT`
                 />
               </div>
             )}
+          </div>
+        )
+
+      // Araç Park QR Kodu - Cam etiketi için
+      case 'PARKING':
+        return (
+          <div className="space-y-4">
+            {/* Telefon Numarası */}
+            <Input
+              label={t('phoneNumber')}
+              type="tel"
+              placeholder={t('phonePlaceholder') || '+90 5XX XXX XX XX'}
+              value={data.phone || ''}
+              onChange={(e) => handleDataChange('phone', e.target.value)}
+            />
+
+            {/* Üst Etiket Metni - TELEFON gibi */}
+            <Input
+              label={t('parkingTopLabel') || 'Üst Etiket'}
+              placeholder={t('parkingTopLabelPlaceholder') || 'TELEFON'}
+              value={data.topLabel || ''}
+              onChange={(e) => handleDataChange('topLabel', e.target.value)}
+            />
+
+            {/* Alt Bilgi Metni */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('parkingBottomText') || 'Alt Bilgi Metni'}
+              </label>
+              <textarea
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 resize-none"
+                rows={2}
+                placeholder={t('parkingBottomTextPlaceholder') || 'ARAÇ SAHİBİNE ULAŞMAK İÇİN KODU OKUT'}
+                value={data.bottomText || ''}
+                onChange={(e) => handleDataChange('bottomText', e.target.value)}
+              />
+            </div>
+
+            {/* Bilgi Notu */}
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800 font-medium mb-2">
+                🚗 {t('parkingInfo') || 'Araç Park QR Kodu'}
+              </p>
+              <p className="text-xs text-yellow-700">
+                {t('parkingTip') || 'Bu QR kod araç camına yapıştırmak için özel tasarlanmıştır. QR kod taratıldığında doğrudan telefon araması başlatır.'}
+              </p>
+            </div>
           </div>
         )
 

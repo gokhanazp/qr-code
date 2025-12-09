@@ -10,13 +10,14 @@ import { useTranslations } from 'next-intl'
 import {
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle, Code
+  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle, Code, Car
 } from 'lucide-react'
 import clsx from 'clsx'
 import QRContentForm from './QRContentForm'
 import QRCustomizer from './QRCustomizer'
 import QRPreview from './QRPreview'
 import VCardForm from './VCardForm'
+import ParkingQRPreview from './ParkingQRPreview'
 import { QRType } from './QRTypeSelector'
 import { createClient } from '@/lib/supabase/client'
 
@@ -48,6 +49,7 @@ const qrTypeBaseConfig: Record<string, {
   pdf: { type: 'PDF', nameKey: 'pdfDocument', descKey: 'linkToPdf', icon: FileText, gradient: 'from-red-500 to-red-600' },
   image: { type: 'IMAGE', nameKey: 'image', descKey: 'linkToImage', icon: Image, gradient: 'from-violet-500 to-violet-600' },
   html: { type: 'HTML', nameKey: 'html', descKey: 'htmlCodeSnippet', icon: Code, gradient: 'from-orange-500 to-red-600' },
+  parking: { type: 'PARKING', nameKey: 'parking', descKey: 'carOwnerContact', icon: Car, gradient: 'from-yellow-500 to-amber-600' },
 }
 
 interface QRTypePageProps {
@@ -295,19 +297,29 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                       📱 Kaydettiğinizde QR kod, güzel bir uygulama indirme sayfasına yönlendirecek.
                     </div>
                   )}
-                  <QRPreview
-                    content={type === 'app' && content ? `${window?.location?.origin || ''}/app/preview` : content}
-                    foregroundColor={foregroundColor}
-                    backgroundColor={backgroundColor}
-                    size={size}
-                    errorCorrection={errorCorrection}
-                    selectedFrame={selectedFrame}
-                    frameText={frameText}
-                    frameColor={frameColor}
-                    logo={logo}
-                    logoSize={logoSize}
-                    isAuthenticated={isLoggedIn}
-                  />
+
+                  {/* PARKING tipi için özel önizleme */}
+                  {type === 'parking' ? (
+                    <ParkingQRPreview
+                      phone={data.phone || ''}
+                      topLabel={data.topLabel || 'TELEFON'}
+                      bottomText={data.bottomText || 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT'}
+                    />
+                  ) : (
+                    <QRPreview
+                      content={type === 'app' && content ? `${window?.location?.origin || ''}/app/preview` : content}
+                      foregroundColor={foregroundColor}
+                      backgroundColor={backgroundColor}
+                      size={size}
+                      errorCorrection={errorCorrection}
+                      selectedFrame={selectedFrame}
+                      frameText={frameText}
+                      frameColor={frameColor}
+                      logo={logo}
+                      logoSize={logoSize}
+                      isAuthenticated={isLoggedIn}
+                    />
+                  )}
                 </div>
               </div>
 

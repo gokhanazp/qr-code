@@ -24,6 +24,7 @@ import {
   Bitcoin,
   CheckCircle2,
   Code,
+  Car,
 } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -189,6 +190,14 @@ export const qrTypes = [
     borderActive: 'border-orange-500',
     description: 'HTML code snippet'
   },
+  {
+    id: 'PARKING',
+    icon: Car,
+    gradient: 'from-yellow-500 to-amber-600',
+    bgLight: 'bg-yellow-50',
+    borderActive: 'border-yellow-500',
+    description: 'Car owner contact QR for windshield'
+  },
 ] as const
 
 export type QRType = typeof qrTypes[number]['id']
@@ -224,6 +233,7 @@ export default function QRTypeSelector({ selectedType, onTypeChange }: QRTypeSel
       IMAGE: 'image',
       BITCOIN: 'bitcoin',
       HTML: 'html',
+      PARKING: 'parking',
     }
     return keyMap[id] || id.toLowerCase()
   }
