@@ -15,6 +15,8 @@ interface ParkingQRPreviewProps {
   phone: string           // Telefon numarası
   topLabel?: string       // Üst etiket (örn: "TELEFON")
   bottomText?: string     // Alt metin (örn: "ARAÇ SAHİBİNE ULAŞMAK İÇİN KODU OKUT")
+  labelColor?: string     // Etiket arka plan rengi (varsayılan: sarı)
+  labelShape?: 'rounded' | 'square' | 'pill' // Etiket şekli
   isAuthenticated?: boolean // Kullanıcı giriş yapmış mı?
 }
 
@@ -22,6 +24,8 @@ export default function ParkingQRPreview({
   phone,
   topLabel = 'TELEFON',
   bottomText = 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT',
+  labelColor = '#FFD700',
+  labelShape = 'rounded',
   isAuthenticated = false
 }: ParkingQRPreviewProps) {
   const t = useTranslations('generator')
@@ -40,7 +44,7 @@ export default function ParkingQRPreview({
 
   useEffect(() => {
     generateParkingLabel()
-  }, [phone, topLabel, bottomText, isAuthenticated])
+  }, [phone, topLabel, bottomText, labelColor, labelShape, isAuthenticated])
 
   // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
   // Minimal watermark - QR'ı taranamaz yapar ama estetik görünür
@@ -104,14 +108,17 @@ export default function ParkingQRPreview({
     // Arka plan temizle
     ctx.clearRect(0, 0, LABEL_WIDTH, LABEL_HEIGHT)
 
+    // Şekil parametreleri
+    const cornerRadius = labelShape === 'pill' ? 40 : labelShape === 'rounded' ? CORNER_RADIUS : 0
+
     // Siyah yuvarlatılmış dikdörtgen arka plan (Black rounded rectangle background)
     ctx.fillStyle = '#1a1a1a'
-    roundRect(ctx, 0, 0, LABEL_WIDTH, LABEL_HEIGHT * 0.7, CORNER_RADIUS, CORNER_RADIUS, 0, 0)
+    roundRect(ctx, 0, 0, LABEL_WIDTH, LABEL_HEIGHT * 0.7, cornerRadius, cornerRadius, 0, 0)
     ctx.fill()
 
-    // Sarı alt bant (Yellow bottom band)
-    ctx.fillStyle = '#FFD700'
-    roundRect(ctx, 0, LABEL_HEIGHT * 0.65, LABEL_WIDTH, LABEL_HEIGHT * 0.35, 0, 0, CORNER_RADIUS, CORNER_RADIUS)
+    // Alt bant - kullanıcının seçtiği renk (Bottom band with user's color)
+    ctx.fillStyle = labelColor
+    roundRect(ctx, 0, LABEL_HEIGHT * 0.65, LABEL_WIDTH, LABEL_HEIGHT * 0.35, 0, 0, cornerRadius, cornerRadius)
     ctx.fill()
 
     // Beyaz QR kod arka planı (White QR background)
@@ -146,9 +153,17 @@ export default function ParkingQRPreview({
           ctx.fillText(topLabel.toUpperCase(), LABEL_WIDTH / 2, QR_SIZE + 80)
         }
 
-        // Alt metin - sarı bant üzerinde siyah (Bottom text on yellow band)
+        // Alt metin - arka plan rengine göre kontrast renk seç
         if (bottomText) {
-          ctx.fillStyle = '#000000'
+          // Rengin parlaklığını hesapla (Calculate brightness)
+          const hex = labelColor.replace('#', '')
+          const r = parseInt(hex.substring(0, 2), 16)
+          const g = parseInt(hex.substring(2, 4), 16)
+          const b = parseInt(hex.substring(4, 6), 16)
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000
+
+          // Koyu arka plan için beyaz, açık için siyah metin
+          ctx.fillStyle = brightness > 128 ? '#000000' : '#ffffff'
           ctx.font = 'bold 22px Arial, sans-serif'
           ctx.textAlign = 'center'
 

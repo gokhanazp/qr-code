@@ -254,30 +254,32 @@ export default function QRTypePage({ type }: QRTypePageProps) {
               <QRContentForm type={baseConfig?.type || 'URL'} content={content} data={data} onChange={handleContentChange} />
             </div>
 
-            {/* Özelleştirme */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('customize')}</h2>
-              <QRCustomizer
-                foregroundColor={foregroundColor}
-                backgroundColor={backgroundColor}
-                size={size}
-                errorCorrection={errorCorrection}
-                selectedFrame={selectedFrame}
-                frameText={frameText}
-                frameColor={frameColor}
-                logo={logo}
-                logoSize={logoSize}
-                onForegroundChange={setForegroundColor}
-                onBackgroundChange={setBackgroundColor}
-                onSizeChange={setSize}
-                onErrorCorrectionChange={setErrorCorrection}
-                onFrameChange={setSelectedFrame}
-                onFrameTextChange={setFrameText}
-                onFrameColorChange={setFrameColor}
-                onLogoChange={setLogo}
-                onLogoSizeChange={setLogoSize}
-              />
-            </div>
+            {/* Özelleştirme - Parking hariç diğer tipler için */}
+            {type !== 'parking' && (
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('customize')}</h2>
+                <QRCustomizer
+                  foregroundColor={foregroundColor}
+                  backgroundColor={backgroundColor}
+                  size={size}
+                  errorCorrection={errorCorrection}
+                  selectedFrame={selectedFrame}
+                  frameText={frameText}
+                  frameColor={frameColor}
+                  logo={logo}
+                  logoSize={logoSize}
+                  onForegroundChange={setForegroundColor}
+                  onBackgroundChange={setBackgroundColor}
+                  onSizeChange={setSize}
+                  onErrorCorrectionChange={setErrorCorrection}
+                  onFrameChange={setSelectedFrame}
+                  onFrameTextChange={setFrameText}
+                  onFrameColorChange={setFrameColor}
+                  onLogoChange={setLogo}
+                  onLogoSizeChange={setLogoSize}
+                />
+              </div>
+            )}
           </div>
 
           {/* Sağ Panel - QR Önizleme */}
@@ -304,6 +306,8 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                       phone={data.phone || ''}
                       topLabel={data.topLabel || 'TELEFON'}
                       bottomText={data.bottomText || 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT'}
+                      labelColor={data.labelColor || '#FFD700'}
+                      labelShape={(data.labelShape as 'rounded' | 'square' | 'pill') || 'rounded'}
                       isAuthenticated={isLoggedIn}
                     />
                   ) : (
