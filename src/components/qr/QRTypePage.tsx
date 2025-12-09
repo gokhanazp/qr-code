@@ -304,6 +304,7 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                       phone={data.phone || ''}
                       topLabel={data.topLabel || 'TELEFON'}
                       bottomText={data.bottomText || 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT'}
+                      isAuthenticated={isLoggedIn}
                     />
                   ) : (
                     <QRPreview

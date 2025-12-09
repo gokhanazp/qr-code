@@ -1,30 +1,36 @@
 // Araç Park QR Kod Önizleme ve İndirme Komponenti
 // Sarı-siyah etiket formatında özel tasarım
+// İndirme için kayıt zorunlu + Watermark koruması
 // (Car Parking QR Code Preview with yellow-black label design)
 
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Download, Check, Copy } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import { Download, Check, Copy, Lock, LogIn } from 'lucide-react'
+import Link from 'next/link'
 import QRCode from 'qrcode'
 
 interface ParkingQRPreviewProps {
   phone: string           // Telefon numarası
   topLabel?: string       // Üst etiket (örn: "TELEFON")
   bottomText?: string     // Alt metin (örn: "ARAÇ SAHİBİNE ULAŞMAK İÇİN KODU OKUT")
+  isAuthenticated?: boolean // Kullanıcı giriş yapmış mı?
 }
 
 export default function ParkingQRPreview({
   phone,
   topLabel = 'TELEFON',
-  bottomText = 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT'
+  bottomText = 'ARAÇ SAHİBİNE\nULAŞMAK İÇİN\nKODU OKUT',
+  isAuthenticated = false
 }: ParkingQRPreviewProps) {
   const t = useTranslations('generator')
+  const locale = useLocale()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [dataUrl, setDataUrl] = useState<string>('')
   const [copied, setCopied] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   // Etiket boyutları (Label dimensions)
   const LABEL_WIDTH = 300
@@ -34,7 +40,35 @@ export default function ParkingQRPreview({
 
   useEffect(() => {
     generateParkingLabel()
-  }, [phone, topLabel, bottomText])
+  }, [phone, topLabel, bottomText, isAuthenticated])
+
+  // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
+  const addWatermark = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    if (isAuthenticated) return // Giriş yapmışsa watermark ekleme
+
+    ctx.save()
+
+    // Yarı saydam beyaz overlay
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
+    ctx.fillRect(0, 0, width, height)
+
+    // Çapraz watermark metni
+    ctx.translate(width / 2, height / 2)
+    ctx.rotate(-Math.PI / 6) // -30 derece
+
+    ctx.font = 'bold 28px Arial, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
+    ctx.fillText('QRCodeShine.com', 0, -40)
+    ctx.fillText('QRCodeShine.com', 0, 40)
+
+    // İkinci satır - "Ücretsiz İndir" mesajı
+    ctx.font = 'bold 16px Arial, sans-serif'
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+    ctx.fillText(locale === 'tr' ? 'Kayıt ol ve indir' : 'Sign up & download', 0, 0)
+
+    ctx.restore()
+  }
 
   // Park etiketi oluştur (Generate parking label)
   const generateParkingLabel = async () => {
@@ -98,16 +132,19 @@ export default function ParkingQRPreview({
           ctx.fillStyle = '#000000'
           ctx.font = 'bold 22px Arial, sans-serif'
           ctx.textAlign = 'center'
-          
+
           // Çok satırlı metin işle
           const lines = bottomText.split('\n')
           const lineHeight = 28
           const startY = LABEL_HEIGHT * 0.72
-          
+
           lines.forEach((line, index) => {
             ctx.fillText(line.toUpperCase(), LABEL_WIDTH / 2, startY + (index * lineHeight))
           })
         }
+
+        // Watermark ekle (giriş yapmamışsa)
+        addWatermark(ctx, LABEL_WIDTH, LABEL_HEIGHT)
 
         // Data URL kaydet
         setDataUrl(canvas.toDataURL('image/png'))
@@ -139,26 +176,32 @@ export default function ParkingQRPreview({
     ctx.closePath()
   }
 
-  // PNG olarak indir (Download as PNG)
-  const downloadPNG = () => {
-    if (!dataUrl) return
-    setDownloading(true)
-    
-    const link = document.createElement('a')
-    link.download = `arac-qr-${phone.replace(/\D/g, '').slice(-4)}.png`
-    link.href = dataUrl
-    link.click()
-    
-    setTimeout(() => setDownloading(false), 1000)
+  // İndirme kontrolü - Giriş yapmamışsa modal göster
+  const handleDownloadClick = (downloadFn: () => void | Promise<void>) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
+    downloadFn()
   }
 
-  // Yüksek çözünürlükte indir (Download high resolution)
-  const downloadHighRes = async () => {
-    if (!phone) return
+  // PNG olarak indir (Download as PNG) - Watermark'sız
+  const downloadPNG = () => {
+    if (!dataUrl || !isAuthenticated) return
     setDownloading(true)
 
-    // Yüksek çözünürlük için 3x boyut
-    const scale = 3
+    // Temiz indirme için yeni canvas oluştur (watermark'sız)
+    generateCleanDownload(1, (cleanDataUrl) => {
+      const link = document.createElement('a')
+      link.download = `arac-qr-${phone.replace(/\D/g, '').slice(-4)}.png`
+      link.href = cleanDataUrl
+      link.click()
+      setTimeout(() => setDownloading(false), 1000)
+    })
+  }
+
+  // Temiz indirme için watermark'sız canvas oluştur
+  const generateCleanDownload = async (scale: number, callback: (dataUrl: string) => void) => {
     const canvas = document.createElement('canvas')
     canvas.width = LABEL_WIDTH * scale
     canvas.height = LABEL_HEIGHT * scale
@@ -211,56 +254,128 @@ export default function ParkingQRPreview({
           ctx.fillStyle = '#000000'
           ctx.font = 'bold 22px Arial, sans-serif'
           ctx.textAlign = 'center'
-          
+
           const lines = bottomText.split('\n')
           const lineHeight = 28
           const startY = LABEL_HEIGHT * 0.72
-          
+
           lines.forEach((line, index) => {
             ctx.fillText(line.toUpperCase(), LABEL_WIDTH / 2, startY + (index * lineHeight))
           })
         }
 
-        // İndir
-        const link = document.createElement('a')
-        link.download = `arac-qr-hd-${phone.replace(/\D/g, '').slice(-4)}.png`
-        link.href = canvas.toDataURL('image/png')
-        link.click()
-        
-        setDownloading(false)
+        // Watermark YOK - temiz indirme
+        callback(canvas.toDataURL('image/png'))
       }
       qrImg.src = qrDataUrl
     } catch (err) {
-      console.error('HD QR oluşturma hatası:', err)
-      setDownloading(false)
+      console.error('Clean download error:', err)
     }
   }
 
-  // Kopyala
+  // Yüksek çözünürlükte indir (Download high resolution) - 3x scale
+  const downloadHighRes = () => {
+    if (!phone || !isAuthenticated) return
+    setDownloading(true)
+
+    generateCleanDownload(3, (cleanDataUrl) => {
+      const link = document.createElement('a')
+      link.download = `arac-qr-hd-${phone.replace(/\D/g, '').slice(-4)}.png`
+      link.href = cleanDataUrl
+      link.click()
+      setDownloading(false)
+    })
+  }
+
+  // Kopyala - Sadece giriş yapan kullanıcılar için temiz kopya
   const copyToClipboard = async () => {
     if (!dataUrl) return
-    try {
-      const response = await fetch(dataUrl)
-      const blob = await response.blob()
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob })
-      ])
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Kopyalama hatası:', err)
+
+    // Giriş yapmamışsa modal göster
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
     }
+
+    // Temiz kopya oluştur (watermark'sız)
+    generateCleanDownload(1, async (cleanDataUrl) => {
+      try {
+        const response = await fetch(cleanDataUrl)
+        const blob = await response.blob()
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob })
+        ])
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      } catch (err) {
+        console.error('Kopyalama hatası:', err)
+      }
+    })
   }
+
+  // Login URL - dile göre
+  const loginUrl = locale === 'tr' ? '/giris' : '/auth/login'
+  const registerUrl = locale === 'tr' ? '/kayit' : '/auth/register'
 
   return (
     <div className="flex flex-col items-center space-y-4">
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {locale === 'tr' ? 'İndirmek için Giriş Yapın' : 'Login to Download'}
+              </h3>
+              <p className="text-gray-600 text-sm mb-6">
+                {locale === 'tr'
+                  ? 'QR kodunu indirmek için ücretsiz hesap oluşturun veya giriş yapın.'
+                  : 'Create a free account or login to download your QR code.'}
+              </p>
+
+              <div className="space-y-3">
+                <Link
+                  href={loginUrl}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                >
+                  <LogIn className="w-5 h-5" />
+                  {locale === 'tr' ? 'Giriş Yap' : 'Login'}
+                </Link>
+                <Link
+                  href={registerUrl}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+                >
+                  {locale === 'tr' ? 'Ücretsiz Kayıt Ol' : 'Sign Up Free'}
+                </Link>
+              </div>
+
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="mt-4 text-sm text-gray-500 hover:text-gray-700"
+              >
+                {locale === 'tr' ? 'Vazgeç' : 'Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Önizleme */}
-      <div className="bg-gray-100 p-4 rounded-2xl shadow-lg">
+      <div className="bg-gray-100 p-4 rounded-2xl shadow-lg relative">
         <canvas
           ref={canvasRef}
           className="rounded-xl"
           style={{ maxWidth: '100%', height: 'auto' }}
         />
+        {/* Watermark varsa uyarı badge'i */}
+        {phone && !isAuthenticated && (
+          <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+            {locale === 'tr' ? 'Önizleme' : 'Preview'}
+          </div>
+        )}
       </div>
 
       {/* İçerik yoksa mesaj */}
@@ -272,39 +387,68 @@ export default function ParkingQRPreview({
         </div>
       )}
 
+      {/* Giriş yapmamış kullanıcı için uyarı */}
+      {phone && !isAuthenticated && (
+        <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200 max-w-xs">
+          <Lock className="w-5 h-5 text-blue-600 mx-auto mb-2" />
+          <p className="text-sm text-blue-700 font-medium">
+            {locale === 'tr'
+              ? 'QR kodu indirmek için giriş yapın'
+              : 'Login to download QR code'}
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            {locale === 'tr'
+              ? 'Kayıt olmak ücretsiz!'
+              : 'Registration is free!'}
+          </p>
+        </div>
+      )}
+
       {/* İndirme Butonları */}
       {phone && dataUrl && (
         <div className="flex flex-wrap gap-2 justify-center">
           <button
-            onClick={downloadPNG}
+            onClick={() => handleDownloadClick(downloadPNG)}
             disabled={downloading}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
+              isAuthenticated
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+            }`}
           >
-            <Download className="w-4 h-4" />
+            {isAuthenticated ? <Download className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
             PNG
           </button>
-          
+
           <button
-            onClick={downloadHighRes}
+            onClick={() => handleDownloadClick(downloadHighRes)}
             disabled={downloading}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
+              isAuthenticated
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-green-100 text-green-600 hover:bg-green-200'
+            }`}
           >
-            <Download className="w-4 h-4" />
+            {isAuthenticated ? <Download className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
             HD PNG
           </button>
 
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              isAuthenticated
+                ? 'bg-gray-600 text-white hover:bg-gray-700'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4" /> : (isAuthenticated ? <Copy className="w-4 h-4" /> : <Lock className="w-4 h-4" />)}
             {copied ? (t('copied') || 'Kopyalandı') : (t('copy') || 'Kopyala')}
           </button>
         </div>
       )}
 
-      {/* Baskı Bilgisi */}
-      {phone && (
+      {/* Baskı Bilgisi - Sadece giriş yapmış kullanıcılar için */}
+      {phone && isAuthenticated && (
         <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200 max-w-xs">
           <p className="text-xs text-gray-600">
             💡 {t('parkingPrintTip') || 'HD PNG baskı için uygundur. Araç camına yapıştırılabilir etiket olarak bastırabilirsiniz.'}
