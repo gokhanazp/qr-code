@@ -55,38 +55,69 @@ export default function QRPreview({
   // Frame template'i bul (Find frame template)
   const frameTemplate = FRAME_TEMPLATES.find(f => f.id === selectedFrame) || FRAME_TEMPLATES[0]
 
-  // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
+  // Watermark ve QR bozucu çizgiler ekle - Giriş yapmamış kullanıcılar için
+  // QR kodun taranmasını engellemek için kalın çapraz çizgiler çizer
+  // (Add watermark and QR blocking lines for non-authenticated users)
   const addWatermark = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     if (isAuthenticated) return // Giriş yapmışsa watermark ekleme
 
     ctx.save()
 
-    // Yarı saydam beyaz overlay
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+    // 1. QR KODU TARANAMAZ HALE GETİR - Kalın çapraz çizgiler
+    // Bu çizgiler QR kodun finder pattern'lerini ve data modüllerini bozar
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'
+    ctx.lineWidth = Math.max(8, width / 25)
+    ctx.lineCap = 'round'
+
+    // Çapraz çizgiler (X şeklinde)
+    ctx.beginPath()
+    ctx.moveTo(width * 0.1, height * 0.1)
+    ctx.lineTo(width * 0.9, height * 0.9)
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.moveTo(width * 0.9, height * 0.1)
+    ctx.lineTo(width * 0.1, height * 0.9)
+    ctx.stroke()
+
+    // Yatay çizgi (ortadan)
+    ctx.beginPath()
+    ctx.moveTo(width * 0.05, height * 0.5)
+    ctx.lineTo(width * 0.95, height * 0.5)
+    ctx.stroke()
+
+    // 2. Yarı saydam overlay
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'
     ctx.fillRect(0, 0, width, height)
 
-    // Çapraz watermark metni - 3 satır
+    // 3. Watermark metinleri
     ctx.translate(width / 2, height / 2)
     ctx.rotate(-Math.PI / 6) // -30 derece
 
-    // Font boyutunu canvas boyutuna göre ayarla
-    const fontSize = Math.max(12, Math.min(20, width / 12))
+    const fontSize = Math.max(12, Math.min(18, width / 14))
     ctx.font = `bold ${fontSize}px Arial, sans-serif`
     ctx.textAlign = 'center'
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
 
-    const spacing = fontSize * 2.5
+    // Metin gölgesi
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+    const spacing = fontSize * 2.2
+    ctx.fillText('QRCodeShine.com', 1, -spacing + 1)
+    ctx.fillText('QRCodeShine.com', 1, 1)
+    ctx.fillText('QRCodeShine.com', 1, spacing + 1)
+
+    // Ana metin
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
     ctx.fillText('QRCodeShine.com', 0, -spacing)
     ctx.fillText('QRCodeShine.com', 0, 0)
     ctx.fillText('QRCodeShine.com', 0, spacing)
 
-    // Alt mesaj - "Ücretsiz Kayıt Ol"
-    ctx.font = `bold ${fontSize * 0.6}px Arial, sans-serif`
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
+    // Alt mesaj
+    ctx.font = `bold ${fontSize * 0.7}px Arial, sans-serif`
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
     ctx.fillText(
-      locale === 'tr' ? '★ Ücretsiz kayıt ol ★' : '★ Sign up free ★',
+      locale === 'tr' ? '★ Kayıt ol ve indir ★' : '★ Sign up to download ★',
       0,
-      spacing * 1.6
+      spacing * 1.7
     )
 
     ctx.restore()

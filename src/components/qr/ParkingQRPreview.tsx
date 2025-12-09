@@ -43,30 +43,66 @@ export default function ParkingQRPreview({
   }, [phone, topLabel, bottomText, isAuthenticated])
 
   // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
+  // Watermark ve QR bozucu çizgiler ekle - Giriş yapmamış kullanıcılar için
+  // QR kodun taranmasını engellemek için kalın çapraz çizgiler çizer
   const addWatermark = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     if (isAuthenticated) return // Giriş yapmışsa watermark ekleme
 
     ctx.save()
 
-    // Yarı saydam beyaz overlay
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
+    // 1. QR KODU TARANAMAZ HALE GETİR - Kalın çapraz çizgiler
+    // QR kod alanına özel çizgiler (üst kısımda QR var)
+    const qrCenterX = width / 2
+    const qrCenterY = 140 // QR kodun merkezi yaklaşık burada
+    const qrRadius = 120
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
+    ctx.lineWidth = 12
+    ctx.lineCap = 'round'
+
+    // QR üzerine X çiz
+    ctx.beginPath()
+    ctx.moveTo(qrCenterX - qrRadius, qrCenterY - qrRadius + 20)
+    ctx.lineTo(qrCenterX + qrRadius, qrCenterY + qrRadius - 20)
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.moveTo(qrCenterX + qrRadius, qrCenterY - qrRadius + 20)
+    ctx.lineTo(qrCenterX - qrRadius, qrCenterY + qrRadius - 20)
+    ctx.stroke()
+
+    // Yatay çizgi
+    ctx.beginPath()
+    ctx.moveTo(qrCenterX - qrRadius, qrCenterY)
+    ctx.lineTo(qrCenterX + qrRadius, qrCenterY)
+    ctx.stroke()
+
+    // 2. Yarı saydam overlay
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
     ctx.fillRect(0, 0, width, height)
 
-    // Çapraz watermark metni - 3 satır
+    // 3. Watermark metinleri
     ctx.translate(width / 2, height / 2)
     ctx.rotate(-Math.PI / 6) // -30 derece
 
-    ctx.font = 'bold 24px Arial, sans-serif'
+    // Metin gölgesi
+    ctx.font = 'bold 22px Arial, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
-    ctx.fillText('QRCodeShine.com', 0, -60)
-    ctx.fillText('QRCodeShine.com', 0, 0)
-    ctx.fillText('QRCodeShine.com', 0, 60)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+    ctx.fillText('QRCodeShine.com', 1, -51)
+    ctx.fillText('QRCodeShine.com', 1, 1)
+    ctx.fillText('QRCodeShine.com', 1, 51)
 
-    // Alt mesaj - "Ücretsiz Kayıt Ol"
-    ctx.font = 'bold 14px Arial, sans-serif'
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
-    ctx.fillText(locale === 'tr' ? '★ Ücretsiz kayıt ol ve indir ★' : '★ Sign up free & download ★', 0, 90)
+    // Ana metin
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+    ctx.fillText('QRCodeShine.com', 0, -50)
+    ctx.fillText('QRCodeShine.com', 0, 0)
+    ctx.fillText('QRCodeShine.com', 0, 50)
+
+    // Alt mesaj
+    ctx.font = 'bold 13px Arial, sans-serif'
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+    ctx.fillText(locale === 'tr' ? '★ Kayıt ol ve indir ★' : '★ Sign up to download ★', 0, 85)
 
     ctx.restore()
   }
