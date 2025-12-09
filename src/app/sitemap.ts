@@ -8,11 +8,13 @@ import { blogPosts } from '@/lib/blog-data'
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qrcodeshine.com'
 
-// QR kod tipleri - her biri için ayrı sayfa (HTML dahil)
-const qrTypes = [
+// QR kod tipleri - her biri için ayrı sayfa (HTML ve Parking dahil)
+// TR slug'ı farklı olanlar için { en, tr } şeklinde tanımlanır
+const qrTypes: Array<string | { en: string; tr: string }> = [
   'url', 'vcard', 'wifi', 'email', 'phone', 'sms', 'whatsapp',
   'text', 'instagram', 'twitter', 'linkedin', 'youtube', 'facebook',
-  'event', 'location', 'bitcoin', 'app', 'html'
+  'event', 'location', 'bitcoin', 'app', 'html',
+  { en: 'parking', tr: 'arac-park' }
 ]
 
 // Statik sayfalar - EN ve TR URL'leri
@@ -54,16 +56,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // === QR GENERATOR SAYFALARI (TR + EN) ===
   qrTypes.forEach((type) => {
-    // İngilizce: /qr-generator/url
+    // String ise EN ve TR aynı slug kullanır
+    // Object ise { en, tr } farklı slug'lar kullanır
+    const enSlug = typeof type === 'string' ? type : type.en
+    const trSlug = typeof type === 'string' ? type : type.tr
+
+    // İngilizce: /qr-generator/url veya /qr-generator/parking
     pages.push({
-      url: `${baseUrl}/qr-generator/${type}`,
+      url: `${baseUrl}/qr-generator/${enSlug}`,
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.85,
     })
-    // Türkçe: /qr-olusturucu/url
+    // Türkçe: /qr-olusturucu/url veya /qr-olusturucu/arac-park
     pages.push({
-      url: `${baseUrl}/qr-olusturucu/${type}`,
+      url: `${baseUrl}/qr-olusturucu/${trSlug}`,
       lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.85,

@@ -125,13 +125,30 @@ export default function Header({ user }: HeaderProps) {
   // Yerelleştirilmiş link yardımcı fonksiyonu (Localized link helper)
   const localizedHref = (path: string) => getLocalizedPathname(path, currentLocale)
 
+  // QR tipi slug'larının Türkçe karşılıkları
+  // TR URL'de kullanılacak slug'lar
+  const qrTypeSlugsTr: Record<string, string> = {
+    'parking': 'arac-park',
+    // Gelecekte diğer Türkçe sluglar buraya eklenebilir
+  }
+
+  // QR tipi için yerelleştirilmiş URL oluştur
+  const getQrTypeHref = (type: string) => {
+    if (currentLocale === 'tr') {
+      const trSlug = qrTypeSlugsTr[type] || type
+      return `/qr-olusturucu/${trSlug}`
+    }
+    return `/qr-generator/${type}`
+  }
+
   // QR kategorilerini çevirilerle birleştir
   const qrCategories = qrCategoriesConfig.map(cat => ({
     name: tHeader(cat.key),
     items: cat.items.map(item => ({
       ...item,
       label: tQr(item.labelKey),
-      desc: tHeader(item.descKey)
+      desc: tHeader(item.descKey),
+      href: getQrTypeHref(item.type)
     }))
   }))
 
@@ -141,7 +158,7 @@ export default function Header({ user }: HeaderProps) {
     const localizedPath = getLocalizedPathname(path, currentLocale)
     return pathname === path || pathname === localizedPath
   }
-  const isQrPage = pathname?.startsWith('/qr-generator')
+  const isQrPage = pathname?.startsWith('/qr-generator') || pathname?.startsWith('/qr-olusturucu')
 
   // Scroll durumuna göre header stilini değiştir
   useEffect(() => {
@@ -315,7 +332,7 @@ export default function Header({ user }: HeaderProps) {
                           {category.items.map((item) => (
                             <Link
                               key={item.type}
-                              href={`/qr-generator/${item.type}`}
+                              href={item.href}
                               onClick={() => setQrMenuOpen(false)}
                               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all group"
                             >
@@ -606,7 +623,7 @@ export default function Header({ user }: HeaderProps) {
                         {category.items.map((item) => (
                           <Link
                             key={item.type}
-                            href={`/qr-generator/${item.type}`}
+                            href={item.href}
                             onClick={() => { setMobileMenuOpen(false); setMobileQrMenuOpen(false); }}
                             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-white hover:shadow-md text-gray-700 transition-all border border-transparent hover:border-gray-100"
                           >

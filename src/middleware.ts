@@ -21,6 +21,15 @@ const blogSlugMap: Record<string, { tr: string; en: string }> = {
   'location-qr-code-google-maps': { tr: 'konum-qr-kod-google-maps', en: 'location-qr-code-google-maps' },
 }
 
+// QR tipi slug çevirileri (TR -> EN)
+// Türkçe slug girilirse İngilizce eşdeğerine çevirir
+const qrTypeSlugMap: Record<string, string> = {
+  'arac-park': 'parking',
+  // Gelecekte diğer Türkçe sluglar buraya eklenebilir
+  // 'web-sitesi': 'url',
+  // 'wifi-ag': 'wifi',
+}
+
 // Türkçe URL'leri İngilizce eşdeğerlerine çeviren map
 const turkishToEnglishPaths: Record<string, string> = {
   '/ozellikler': '/features',
@@ -54,6 +63,7 @@ function isTurkishUrl(pathname: string): boolean {
 }
 
 // Dinamik route'ları işle (örn: /qr-olusturucu/url -> /qr-generator/url)
+// QR tipi slug'larını da çevirir (örn: /qr-olusturucu/arac-park -> /qr-generator/parking)
 function translatePath(pathname: string): string {
   // Önce tam eşleşme kontrol et
   if (turkishToEnglishPaths[pathname]) {
@@ -63,7 +73,17 @@ function translatePath(pathname: string): string {
   // Dinamik route'ları kontrol et
   for (const [trPath, enPath] of Object.entries(turkishToEnglishPaths)) {
     if (pathname.startsWith(trPath + '/')) {
-      return pathname.replace(trPath, enPath)
+      let translatedPath = pathname.replace(trPath, enPath)
+
+      // QR generator için slug çevirisi yap
+      if (enPath === '/qr-generator') {
+        const slug = translatedPath.replace('/qr-generator/', '')
+        if (qrTypeSlugMap[slug]) {
+          translatedPath = `/qr-generator/${qrTypeSlugMap[slug]}`
+        }
+      }
+
+      return translatedPath
     }
   }
 
