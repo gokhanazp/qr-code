@@ -43,66 +43,48 @@ export default function ParkingQRPreview({
   }, [phone, topLabel, bottomText, isAuthenticated])
 
   // Watermark ekle - Giriş yapmamış kullanıcılar için (Add watermark for non-authenticated users)
-  // Watermark ve QR bozucu çizgiler ekle - Giriş yapmamış kullanıcılar için
-  // QR kodun taranmasını engellemek için kalın çapraz çizgiler çizer
+  // Minimal watermark - QR'ı taranamaz yapar ama estetik görünür
+  // Parking etiketi için özel - QR kod üst kısımda
   const addWatermark = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    if (isAuthenticated) return // Giriş yapmışsa watermark ekleme
+    if (isAuthenticated) return
 
     ctx.save()
 
-    // 1. QR KODU TARANAMAZ HALE GETİR - Kalın çapraz çizgiler
-    // QR kod alanına özel çizgiler (üst kısımda QR var)
-    const qrCenterX = width / 2
-    const qrCenterY = 140 // QR kodun merkezi yaklaşık burada
-    const qrRadius = 120
+    // QR kod pozisyonu (parking etiketinde QR üstte)
+    const qrTop = 30
+    const qrLeft = (width - 200) / 2
+    const qrSize = 200
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
-    ctx.lineWidth = 12
+    // Finder pattern'leri bozan minimal çizgiler
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)'
+    ctx.lineWidth = 5
     ctx.lineCap = 'round'
 
-    // QR üzerine X çiz
+    // Sol üst finder
     ctx.beginPath()
-    ctx.moveTo(qrCenterX - qrRadius, qrCenterY - qrRadius + 20)
-    ctx.lineTo(qrCenterX + qrRadius, qrCenterY + qrRadius - 20)
+    ctx.moveTo(qrLeft + 5, qrTop + 5)
+    ctx.lineTo(qrLeft + 55, qrTop + 55)
     ctx.stroke()
 
+    // Sağ üst finder
     ctx.beginPath()
-    ctx.moveTo(qrCenterX + qrRadius, qrCenterY - qrRadius + 20)
-    ctx.lineTo(qrCenterX - qrRadius, qrCenterY + qrRadius - 20)
+    ctx.moveTo(qrLeft + qrSize - 5, qrTop + 5)
+    ctx.lineTo(qrLeft + qrSize - 55, qrTop + 55)
     ctx.stroke()
 
-    // Yatay çizgi
+    // Sol alt finder
     ctx.beginPath()
-    ctx.moveTo(qrCenterX - qrRadius, qrCenterY)
-    ctx.lineTo(qrCenterX + qrRadius, qrCenterY)
+    ctx.moveTo(qrLeft + 5, qrTop + qrSize - 5)
+    ctx.lineTo(qrLeft + 55, qrTop + qrSize - 55)
     ctx.stroke()
 
-    // 2. Yarı saydam overlay
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
-    ctx.fillRect(0, 0, width, height)
-
-    // 3. Watermark metinleri
-    ctx.translate(width / 2, height / 2)
-    ctx.rotate(-Math.PI / 6) // -30 derece
-
-    // Metin gölgesi
-    ctx.font = 'bold 22px Arial, sans-serif'
+    // Orta watermark yazısı - şeffaf
+    ctx.translate(width / 2, qrTop + qrSize / 2)
+    ctx.rotate(-Math.PI / 6)
+    ctx.font = '600 14px Arial, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-    ctx.fillText('QRCodeShine.com', 1, -51)
-    ctx.fillText('QRCodeShine.com', 1, 1)
-    ctx.fillText('QRCodeShine.com', 1, 51)
-
-    // Ana metin
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
-    ctx.fillText('QRCodeShine.com', 0, -50)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
     ctx.fillText('QRCodeShine.com', 0, 0)
-    ctx.fillText('QRCodeShine.com', 0, 50)
-
-    // Alt mesaj
-    ctx.font = 'bold 13px Arial, sans-serif'
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-    ctx.fillText(locale === 'tr' ? '★ Kayıt ol ve indir ★' : '★ Sign up to download ★', 0, 85)
 
     ctx.restore()
   }
