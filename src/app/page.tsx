@@ -151,10 +151,10 @@ export default function HomePage() {
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </Link>
-                <Link href="/pricing">
+                <Link href="/pricing" aria-label={t('viewPricing')}>
                   <button className="flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
-                    <Play className="w-5 h-5" />
-                    {t('learnMore')}
+                    <Play className="w-5 h-5" aria-hidden="true" />
+                    {t('viewPricing')}
                   </button>
                 </Link>
               </div>

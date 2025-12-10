@@ -220,11 +220,16 @@ export default function Header({ user }: HeaderProps) {
             {/* Sağ - Dil */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-gray-400">
-                <Globe className="w-3.5 h-3.5" />
+                <Globe className="w-3.5 h-3.5" aria-hidden="true" />
+                <label htmlFor="language-select-desktop" className="sr-only">
+                  {currentLocale === 'tr' ? 'Dil seçin' : 'Select language'}
+                </label>
                 <select
+                  id="language-select-desktop"
                   value={currentLocale}
                   onChange={(e) => handleLanguageChange(e.target.value as Locale)}
                   className="bg-transparent text-xs text-gray-300 border-none outline-none cursor-pointer"
+                  aria-label={currentLocale === 'tr' ? 'Dil seçin' : 'Select language'}
                 >
                   <option value="en" className="bg-gray-900">English</option>
                   <option value="tr" className="bg-gray-900">Türkçe</option>
@@ -245,11 +250,11 @@ export default function Header({ user }: HeaderProps) {
           <div className="flex justify-between h-16 lg:h-[70px]">
             {/* Logo ve marka - Kurumsal */}
             <div className="flex items-center">
-              <Link href="/" className="flex items-center gap-3 group">
+              <Link href="/" className="flex items-center gap-3 group" aria-label="QRCodeShine - Ana Sayfa">
                 {/* Logo Icon */}
                 <div className="relative">
                   <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/30 group-hover:scale-105 transition-all duration-300">
-                    <QrCode className="h-5 w-5 lg:h-6 lg:w-6 text-white" />
+                    <QrCode className="h-5 w-5 lg:h-6 lg:w-6 text-white" aria-hidden="true" />
                   </div>
                   {/* Status indicator */}
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
@@ -259,7 +264,7 @@ export default function Header({ user }: HeaderProps) {
                   <span className="text-xl lg:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                     QRCode<span className="text-blue-600 group-hover:text-gray-900 transition-colors">Shine</span>
                   </span>
-                  <span className="text-[9px] lg:text-[10px] text-gray-400 font-medium tracking-[0.15em] uppercase -mt-1">
+                  <span className="text-[9px] lg:text-[10px] text-gray-600 font-medium tracking-[0.15em] uppercase -mt-1">
                     {tHeader('professionalQR')}
                   </span>
                 </div>
