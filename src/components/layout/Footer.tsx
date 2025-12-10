@@ -5,7 +5,7 @@
 
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
-import { QrCode, Facebook, Twitter, Instagram, Linkedin, Github } from 'lucide-react'
+import { QrCode } from 'lucide-react'
 import { getLocalizedPathname } from '@/i18n/navigation'
 import { Locale } from '@/i18n/config'
 
@@ -28,25 +28,6 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">{common('appName')}</span>
             </Link>
             <p className="text-gray-400 max-w-md">{t('description')}</p>
-
-            {/* Sosyal medya ikonları */}
-            <div className="flex gap-4 mt-6">
-              <a href="#" className="hover:text-blue-500 transition-colors" aria-label="Facebook">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="hover:text-blue-500 transition-colors" aria-label="Twitter">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="hover:text-blue-500 transition-colors" aria-label="Instagram">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="hover:text-blue-500 transition-colors" aria-label="LinkedIn">
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="#" className="hover:text-blue-500 transition-colors" aria-label="GitHub">
-                <Github className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
           {/* Ürün linkleri */}

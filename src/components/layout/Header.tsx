@@ -217,22 +217,8 @@ export default function Header({ user }: HeaderProps) {
               </a>
             </div>
 
-            {/* Sağ - Sosyal Medya + Dil */}
+            {/* Sağ - Dil */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 pr-4 border-r border-gray-700">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`p-1.5 text-gray-400 ${social.color} transition-all hover:scale-110`}
-                    aria-label={social.name}
-                  >
-                    <social.icon className="w-3.5 h-3.5" />
-                  </a>
-                ))}
-              </div>
               <div className="flex items-center gap-2 text-gray-400">
                 <Globe className="w-3.5 h-3.5" />
                 <select
@@ -304,7 +290,7 @@ export default function Header({ user }: HeaderProps) {
                 }`}
               >
                 <QrCode className="w-4 h-4" />
-                QR Types
+                {t('qrTypes')}
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${qrMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -315,9 +301,9 @@ export default function Header({ user }: HeaderProps) {
                   <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
                     <h3 className="text-white font-semibold flex items-center gap-2">
                       <Sparkles className="w-5 h-5" />
-                      Choose Your QR Code Type
+                      {t('chooseQrType')}
                     </h3>
-                    <p className="text-blue-100 text-sm mt-1">19+ professional QR code solutions for every need</p>
+                    <p className="text-blue-100 text-sm mt-1">{t('qrSolutions')}</p>
                   </div>
 
                   {/* Content */}
@@ -597,7 +583,7 @@ export default function Header({ user }: HeaderProps) {
                   }`}>
                     <Sparkles className="w-4 h-4" />
                   </div>
-                  QR Types
+                  {t('qrTypes')}
                 </span>
                 <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${mobileQrMenuOpen ? 'rotate-180' : ''}`} />
               </button>
