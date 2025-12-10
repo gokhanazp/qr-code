@@ -12,7 +12,6 @@ import {
   QrCode,
   CreditCard,
   Settings,
-  BarChart3,
   MessageSquare,
   ShoppingCart,
   DollarSign,
@@ -32,7 +31,6 @@ const menuItems = [
   { href: '/admin/messages', label: 'Mesajlar', icon: MessageSquare },
   { href: '/admin/pricing', label: 'Fiyatlandırma', icon: DollarSign },
   { href: '/admin/subscriptions', label: 'Abonelikler', icon: CreditCard },
-  { href: '/admin/analytics', label: 'Analitik', icon: BarChart3 },
   { href: '/admin/settings', label: 'Ayarlar', icon: Settings },
 ]
 
