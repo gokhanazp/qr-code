@@ -1,16 +1,26 @@
 // Google Analytics Component
 // GA4 entegrasyonu ve event tracking
 // Measurement ID: G-3J4M3NXV30
+// NOT: /admin sayfalarında çalışmaz
 
 'use client'
 
 import Script from 'next/script'
+import { usePathname } from 'next/navigation'
 
 // GA Measurement ID
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-3J4M3NXV30'
 
 // Google Analytics Script Component
+// Admin panelinde (/admin/*) çalışmaz
 export function GoogleAnalytics() {
+  const pathname = usePathname()
+
+  // Admin sayfalarında GA'yı yükleme
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
+
   return (
     <>
       {/* Google Analytics Script - async yükleme */}
