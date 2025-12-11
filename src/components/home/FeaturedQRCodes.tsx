@@ -83,14 +83,15 @@ export default function FeaturedQRCodes() {
     fetchFeatured()
   }, [])
 
-  // QR kodu için URL oluştur
+  // QR kodu için URL oluştur - her zaman id kullan (short_code genelde null)
   const getQRValue = (qr: FeaturedQR): string => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+    // Öncelik: short_code > id
     if (qr.short_code) {
-      return `${typeof window !== 'undefined' ? window.location.origin : ''}/r/${qr.short_code}`
+      return `${baseUrl}/r/${qr.short_code}`
     }
-    // Fallback: content'ten URL al
-    const content = qr.content as Record<string, string>
-    return content?.url || content?.text || ''
+    // short_code yoksa id kullan
+    return `${baseUrl}/r/${qr.id}`
   }
 
   // Hiç QR kod yoksa gösterme
