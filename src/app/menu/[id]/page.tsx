@@ -27,7 +27,7 @@ export default function MenuPage({ params }: { params: { id: string } }) {
                 // QR kod verisini çek
                 const { data: qrData, error: qrError } = await supabase
                     .from('qr_codes')
-                    .select('content_json')
+                    .select('content')
                     .eq('id', params.id)
                     .single()
 
@@ -37,7 +37,8 @@ export default function MenuPage({ params }: { params: { id: string } }) {
 
                 // content_json içindeki veriyi parse et
                 // API artık content'i { encoded: 'url', raw: { ...data } } şeklinde kaydediyor
-                const qrContent = qrData.content_json
+                // content içindeki veriyi parse et
+                const qrContent = qrData.content
                 const menuData = qrContent.raw || qrContent // Geriye dönük uyumluluk için
 
                 // Veri doğrulama
