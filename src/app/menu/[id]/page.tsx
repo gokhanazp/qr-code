@@ -46,6 +46,15 @@ export default function MenuPage({ params }: { params: { id: string } }) {
                 console.log('Parsed Menu Data:', menuData)
 
                 if (menuData) {
+                    // Items bazen string olarak geliyor (formdan), parse etmemiz lazım
+                    if (typeof menuData.items === 'string') {
+                        try {
+                            menuData.items = JSON.parse(menuData.items)
+                        } catch (e) {
+                            console.error('Error parsing items:', e)
+                            menuData.items = []
+                        }
+                    }
                     setData(menuData as MenuData)
                 } else {
                     throw new Error('Invalid menu data')
