@@ -175,6 +175,12 @@ export default function ParkingQRPreview({
           lines.forEach((line, index) => {
             ctx.fillText(line.toUpperCase(), LABEL_WIDTH / 2, startY + (index * lineHeight))
           })
+
+          // www.qrcodeshine.com yazısı - En alta (Website text - At the bottom)
+          ctx.fillStyle = brightness > 128 ? '#000000' : '#ffffff'
+          ctx.font = 'bold 14px Arial, sans-serif'
+          ctx.textAlign = 'center'
+          ctx.fillText('www.qrcodeshine.com', LABEL_WIDTH / 2, LABEL_HEIGHT - 20)
         }
 
         // Watermark ekle (giriş yapmamışsa)
@@ -296,6 +302,12 @@ export default function ParkingQRPreview({
           lines.forEach((line, index) => {
             ctx.fillText(line.toUpperCase(), LABEL_WIDTH / 2, startY + (index * lineHeight))
           })
+
+          // www.qrcodeshine.com yazısı
+          ctx.fillStyle = '#000000'
+          ctx.font = 'bold 14px Arial, sans-serif'
+          ctx.textAlign = 'center'
+          ctx.fillText('www.qrcodeshine.com', LABEL_WIDTH / 2, LABEL_HEIGHT - 20)
         }
 
         // Watermark YOK - temiz indirme
@@ -398,7 +410,7 @@ export default function ParkingQRPreview({
       )}
 
       {/* Önizleme */}
-      <div className="bg-gray-100 p-4 rounded-2xl shadow-lg relative">
+      <div className="bg-gray-100 p-4 rounded-2xl shadow-lg relative flex flex-col items-center">
         <canvas
           ref={canvasRef}
           className="rounded-xl"
@@ -444,11 +456,10 @@ export default function ParkingQRPreview({
           <button
             onClick={() => handleDownloadClick(downloadPNG)}
             disabled={downloading}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
-              isAuthenticated
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${isAuthenticated
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+              }`}
           >
             {isAuthenticated ? <Download className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
             PNG
@@ -457,11 +468,10 @@ export default function ParkingQRPreview({
           <button
             onClick={() => handleDownloadClick(downloadHighRes)}
             disabled={downloading}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${
-              isAuthenticated
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-green-100 text-green-600 hover:bg-green-200'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 ${isAuthenticated
+              ? 'bg-green-600 text-white hover:bg-green-700'
+              : 'bg-green-100 text-green-600 hover:bg-green-200'
+              }`}
           >
             {isAuthenticated ? <Download className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
             HD PNG
@@ -469,11 +479,10 @@ export default function ParkingQRPreview({
 
           <button
             onClick={copyToClipboard}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              isAuthenticated
-                ? 'bg-gray-600 text-white hover:bg-gray-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isAuthenticated
+              ? 'bg-gray-600 text-white hover:bg-gray-700'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
           >
             {copied ? <Check className="w-4 h-4" /> : (isAuthenticated ? <Copy className="w-4 h-4" /> : <Lock className="w-4 h-4" />)}
             {copied ? (t('copied') || 'Kopyalandı') : (t('copy') || 'Kopyala')}

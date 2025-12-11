@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 import {
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle, Code, Car
+  Bitcoin, AppWindow, Image, QrCode, ArrowLeft, Save, Loader2, AlertCircle, CheckCircle, Code, Car, Utensils
 } from 'lucide-react'
 import clsx from 'clsx'
 import QRContentForm from './QRContentForm'
@@ -50,6 +50,7 @@ const qrTypeBaseConfig: Record<string, {
   image: { type: 'IMAGE', nameKey: 'image', descKey: 'linkToImage', icon: Image, gradient: 'from-violet-500 to-violet-600' },
   html: { type: 'HTML', nameKey: 'html', descKey: 'htmlCodeSnippet', icon: Code, gradient: 'from-orange-500 to-red-600' },
   parking: { type: 'PARKING', nameKey: 'parking', descKey: 'carOwnerContact', icon: Car, gradient: 'from-yellow-500 to-amber-600' },
+  menu: { type: 'MENU', nameKey: 'menu', descKey: 'restaurantMenu', icon: Utensils, gradient: 'from-orange-500 to-red-600' },
 }
 
 interface QRTypePageProps {
@@ -312,7 +313,11 @@ export default function QRTypePage({ type }: QRTypePageProps) {
                     />
                   ) : (
                     <QRPreview
-                      content={type === 'app' && content ? `${window?.location?.origin || ''}/app/preview` : content}
+                      content={
+                        type === 'app' && content ? `${window?.location?.origin || ''}/app/preview` :
+                          type === 'menu' ? 'https://qrcodeshine.com/menu/preview' :
+                            content
+                      }
                       foregroundColor={foregroundColor}
                       backgroundColor={backgroundColor}
                       size={size}

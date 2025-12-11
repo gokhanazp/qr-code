@@ -80,6 +80,27 @@ export default async function QRRedirectPage({ params }: PageProps) {
 
   // İçeriği al ve yönlendir (Get content and redirect)
   const content = qrCode.content
+  const qrType = qrCode.type?.toLowerCase()
+
+  // Özel tipler için landing page'e yönlendir
+  // (Redirect to landing page for special types)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://qrcodeshine.com'
+
+  // APP tipi için /app/[id] sayfasına yönlendir
+  if (qrType === 'app') {
+    redirect(`${baseUrl}/app/${qrCode.id}`)
+  }
+
+  // vCard tipi için /v/[id] sayfasına yönlendir
+  if (qrType === 'vcard') {
+    redirect(`${baseUrl}/v/${qrCode.id}`)
+  }
+
+  // HTML tipi için /html/[id] sayfasına yönlendir
+  if (qrType === 'html') {
+    redirect(`${baseUrl}/html/${qrCode.id}`)
+  }
+
   let redirectUrl: string | null = null
 
   // Content'ten URL çıkar (Extract URL from content)

@@ -265,6 +265,14 @@ const QRPreviewClient = forwardRef<QRPreviewClientRef, QRPreviewClientProps>(({
         className="rounded-lg"
         style={{ maxWidth: '100%', height: 'auto' }}
       />
+      <a 
+        href="https://www.qrcodeshine.com" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="mt-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+      >
+        www.qrcodeshine.com
+      </a>
     </div>
   )
 })

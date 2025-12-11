@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     // Tarama takibi gereken tüm tipler için is_dynamic = true
     // URL tipi de dahil - böylece tarama sayısı takip edilebilir
     // Dynamic types that need tracking - includes URL for scan tracking
-    const dynamicTypes = ['app', 'vcard', 'url', 'wifi', 'email', 'sms', 'phone', 'location']
+    const dynamicTypes = ['app', 'vcard', 'url', 'wifi', 'email', 'sms', 'phone', 'location', 'menu']
     const isDynamic = dynamicTypes.includes(type.toLowerCase())
 
     // QR kodunu kaydet
@@ -114,6 +114,8 @@ export async function POST(request: NextRequest) {
     if (isDynamic && qrCode) {
       if (type.toLowerCase() === 'app') {
         qrUrl = `${baseUrl}/app/${qrCode.id}`
+      } else if (type.toLowerCase() === 'menu') {
+        qrUrl = `${baseUrl}/menu/${qrCode.id}`
       } else if (type.toLowerCase() === 'vcard') {
         // vCard için mevcut /v/[encoded] yapısını koru veya /r/[id] kullan
         qrUrl = `${baseUrl}/r/${qrCode.id}`

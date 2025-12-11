@@ -108,7 +108,8 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/app/') ||
     pathname.startsWith('/r/') ||
-    pathname.startsWith('/v/')
+    pathname.startsWith('/v/') ||
+    pathname.startsWith('/menu/')
   ) {
     const response = await updateSession(request)
     response.headers.set('x-pathname', pathname)

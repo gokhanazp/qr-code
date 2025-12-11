@@ -110,6 +110,10 @@ END:VEVENT`
       case 'PARKING':
         // PARKING QR kodu - telefon numarasına yönlendirir
         return `tel:${formData.phone || ''}`
+      case 'MENU':
+        // MENU QR kodu landing page'e yönlendirecek - içerik JSON formatında saklanacak
+        // Preview için bu content QRTypePage'de override edilecek
+        return JSON.stringify(formData)
       default:
         return formData.url || formData.text || ''
     }
@@ -539,9 +543,8 @@ END:VEVENT`
                         handleDataChange('secondaryColor', preset.secondary)
                         handleDataChange('textColor', preset.text)
                       }}
-                      className={`w-14 h-10 rounded-md border-2 transition-all overflow-hidden ${
-                        primaryColor === preset.primary ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`w-14 h-10 rounded-md border-2 transition-all overflow-hidden ${primaryColor === preset.primary ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                        }`}
                       style={{ background: `linear-gradient(to bottom, ${preset.secondary}, ${preset.primary})` }}
                     />
                   ))}
@@ -707,13 +710,11 @@ END:VEVENT`
                 <button
                   type="button"
                   onClick={() => handleDataChange('welcomeScreenEnabled', data.welcomeScreenEnabled === 'true' ? 'false' : 'true')}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${
-                    data.welcomeScreenEnabled !== 'false' ? 'bg-blue-500' : 'bg-gray-300'
-                  }`}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${data.welcomeScreenEnabled !== 'false' ? 'bg-blue-500' : 'bg-gray-300'
+                    }`}
                 >
-                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
-                    data.welcomeScreenEnabled !== 'false' ? 'translate-x-7' : 'translate-x-1'
-                  }`} />
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${data.welcomeScreenEnabled !== 'false' ? 'translate-x-7' : 'translate-x-1'
+                    }`} />
                 </button>
               </div>
 
@@ -830,7 +831,7 @@ END:VEVENT`
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                   </svg>
                 </div>
                 <Input
@@ -844,7 +845,7 @@ END:VEVENT`
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="text-gray-700">
-                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
                   </svg>
                 </div>
                 <Input
@@ -1059,11 +1060,10 @@ END:VEVENT`
                     key={c.id}
                     type="button"
                     onClick={() => handleDataChange('labelColor', c.color)}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      (data.labelColor || '#FFD700') === c.color
-                        ? 'border-gray-800 scale-110 shadow-md'
-                        : 'border-gray-200 hover:border-gray-400'
-                    }`}
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${(data.labelColor || '#FFD700') === c.color
+                      ? 'border-gray-800 scale-110 shadow-md'
+                      : 'border-gray-200 hover:border-gray-400'
+                      }`}
                     style={{ backgroundColor: c.color }}
                     title={c.name}
                   />
@@ -1082,11 +1082,10 @@ END:VEVENT`
                     key={s.id}
                     type="button"
                     onClick={() => handleDataChange('labelShape', s.id)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg border-2 transition-all ${
-                      (data.labelShape || 'rounded') === s.id
-                        ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                    }`}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg border-2 transition-all ${(data.labelShape || 'rounded') === s.id
+                      ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                      }`}
                   >
                     {s.name}
                   </button>
@@ -1102,6 +1101,222 @@ END:VEVENT`
               <p className="text-xs text-yellow-700">
                 {t('parkingTip') || 'Bu QR kod araç camına yapıştırmak için özel tasarlanmıştır. QR kod taratıldığında doğrudan telefon araması başlatır.'}
               </p>
+            </div>
+          </div>
+        )
+
+      // Menü QR Kodu
+      case 'MENU':
+        // Varsayılan renkler
+        const menuPrimaryColor = data.primaryColor || '#ff5722' // Orange default
+        const menuTextColor = data.textColor || '#000000'
+
+        return (
+          <div className="space-y-6">
+            {/* Renk Seçimi */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-900 border-b pb-2">
+                🎨 {locale === 'tr' ? 'Renk Teması' : 'Color Scheme'}
+              </h4>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <label className="text-sm text-gray-600 mb-1 block">Primary Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={menuPrimaryColor}
+                      onChange={(e) => handleDataChange('primaryColor', e.target.value)}
+                      className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={menuPrimaryColor}
+                      onChange={(e) => handleDataChange('primaryColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <label className="text-sm text-gray-600 mb-1 block">Text Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={menuTextColor}
+                      onChange={(e) => handleDataChange('textColor', e.target.value)}
+                      className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={menuTextColor}
+                      onChange={(e) => handleDataChange('textColor', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Restoran Bilgileri */}
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-900 border-b pb-2">
+                🍽️ {locale === 'tr' ? 'Restoran Bilgileri' : 'Restaurant Info'}
+              </h4>
+              <Input
+                label={locale === 'tr' ? 'Restoran Adı' : 'Restaurant Name'}
+                placeholder="Lezzet Durağı"
+                value={data.restaurantName || ''}
+                onChange={(e) => handleDataChange('restaurantName', e.target.value)}
+              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {locale === 'tr' ? 'Açıklama' : 'Description'}
+                </label>
+                <textarea
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                  rows={3}
+                  placeholder={locale === 'tr' ? 'Menümüzdeki en taze lezzetler...' : 'The freshest tastes mainly...'}
+                  value={data.description || ''}
+                  onChange={(e) => handleDataChange('description', e.target.value)}
+                />
+              </div>
+              <Input
+                label={locale === 'tr' ? 'Web Sitesi / Link' : 'Website / Link'}
+                placeholder="https://www.restoran.com"
+                value={data.website || ''}
+                onChange={(e) => handleDataChange('website', e.target.value)}
+              />
+            </div>
+
+            {/* Kapak Görseli */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                {locale === 'tr' ? 'Kapak Görseli / Logo' : 'Cover Image / Logo'}
+              </label>
+              <div className="flex items-center gap-4">
+                {data.coverImage ? (
+                  <div className="relative">
+                    <img
+                      src={data.coverImage}
+                      alt="Cover"
+                      className="w-32 h-20 rounded-lg object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDataChange('coverImage', '')}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <label className="w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-colors">
+                    <span className="text-2xl text-gray-400">📷</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onload = (ev) => {
+                            handleDataChange('coverImage', ev.target?.result as string)
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* Menü Görselleri - Çoklu Yükleme */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-gray-900 border-b pb-2 flex justify-between items-center">
+                <span>📑 {locale === 'tr' ? 'Menü Sayfaları' : 'Menu Pages'}</span>
+                <span className="text-xs font-normal text-gray-500">
+                  {data.items ? JSON.parse(data.items).length : 0} {locale === 'tr' ? 'Sayfa' : 'Pages'}
+                </span>
+              </h4>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {/* Mevcut Sayfalar */}
+                {(data.items ? JSON.parse(data.items) : []).map((item: any, index: number) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={item.url}
+                      alt={`Page ${index + 1}`}
+                      className="w-full aspect-[3/4] object-cover rounded-lg border border-gray-200 shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentItems = data.items ? JSON.parse(data.items) : []
+                        const newItems = currentItems.filter((_: any, i: number) => i !== index)
+                        handleDataChange('items', JSON.stringify(newItems))
+                      }}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <span className="sr-only">Delete</span>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-0.5 rounded text-xs">
+                      {index + 1}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Yeni Ekle Butonu */}
+                <label className="aspect-[3/4] rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-colors">
+                  <span className="text-4xl text-gray-300 mb-2">+</span>
+                  <span className="text-sm text-gray-500">{locale === 'tr' ? 'Sayfa Ekle' : 'Add Page'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const files = Array.from(e.target.files)
+                        const currentItems = data.items ? JSON.parse(data.items) : []
+
+                        // Her dosyayı oku ve ekle
+                        files.forEach(file => {
+                          const reader = new FileReader()
+                          reader.onload = (ev) => {
+                            const newUrl = ev.target?.result as string
+                            // State update async olduğu için burada biraz riskli ama basit döngüde çalışmayabilir
+                            // Callback içinde güncelleme yapmalıyız
+                            // Burası basitleştirilmiş mantık, gerçekte promise.all daha iyi olurdu
+                            const updatedItems = [...currentItems, { url: newUrl, caption: '' }]
+                            // Not: Döngü içinde state update sorunu olabilir, tek tek eklemek daha güvenli kullanıcı için
+                            // Şimdilik sadece tek dosya veya sonuncuyu alacak gibi duruyor, düzeltelim:
+                            // Aslında bu event handler her dosya için ayrı çalışacak ama closure sorunu olabilir.
+                            // En temizi: Promise.all yapısı.
+                          }
+                          // reader.readAsDataURL(file)
+                        })
+
+                        // Promise All Yapısı
+                        Promise.all(files.map(file => {
+                          return new Promise((resolve) => {
+                            const reader = new FileReader()
+                            reader.onload = (ev) => resolve({ url: ev.target?.result, caption: '' })
+                            reader.readAsDataURL(file)
+                          })
+                        })).then(newPages => {
+                          const updatedItems = [...currentItems, ...newPages]
+                          handleDataChange('items', JSON.stringify(updatedItems))
+                        })
+
+                      }
+                    }}
+                  />
+                </label>
+              </div>
             </div>
           </div>
         )

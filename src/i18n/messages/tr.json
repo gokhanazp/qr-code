@@ -134,7 +134,9 @@
     "html": "HTML Kodu",
     "htmlDesc": "HTML kod parçacığı",
     "parking": "Araç Park QR",
-    "parkingDesc": "Araç camı için iletişim QR kodu"
+    "parkingDesc": "Araç camı için iletişim QR kodu",
+    "menu": "Restoran Menüsü",
+    "menuDesc": "Dijital, temassız QR menü"
   },
   "features": {
     "pageTitle": "Güçlü Özellikler",
@@ -642,6 +644,7 @@
     "appDownload": "Uygulama indirme linkleri",
     "htmlContent": "Özel HTML içeriği",
     "carOwnerContact": "Araç sahibine ulaşım",
+    "restaurantMenu": "Dijital restoran menüsü",
     "myQRCodes": "QR Kodlarım",
     "analytics": "Analizler",
     "subscription": "Abonelik",

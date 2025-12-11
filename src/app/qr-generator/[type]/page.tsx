@@ -9,7 +9,7 @@ import QRTypePage from '@/components/qr/QRTypePage'
 const validTypes = [
   'url', 'wifi', 'vcard', 'email', 'phone', 'sms', 'whatsapp',
   'text', 'instagram', 'twitter', 'linkedin', 'youtube', 'facebook',
-  'event', 'location', 'bitcoin', 'app', 'pdf', 'image', 'html', 'parking'
+  'event', 'location', 'bitcoin', 'app', 'pdf', 'image', 'html', 'parking', 'menu'
 ]
 
 // QR tipi SEO bilgileri - Türkçe ve İngilizce
@@ -118,6 +118,11 @@ const qrTypeSEO: Record<string, { title: string; description: string; keywords: 
     title: 'Araç Park QR Kod Oluşturucu - Araç Sahibi İletişim QR Kodu',
     description: 'Araç camına yapıştırmak için QR kod oluşturun. Telefon numarası ile araç sahibine anında ulaşım. Car parking contact QR code.',
     keywords: ['araç qr kod', 'park qr kod', 'araç sahibi iletişim', 'car parking qr', 'vehicle contact qr', 'oto park qr']
+  },
+  menu: {
+    title: 'Menü QR Kod Oluşturucu - Dijital Restoran Menüsü',
+    description: 'Restoran ve kafe menülerinizi dijitalleştirin. PDF veya resim yükleyin, QR kod ile temassız menü sunun. Digital restaurant menu QR code.',
+    keywords: ['menü qr kod', 'restoran menü qr', 'dijital menü', 'karekod menü', 'qr menu', 'menu qr code', 'contactless menu']
   }
 }
 
@@ -132,7 +137,7 @@ export async function generateMetadata({ params }: { params: Promise<{ type: str
       description: 'Generate QR codes for free'
     }
   }
-  
+
   return {
     title: seo.title,
     description: seo.description,
@@ -153,12 +158,12 @@ export function generateStaticParams() {
 // Sayfa bileşeni (Page component)
 export default async function QRTypePageRoute({ params }: { params: Promise<{ type: string }> }) {
   const { type } = await params
-  
+
   // Geçersiz tip kontrolü
   if (!validTypes.includes(type)) {
     notFound()
   }
-  
+
   return <QRTypePage type={type} />
 }
 
