@@ -18,7 +18,7 @@ interface MenuData {
 export default function MenuPage({ params }: { params: { id: string } }) {
     const [data, setData] = useState<MenuData | null>(null)
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
+    const [error, setError] = useState<any>(null)
 
     useEffect(() => {
         const fetchMenu = async () => {
@@ -62,7 +62,7 @@ export default function MenuPage({ params }: { params: { id: string } }) {
                 }
             } catch (e) {
                 console.error('Error fetching menu:', e)
-                setError(true)
+                setError(e as any)
             } finally {
                 setLoading(false)
             }
@@ -86,7 +86,12 @@ export default function MenuPage({ params }: { params: { id: string } }) {
                     <Utensils className="w-8 h-8 text-red-500" />
                 </div>
                 <h1 className="text-xl font-bold text-gray-900 mb-2">Menü Bulunamadı</h1>
-                <p className="text-gray-500 text-center">Aradığınız menüye ulaşılamıyor veya silinmiş olabilir.</p>
+                <p className="text-gray-500 text-center mb-4">Aradığınız menüye ulaşılamıyor veya silinmiş olabilir.</p>
+                {/* Debug Purpose only */}
+                <div className="bg-red-50 p-3 rounded text-xs text-red-600 font-mono max-w-md break-all">
+                    ID: {params.id}<br />
+                    Error: {error instanceof Error ? error.message : 'Unknown Error'}
+                </div>
             </div>
         )
     }
