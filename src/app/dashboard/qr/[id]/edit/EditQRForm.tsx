@@ -302,6 +302,208 @@ export default function EditQRForm({
               </div>
             )}
 
+            {/* MENU içeriği */}
+            {normalizedType === 'MENU' && (
+              <div className="space-y-4 p-4 bg-orange-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">🍽️ Menü Bilgileri</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Restoran Adı</label>
+                  <input type="text" value={initialRawContent.restaurantName || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Açıklama</label>
+                  <textarea value={initialRawContent.description || ''} readOnly rows={2}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Website</label>
+                  <input type="text" value={initialRawContent.website || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <p className="text-xs text-orange-600">⚠️ Menü içeriğini değiştirmek için yeni QR kod oluşturun</p>
+              </div>
+            )}
+
+            {/* WIFI içeriği */}
+            {normalizedType === 'WIFI' && (
+              <div className="space-y-4 p-4 bg-purple-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">📶 WiFi Bilgileri</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Ağ Adı (SSID)</label>
+                  <input type="text" value={initialRawContent.ssid || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Şifre</label>
+                  <input type="text" value={initialRawContent.password || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Güvenlik Tipi</label>
+                  <input type="text" value={initialRawContent.encryption || 'WPA'} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+              </div>
+            )}
+
+            {/* VCARD içeriği */}
+            {normalizedType === 'VCARD' && (
+              <div className="space-y-4 p-4 bg-indigo-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">👤 Kişi Bilgileri</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Ad</label>
+                    <input type="text" value={initialRawContent.firstName || ''} readOnly
+                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Soyad</label>
+                    <input type="text" value={initialRawContent.lastName || ''} readOnly
+                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Şirket</label>
+                  <input type="text" value={initialRawContent.organization || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Telefon</label>
+                  <input type="text" value={initialRawContent.phone || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Email</label>
+                  <input type="text" value={initialRawContent.email || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+              </div>
+            )}
+
+            {/* EMAIL içeriği */}
+            {normalizedType === 'EMAIL' && (
+              <div className="space-y-4 p-4 bg-red-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">📧 Email Bilgileri</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Email Adresi</label>
+                  <input type="text" value={initialRawContent.email || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Konu</label>
+                  <input type="text" value={initialRawContent.subject || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Mesaj</label>
+                  <textarea value={initialRawContent.body || ''} readOnly rows={2}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+                </div>
+              </div>
+            )}
+
+            {/* PHONE içeriği */}
+            {normalizedType === 'PHONE' && (
+              <div className="space-y-4 p-4 bg-green-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">📞 Telefon</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Telefon Numarası</label>
+                  <input type="text" value={initialRawContent.phone || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+              </div>
+            )}
+
+            {/* SMS içeriği */}
+            {normalizedType === 'SMS' && (
+              <div className="space-y-4 p-4 bg-yellow-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">💬 SMS Bilgileri</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Telefon Numarası</label>
+                  <input type="text" value={initialRawContent.phone || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Mesaj</label>
+                  <textarea value={initialRawContent.message || ''} readOnly rows={2}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+                </div>
+              </div>
+            )}
+
+            {/* WHATSAPP içeriği */}
+            {normalizedType === 'WHATSAPP' && (
+              <div className="space-y-4 p-4 bg-emerald-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">💬 WhatsApp</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Telefon Numarası</label>
+                  <input type="text" value={initialRawContent.phone || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Mesaj</label>
+                  <textarea value={initialRawContent.message || ''} readOnly rows={2}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+                </div>
+              </div>
+            )}
+
+            {/* LOCATION içeriği */}
+            {normalizedType === 'LOCATION' && (
+              <div className="space-y-4 p-4 bg-pink-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">📍 Konum Bilgileri</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Enlem (Latitude)</label>
+                    <input type="text" value={initialRawContent.latitude || ''} readOnly
+                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Boylam (Longitude)</label>
+                    <input type="text" value={initialRawContent.longitude || ''} readOnly
+                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PARKING içeriği */}
+            {normalizedType === 'PARKING' && (
+              <div className="space-y-4 p-4 bg-amber-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">🚗 Park QR Bilgileri</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Telefon Numarası</label>
+                  <input type="text" value={initialRawContent.phone || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+              </div>
+            )}
+
+            {/* Sosyal Medya tipleri */}
+            {['INSTAGRAM', 'FACEBOOK', 'TWITTER', 'LINKEDIN', 'YOUTUBE'].includes(normalizedType) && (
+              <div className="space-y-4 p-4 bg-blue-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">🔗 Sosyal Medya</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Kullanıcı Adı / URL</label>
+                  <input type="text" value={initialRawContent.username || initialRawContent.url || ''} readOnly
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                </div>
+              </div>
+            )}
+
+            {/* TEXT içeriği */}
+            {normalizedType === 'TEXT' && (
+              <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
+                <h4 className="font-medium text-gray-900 flex items-center gap-2">📝 Metin İçeriği</h4>
+                <div>
+                  <label className="block text-sm text-gray-700 mb-1">Metin</label>
+                  <textarea value={initialRawContent.text || url || ''} readOnly rows={4}
+                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+                </div>
+              </div>
+            )}
+
             {/* 🎨 RENKLER BÖLÜMÜ */}
             <div className="space-y-4 p-4 bg-gray-50 rounded-xl">
               <h4 className="font-medium text-gray-900 flex items-center gap-2">🎨 {tGen('colors')}</h4>

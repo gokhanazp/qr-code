@@ -53,6 +53,9 @@ export default function CreateQRPage() {
           name,
           type: selectedType,
           content,
+          // Form verilerini rawContent olarak gönder (Send form data as rawContent)
+          // Edit sayfasında bu veriler kullanılacak
+          rawContent: data,
           settings: {
             foregroundColor,
             backgroundColor,
