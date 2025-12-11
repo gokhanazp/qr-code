@@ -15,12 +15,36 @@ export default async function QRRedirectPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
 
-  // QR kodu veritabanından bul (Find QR code in database)
-  const { data: qrCode, error } = await supabase
-    .from('qr_codes')
-    .select('*')
-    .eq('id', id)
-    .single()
+  // QR kodu veritabanından bul - önce id ile, sonra short_code ile dene
+  // (Find QR code in database - try id first, then short_code)
+  let qrCode = null
+  let error = null
+
+  // Önce UUID formatında mı kontrol et (Check if UUID format first)
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+
+  if (isUUID) {
+    // UUID ise id ile ara (If UUID, search by id)
+    const result = await supabase
+      .from('qr_codes')
+      .select('*')
+      .eq('id', id)
+      .single()
+    qrCode = result.data
+    error = result.error
+  }
+
+  // UUID değilse veya bulunamadıysa short_code ile dene
+  // (If not UUID or not found, try short_code)
+  if (!qrCode) {
+    const result = await supabase
+      .from('qr_codes')
+      .select('*')
+      .eq('short_code', id)
+      .single()
+    qrCode = result.data
+    error = result.error
+  }
 
   // QR kod bulunamadı (QR code not found)
   if (error || !qrCode) {
