@@ -31,8 +31,12 @@ export default function MenuPage({ params }: { params: { id: string } }) {
                     .eq('id', params.id)
                     .single()
 
-                if (qrError || !qrData) {
-                    throw new Error('Menu not found')
+                if (qrError) {
+                    throw new Error(`DB Error: ${qrError.message} (${qrError.code})`)
+                }
+
+                if (!qrData) {
+                    throw new Error('No data found for this ID (Check RLS policies)')
                 }
 
                 // content_json içindeki veriyi parse et
