@@ -41,6 +41,7 @@ import {
   Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star, Code
 } from 'lucide-react'
 import FAQ from '@/components/FAQ'
+import FeaturedQRCodes from '@/components/home/FeaturedQRCodes'
 
 // QR tipleri - icon ve gradient bilgileri (text çeviriden gelecek)
 const qrTypesConfig = [
@@ -376,6 +377,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured QR Codes - Müşteri QR Kodları */}
+      <FeaturedQRCodes />
 
       {/* FAQ Section - Ana sayfada 5 soru göster */}
       <FAQ limit={5} />

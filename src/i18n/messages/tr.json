@@ -88,7 +88,10 @@
     "readyToCreate": "QR Kodlarınızı Oluşturmaya Hazır mısınız?",
     "ctaDesc": "QR kod ihtiyaçları için platformumuza güvenen milyonlarca kullanıcıya katılın.",
     "getStartedFree": "Ücretsiz Başlayın",
-    "viewPricing": "Fiyatları Görüntüle"
+    "viewPricing": "Fiyatları Görüntüle",
+    "featuredShowcase": "Müşteri Vitrini",
+    "featuredTitle": "Müşterilerimizin QR Kodları",
+    "featuredSubtitle": "Platformumuzda oluşturulan başarılı QR kod örneklerini keşfedin"
   },
   "qrTypes": {
     "url": "Web Sitesi URL",

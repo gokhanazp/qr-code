@@ -3,16 +3,18 @@
 
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  QrCode, 
-  Clock, 
+import {
+  QrCode,
+  Clock,
   AlertTriangle,
   CheckCircle,
   ExternalLink,
   Eye,
   Search,
-  Filter
+  Filter,
+  Star
 } from 'lucide-react'
+import FeaturedToggle from '@/components/admin/FeaturedToggle'
 
 // Sayfa parametreleri için tip
 interface PageProps {
@@ -212,6 +214,11 @@ export default async function AdminQRCodesPage({ searchParams }: PageProps) {
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
+                        {/* Featured Toggle - Ana sayfada göster/gizle */}
+                        <FeaturedToggle
+                          qrId={qr.id}
+                          initialFeatured={qr.is_featured || false}
+                        />
                         {qr.short_code && (
                           <a
                             href={`/r/${qr.short_code}`}

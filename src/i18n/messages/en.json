@@ -88,7 +88,10 @@
     "readyToCreate": "Ready to Create Your QR Codes?",
     "ctaDesc": "Join millions of users who trust our platform for their QR code needs.",
     "getStartedFree": "Get Started Free",
-    "viewPricing": "View Pricing"
+    "viewPricing": "View Pricing",
+    "featuredShowcase": "Customer Showcase",
+    "featuredTitle": "Our Customers' QR Codes",
+    "featuredSubtitle": "Discover successful QR code examples created on our platform"
   },
   "qrTypes": {
     "url": "URL / Website",
