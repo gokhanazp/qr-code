@@ -57,7 +57,26 @@ export default function PricingEditor({ plan, currencySymbol }: PricingEditorPro
         .eq('id', plan.id)
 
       if (error) throw error
-      
+
+      // plan_limits tablosunu da güncelle (Limitlerin aktif olması için)
+      // (Update plan_limits table for enforcement)
+      const { error: limitError } = await supabase
+        .from('plan_limits')
+        .upsert({
+          plan: plan.id,
+          max_qr_codes: formData.max_qr_codes,
+          qr_duration_days: formData.qr_duration_days,
+          max_scans_per_month: formData.max_scans_per_month,
+          can_use_logo: formData.can_use_logo,
+          can_use_frames: formData.can_use_frames,
+          can_use_analytics: formData.can_use_analytics
+        })
+
+      if (limitError) {
+        console.error('Plan limit update error:', limitError)
+        // Kritik değilse devam et veya kullanıcıya bildir
+      }
+
       setIsEditing(false)
       // Sayfayı yenile (Refresh page)
       window.location.reload()

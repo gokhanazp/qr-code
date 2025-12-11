@@ -143,7 +143,7 @@ export default async function RootLayout({
   // - /r/* : QR redirect sayfası (tarama)
   // - /v/* : vCard görüntüleme (tarama)
   const isAdminPage = pathname.startsWith('/admin');
-  const isQRLandingPage = pathname.startsWith('/app/') || pathname.startsWith('/r/') || pathname.startsWith('/v/');
+  const isQRLandingPage = pathname.startsWith('/app/') || pathname.startsWith('/r/') || pathname.startsWith('/v/') || pathname.startsWith('/menu/');
   const hideHeaderFooter = isAdminPage || isQRLandingPage;
 
   // Supabase client oluştur ve kullanıcı bilgisini al
