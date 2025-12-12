@@ -1,7 +1,8 @@
 // QR Kod Redirect Sayfası - Tarama sonrası yönlendirme
 // QR Code Redirect Page - Handles scan and redirect with validation
+// Service client kullanılır çünkü bu public bir sayfa - herkes QR'ı taratabilir
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { redirect, notFound } from 'next/navigation'
 import { AlertTriangle, Clock, XCircle, QrCode } from 'lucide-react'
 import Link from 'next/link'
@@ -13,7 +14,8 @@ interface PageProps {
 
 export default async function QRRedirectPage({ params }: PageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  // Service role client - RLS'i bypass eder (public access için gerekli)
+  const supabase = createServiceClient()
 
   // QR kodu veritabanından bul - önce id ile, sonra short_code ile dene
   // (Find QR code in database - try id first, then short_code)

@@ -1,7 +1,8 @@
 // HTML Viewer Page - QR kod taratıldığında HTML içeriği gösterir
 // HTML Viewer Page - Shows HTML content when QR code is scanned
+// Service client kullanılır çünkü bu public bir sayfa - herkes QR'ı taratabilir
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { notFound } from 'next/navigation'
 
 interface PageProps {
@@ -10,7 +11,8 @@ interface PageProps {
 
 export default async function HTMLViewerPage({ params }: PageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  // Service role client - RLS'i bypass eder (public access için gerekli)
+  const supabase = createServiceClient()
 
   // QR kodunu bul (Find QR code)
   const { data: qrCode } = await supabase

@@ -37,7 +37,8 @@ const socialLinks = [
   { name: 'YouTube', icon: Youtube, href: 'https://youtube.com', color: 'hover:text-red-500' },
 ]
 
-// QR tipleri kategorileri config - text çeviriden gelecek
+// QR tipleri kategorileri config - 3 sütunlu grid için düzenlenmiş
+// QR types categories config - organized for 3 column grid
 const qrCategoriesConfig = [
   {
     key: 'popular',
@@ -45,7 +46,9 @@ const qrCategoriesConfig = [
       { type: 'url', labelKey: 'url', icon: LinkIcon, color: 'bg-blue-500', descKey: 'linkToWebsite' },
       { type: 'vcard', labelKey: 'vcard', icon: CreditCard, color: 'bg-purple-500', descKey: 'digitalBusinessCard' },
       { type: 'wifi', labelKey: 'wifi', icon: Wifi, color: 'bg-green-500', descKey: 'shareWifi' },
-      { type: 'text', labelKey: 'text', icon: FileText, color: 'bg-gray-500', descKey: 'anyTextContent' },
+      { type: 'whatsapp', labelKey: 'whatsapp', icon: MessageCircle, color: 'bg-green-500', descKey: 'openWhatsApp' },
+      { type: 'menu', labelKey: 'menu', icon: Utensils, color: 'bg-orange-600', descKey: 'restaurantMenu' },
+      { type: 'app', labelKey: 'appStore', icon: AppWindow, color: 'bg-indigo-500', descKey: 'appDownload' },
     ]
   },
   {
@@ -54,29 +57,20 @@ const qrCategoriesConfig = [
       { type: 'email', labelKey: 'email', icon: Mail, color: 'bg-red-500', descKey: 'preFilledEmail' },
       { type: 'phone', labelKey: 'phone', icon: Phone, color: 'bg-emerald-500', descKey: 'quickDial' },
       { type: 'sms', labelKey: 'sms', icon: MessageCircle, color: 'bg-blue-400', descKey: 'sendTextMessage' },
-      { type: 'whatsapp', labelKey: 'whatsapp', icon: MessageCircle, color: 'bg-green-500', descKey: 'openWhatsApp' },
+      { type: 'text', labelKey: 'text', icon: FileText, color: 'bg-gray-500', descKey: 'anyTextContent' },
+      { type: 'event', labelKey: 'event', icon: Calendar, color: 'bg-orange-500', descKey: 'addToCalendar' },
+      { type: 'location', labelKey: 'location', icon: MapPin, color: 'bg-red-500', descKey: 'gpsCoordinates' },
     ]
   },
   {
-    key: 'socialMedia',
+    key: 'socialAndOther',
     items: [
       { type: 'instagram', labelKey: 'instagram', icon: Instagram, color: 'bg-gradient-to-br from-purple-500 to-pink-500', descKey: 'instagramProfile' },
       { type: 'twitter', labelKey: 'twitter', icon: Twitter, color: 'bg-sky-500', descKey: 'twitterProfile' },
       { type: 'linkedin', labelKey: 'linkedin', icon: Linkedin, color: 'bg-blue-600', descKey: 'professionalNetwork' },
       { type: 'youtube', labelKey: 'youtube', icon: Youtube, color: 'bg-red-600', descKey: 'youtubeChannel' },
       { type: 'facebook', labelKey: 'facebook', icon: Facebook, color: 'bg-blue-500', descKey: 'facebookPage' },
-    ]
-  },
-  {
-    key: 'other',
-    items: [
-      { type: 'event', labelKey: 'event', icon: Calendar, color: 'bg-orange-500', descKey: 'addToCalendar' },
-      { type: 'location', labelKey: 'location', icon: MapPin, color: 'bg-red-500', descKey: 'gpsCoordinates' },
       { type: 'bitcoin', labelKey: 'bitcoin', icon: Bitcoin, color: 'bg-amber-500', descKey: 'cryptoPayment' },
-      { type: 'app', labelKey: 'appStore', icon: AppWindow, color: 'bg-indigo-500', descKey: 'appDownload' },
-      { type: 'html', labelKey: 'html', icon: Code, color: 'bg-pink-500', descKey: 'htmlContent' },
-      { type: 'parking', labelKey: 'parking', icon: Car, color: 'bg-yellow-500', descKey: 'carOwnerContact' },
-      { type: 'menu', labelKey: 'menu', icon: Utensils, color: 'bg-orange-600', descKey: 'restaurantMenu' },
     ]
   }
 ]
@@ -296,42 +290,40 @@ export default function Header({ user }: HeaderProps) {
                   <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${qrMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Mega Menu Dropdown */}
+                {/* Mega Menu Dropdown - 3 sütunlu kompakt tasarım */}
                 {qrMenuOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-[720px] bg-white rounded-2xl shadow-2xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-50">
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-[900px] bg-white rounded-2xl shadow-2xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-50">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3">
                       <h3 className="text-white font-semibold flex items-center gap-2">
                         <Sparkles className="w-5 h-5" />
                         {t('chooseQrType')}
                       </h3>
-                      <p className="text-blue-100 text-sm mt-1">{t('qrSolutions')}</p>
+                      <p className="text-blue-100 text-sm">{t('qrSolutions')}</p>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 grid grid-cols-2 gap-6">
+                    {/* Content - 3 sütunlu grid */}
+                    <div className="p-4 grid grid-cols-3 gap-4">
                       {qrCategories.map((category) => (
                         <div key={category.name}>
-                          <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <div className="w-1 h-4 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+                          <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-2 px-2">
+                            <div className="w-1 h-3 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
                             {category.name}
                           </h4>
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             {category.items.map((item) => (
                               <Link
                                 key={item.type}
                                 href={item.href}
                                 onClick={() => setQrMenuOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-all group"
+                                className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-gray-50 transition-all group"
                               >
-                                <div className={`w-10 h-10 rounded-xl ${item.color} flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all`}>
-                                  <item.icon className="w-5 h-5 text-white" />
+                                <div className={`w-8 h-8 rounded-lg ${item.color} flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all`}>
+                                  <item.icon className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="flex-1">
-                                  <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">{item.label}</span>
-                                  <span className="text-xs text-gray-400 block">{item.desc}</span>
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors block truncate">{item.label}</span>
                                 </div>
-                                <ChevronRight className="w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-all" />
                               </Link>
                             ))}
                           </div>

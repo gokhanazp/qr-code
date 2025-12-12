@@ -1,6 +1,7 @@
 // Menü sayfası - Server Component olarak çalışır
 // QR kod taratıldığında menü içeriğini görüntüler
-import { createClient } from '@/lib/supabase/server'
+// Service client kullanılır çünkü bu public bir sayfa - herkes QR'ı taratabilir
+import { createServiceClient } from '@/lib/supabase/service'
 import { notFound } from 'next/navigation'
 import { Utensils } from 'lucide-react'
 
@@ -23,8 +24,9 @@ interface PageProps {
 export default async function MenuPage({ params }: PageProps) {
     const { id } = await params
 
-    // Server-side Supabase client kullan (Use server-side Supabase client)
-    const supabase = await createClient()
+    // Service role client kullan - RLS'i bypass eder (Use service role client - bypasses RLS)
+    // Public sayfa olduğu için herkesin erişebilmesi gerekiyor
+    const supabase = createServiceClient()
 
     // QR kod verisini çek (Fetch QR code data)
     const { data: qrData, error: qrError } = await supabase

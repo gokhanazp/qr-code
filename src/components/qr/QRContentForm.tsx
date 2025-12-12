@@ -1283,35 +1283,72 @@ END:VEVENT`
                         const files = Array.from(e.target.files)
                         const currentItems = data.items ? JSON.parse(data.items) : []
 
-                        // Her dosyayı oku ve ekle
-                        files.forEach(file => {
-                          const reader = new FileReader()
-                          reader.onload = (ev) => {
-                            const newUrl = ev.target?.result as string
-                            // State update async olduğu için burada biraz riskli ama basit döngüde çalışmayabilir
-                            // Callback içinde güncelleme yapmalıyız
-                            // Burası basitleştirilmiş mantık, gerçekte promise.all daha iyi olurdu
-                            const updatedItems = [...currentItems, { url: newUrl, caption: '' }]
-                            // Not: Döngü içinde state update sorunu olabilir, tek tek eklemek daha güvenli kullanıcı için
-                            // Şimdilik sadece tek dosya veya sonuncuyu alacak gibi duruyor, düzeltelim:
-                            // Aslında bu event handler her dosya için ayrı çalışacak ama closure sorunu olabilir.
-                            // En temizi: Promise.all yapısı.
-                          }
-                          // reader.readAsDataURL(file)
-                        })
+                        // Maksimum 10 görsel kontrolü (Max 10 images)
+                        const maxImages = 10
+                        if (currentItems.length + files.length > maxImages) {
+                          alert(locale === 'tr'
+                            ? `En fazla ${maxImages} menü sayfası ekleyebilirsiniz`
+                            : `You can add up to ${maxImages} menu pages`)
+                          return
+                        }
 
-                        // Promise All Yapısı
+                        // Görselleri sıkıştır ve ekle (Compress and add images)
+                        // Dosya boyutu kontrolü (File size check - max 5MB per file)
+                        const maxSize = 5 * 1024 * 1024
+                        const oversizedFiles = files.filter(f => f.size > maxSize)
+                        if (oversizedFiles.length > 0) {
+                          alert(locale === 'tr'
+                            ? 'Her görsel en fazla 5MB olabilir'
+                            : 'Each image must be less than 5MB')
+                          return
+                        }
+
+                        // Promise All ile dosyaları oku ve sıkıştır
                         Promise.all(files.map(file => {
-                          return new Promise((resolve) => {
+                          return new Promise<{ url: string; caption: string }>((resolve, reject) => {
                             const reader = new FileReader()
-                            reader.onload = (ev) => resolve({ url: ev.target?.result, caption: '' })
+                            reader.onload = (ev) => {
+                              const img = new Image()
+                              img.onload = () => {
+                                // Görsel boyutunu sınırla (Max 1200px genişlik)
+                                const maxWidth = 1200
+                                let width = img.width
+                                let height = img.height
+
+                                if (width > maxWidth) {
+                                  height = (height * maxWidth) / width
+                                  width = maxWidth
+                                }
+
+                                // Canvas ile sıkıştır
+                                const canvas = document.createElement('canvas')
+                                canvas.width = width
+                                canvas.height = height
+                                const ctx = canvas.getContext('2d')
+                                if (ctx) {
+                                  ctx.drawImage(img, 0, 0, width, height)
+                                  // JPEG olarak sıkıştır (quality: 0.8)
+                                  const compressedUrl = canvas.toDataURL('image/jpeg', 0.8)
+                                  resolve({ url: compressedUrl, caption: '' })
+                                } else {
+                                  resolve({ url: ev.target?.result as string, caption: '' })
+                                }
+                              }
+                              img.onerror = () => reject(new Error('Görsel yüklenemedi'))
+                              img.src = ev.target?.result as string
+                            }
+                            reader.onerror = () => reject(new Error('Dosya okunamadı'))
                             reader.readAsDataURL(file)
                           })
                         })).then(newPages => {
                           const updatedItems = [...currentItems, ...newPages]
                           handleDataChange('items', JSON.stringify(updatedItems))
+                        }).catch(err => {
+                          console.error('Görsel yükleme hatası:', err)
+                          alert(locale === 'tr'
+                            ? 'Görsel yüklenirken bir hata oluştu'
+                            : 'An error occurred while uploading image')
                         })
-
                       }
                     }}
                   />

@@ -38,17 +38,19 @@ import {
   QrCode, Zap, Shield, Globe, Smartphone, BarChart3, Sparkles, Play,
   Link as LinkIcon, Wifi, Mail, Phone, CreditCard, FileText, Calendar,
   MapPin, MessageCircle, Instagram, Twitter, Linkedin, Youtube, Facebook,
-  Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star, Code
+  Bitcoin, AppWindow, ArrowRight, CheckCircle2, Star, Code, Utensils, Car
 } from 'lucide-react'
 import FAQ from '@/components/FAQ'
 import FeaturedQRCodes from '@/components/home/FeaturedQRCodes'
 
 // QR tipleri - icon ve gradient bilgileri (text çeviriden gelecek)
+// QR types - icon and gradient info (text comes from translations)
 const qrTypesConfig = [
   { type: 'url', icon: LinkIcon, gradient: 'from-blue-500 to-blue-600', color: 'bg-blue-500', popular: true },
   { type: 'vcard', icon: CreditCard, gradient: 'from-purple-500 to-purple-600', color: 'bg-purple-500', popular: true },
   { type: 'wifi', icon: Wifi, gradient: 'from-green-500 to-emerald-600', color: 'bg-green-500', popular: true },
-  { type: 'email', icon: Mail, gradient: 'from-red-500 to-red-600', color: 'bg-red-500', popular: true },
+  { type: 'menu', icon: Utensils, gradient: 'from-orange-500 to-red-600', color: 'bg-orange-500', popular: true },
+  { type: 'email', icon: Mail, gradient: 'from-red-500 to-red-600', color: 'bg-red-500' },
   { type: 'phone', icon: Phone, gradient: 'from-emerald-500 to-emerald-600', color: 'bg-emerald-500' },
   { type: 'sms', icon: MessageCircle, gradient: 'from-blue-400 to-blue-500', color: 'bg-blue-400' },
   { type: 'whatsapp', icon: MessageCircle, gradient: 'from-green-500 to-green-600', color: 'bg-green-500', popular: true },
@@ -63,6 +65,7 @@ const qrTypesConfig = [
   { type: 'bitcoin', icon: Bitcoin, gradient: 'from-amber-500 to-amber-600', color: 'bg-amber-500' },
   { type: 'app', icon: AppWindow, gradient: 'from-indigo-500 to-indigo-600', color: 'bg-indigo-500', popular: true },
   { type: 'html', icon: Code, gradient: 'from-orange-500 to-red-500', color: 'bg-orange-500' },
+  { type: 'parking', icon: Car, gradient: 'from-yellow-500 to-amber-600', color: 'bg-yellow-500' },
 ]
 
 // Özellikler config - text çeviriden gelecek

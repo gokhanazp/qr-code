@@ -70,10 +70,10 @@ export default function CreateQRPage() {
         }),
       })
 
-      const data = await response.json()
+      const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to save QR code')
+        throw new Error(result.error || 'Failed to save QR code')
       }
 
       router.push('/dashboard')
@@ -169,8 +169,18 @@ export default function CreateQRPage() {
           {/* Sağ taraf - Önizleme */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-4">
+              {/*
+                MENU ve APP gibi dinamik tipler için QR preview'da örnek URL göster
+                (For dynamic types like MENU and APP, show example URL in preview)
+                Gerçek QR kodu kaydedildiğinde dinamik URL oluşturulacak
+              */}
               <QRPreview
-                content={content}
+                content={
+                  // Dinamik tipler için placeholder URL, diğerleri için gerçek content
+                  ['MENU', 'APP'].includes(selectedType.toUpperCase())
+                    ? (content ? `https://qrcodeshine.com/${selectedType.toLowerCase()}/preview` : '')
+                    : content
+                }
                 foregroundColor={foregroundColor}
                 backgroundColor={backgroundColor}
                 size={size}

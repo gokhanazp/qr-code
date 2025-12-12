@@ -1,8 +1,9 @@
 // App Download Landing Page - QR kod taratıldığında açılan uygulama indirme sayfası
 // Mobil uyumlu, güzel bir tasarım ile App Store ve Google Play linkleri
 // Welcome Screen (logo büyüme animasyonu) + Primary/Secondary renk sistemi
+// Service client kullanılır çünkü bu public bir sayfa - herkes QR'ı taratabilir
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { notFound } from 'next/navigation'
 import { AlertTriangle, Clock } from 'lucide-react'
 import Link from 'next/link'
@@ -35,7 +36,8 @@ interface AppData {
 
 export default async function AppLandingPage({ params }: PageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  // Service role client - RLS'i bypass eder (public access için gerekli)
+  const supabase = createServiceClient()
 
   // QR kodu veritabanından bul (Find QR code in database)
   const { data: qrCode, error } = await supabase
