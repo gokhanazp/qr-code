@@ -41,15 +41,20 @@ export default async function EditQRCodePage({ params }: PageProps) {
   const qrContent = qrCode.content as { encoded?: string; raw?: Record<string, unknown>; originalUrl?: string } | null
 
   // rawContent'i düzgün şekilde al - tüm değerleri string'e çevir
+  // rawContent properly - convert all values to strings
   const rawContentObj = qrContent?.raw || {}
   const rawContent: Record<string, string> = {}
 
   // Object değerlerini string'e çevir (Convert object values to strings)
+  // Array ve Object değerlerini JSON string olarak sakla
   Object.entries(rawContentObj).forEach(([key, value]) => {
     if (typeof value === 'string') {
       rawContent[key] = value
     } else if (typeof value === 'boolean') {
       rawContent[key] = String(value)
+    } else if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+      // Array veya Object ise JSON string olarak sakla (items gibi)
+      rawContent[key] = JSON.stringify(value)
     } else if (value !== null && value !== undefined) {
       rawContent[key] = String(value)
     }
