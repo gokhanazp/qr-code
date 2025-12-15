@@ -387,6 +387,7 @@
     "contactInfoSubtitle": "Add your contact details.",
     "address": "Address",
     "addressSubtitle": "Add your location.",
+    "logoSubtitle": "Add a logo to the center of your QR code.",
     "yourQRCode": "Your QR Code",
     "loadingQRCode": "Loading QR Code...",
     "scanToView": "Scan this QR code to view your digital business card",

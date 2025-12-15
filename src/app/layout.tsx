@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Header, Footer } from '@/components/layout';
 import { MainJsonLd } from '@/components/seo/JsonLd';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
+import { Analytics } from '@vercel/analytics/next';
 import { headers } from 'next/headers';
 import "./globals.css";
 
@@ -183,6 +184,9 @@ export default async function RootLayout({
           {/* QR landing ve Admin sayfalarında Footer gösterme */}
           {!hideHeaderFooter && <Footer />}
         </NextIntlClientProvider>
+
+        {/* Vercel Analytics */}
+        <Analytics />
       </body>
     </html>
   );

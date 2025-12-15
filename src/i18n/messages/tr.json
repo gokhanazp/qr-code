@@ -389,6 +389,7 @@
     "contactInfoSubtitle": "İletişim detaylarınızı ekleyin.",
     "address": "Adres",
     "addressSubtitle": "Konumunuzu ekleyin.",
+    "logoSubtitle": "QR kodun ortasına logo ekleyin.",
     "yourQRCode": "QR Kodunuz",
     "loadingQRCode": "QR Kod Yükleniyor...",
     "scanToView": "Dijital kartvizitinizi görüntülemek için bu QR kodu tarayın",

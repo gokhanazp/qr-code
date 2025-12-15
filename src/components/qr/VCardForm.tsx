@@ -18,12 +18,15 @@ import {
   ArrowLeftRight,
   Download,
   QrCode,
+  ImageIcon,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import VCardPhonePreview from './VCardPhonePreview'
 import QRPreview from './QRPreview'
 import VCardPhotoUpload from './VCardPhotoUpload'
+import QRLogoUploader from './QRLogoUploader'
+import { createClient } from '@/lib/supabase/client'
 
 // Renk paletleri (Color palettes)
 const colorPalettes = [
@@ -53,6 +56,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
     work: false,
     contact: false,
     address: false,
+    logo: false,
   })
 
   // Seçili palet (Selected palette)
@@ -61,11 +65,28 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
   // Base URL için state (client-side only)
   const [baseUrl, setBaseUrl] = useState('')
 
+  // Authentication durumu (Authentication state)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Logo durumu (Logo state)
+  const [logo, setLogo] = useState<string | null>(null)
+  const [logoSize, setLogoSize] = useState(20)
+
   // Client tarafında base URL'yi ayarla
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setBaseUrl(window.location.origin)
     }
+  }, [])
+
+  // Kullanıcı giriş durumunu kontrol et (Check user authentication)
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setIsAuthenticated(!!user)
+    }
+    checkAuth()
   }, [])
 
   // Bölüm aç/kapat (Toggle section)
@@ -227,6 +248,22 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
         >
           <AddressFields data={data} onChange={updateField} t={t} />
         </CollapsibleSection>
+
+        {/* Logo Bölümü (Logo Section) */}
+        <CollapsibleSection
+          icon={<ImageIcon className="w-5 h-5" />}
+          title={t('logo')}
+          subtitle={t('logoSubtitle')}
+          isOpen={openSections.logo}
+          onToggle={() => toggleSection('logo')}
+        >
+          <QRLogoUploader
+            logo={logo}
+            logoSize={logoSize}
+            onLogoChange={setLogo}
+            onLogoSizeChange={setLogoSize}
+          />
+        </CollapsibleSection>
       </div>
 
       {/* Sağ Panel - Önizlemeler (Right Panel - Previews) */}
@@ -264,6 +301,9 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
                 backgroundColor="#ffffff"
                 size={200}
                 errorCorrection="H"
+                logo={logo}
+                logoSize={logoSize}
+                isAuthenticated={isAuthenticated}
               />
             ) : (
               <div className="flex items-center justify-center h-48 bg-gray-50 rounded-xl">

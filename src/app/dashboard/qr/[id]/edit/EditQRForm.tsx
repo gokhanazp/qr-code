@@ -87,6 +87,22 @@ export default function EditQRForm({
     setAppData(prev => ({ ...prev, [key]: value }))
   }
 
+  // MENU tipi için ek state'ler
+  const [menuData, setMenuData] = useState({
+    restaurantName: initialRawContent.restaurantName || '',
+    description: initialRawContent.description || '',
+    website: initialRawContent.website || '',
+    primaryColor: initialRawContent.primaryColor || '#ff5722',
+    textColor: initialRawContent.textColor || '#000000',
+    coverImage: initialRawContent.coverImage || '',
+    items: initialRawContent.items || '[]',
+  })
+
+  // MENU verilerini güncelle
+  const updateMenuData = (key: string, value: string) => {
+    setMenuData(prev => ({ ...prev, [key]: value }))
+  }
+
   const handleSave = async () => {
     if (!name.trim()) { setMessage({ type: 'error', text: t('pleaseEnterName') }); return }
     setIsSaving(true); setMessage(null)
@@ -95,6 +111,8 @@ export default function EditQRForm({
     let updatedRawContent = { ...initialRawContent }
     if (normalizedType === 'APP') {
       updatedRawContent = { ...appData, welcomeScreenEnabled: String(appData.welcomeScreenEnabled) }
+    } else if (normalizedType === 'MENU') {
+      updatedRawContent = { ...menuData }
     }
 
     try {
@@ -128,7 +146,34 @@ export default function EditQRForm({
     } finally { setIsSaving(false) }
   }
 
-  const getQRContent = () => normalizedType === 'URL' ? url : (url || initialUrl)
+  const getQRContent = () => {
+    if (normalizedType === 'URL') return url
+    if (normalizedType === 'MENU') {
+      // MENU tipi için landing page URL'sini oluştur
+      // Format: https://domain.com/menu/[qr-id]
+      if (typeof window !== 'undefined') {
+        const baseUrl = window.location.origin
+        const menuUrl = `${baseUrl}/menu/${qrId}`
+        console.log('MENU QR Content:', menuUrl)
+        return menuUrl
+      }
+      // Server-side fallback
+      return initialUrl || `/menu/${qrId}`
+    }
+    return url || initialUrl
+  }
+
+  // Debug: MENU tipi için değerleri kontrol et
+  if (normalizedType === 'MENU') {
+    console.log('MENU Edit Page Debug:', {
+      normalizedType,
+      qrId,
+      initialUrl,
+      url,
+      generatedContent: getQRContent(),
+      menuData
+    })
+  }
 
   // APP tipi için düzenleme formu
   const renderAppForm = () => (
@@ -226,14 +271,14 @@ export default function EditQRForm({
         <h4 className="font-medium text-gray-900 border-b pb-2">🔗 Store Linkleri</h4>
         <div>
           <label className="text-sm text-gray-700 mb-1 block flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg>
             App Store URL
           </label>
           <input type="url" value={appData.iosUrl} onChange={(e) => updateAppData('iosUrl', e.target.value)} className="w-full px-3 py-2 border rounded-lg" placeholder="https://apps.apple.com/app/..." />
         </div>
         <div>
           <label className="text-sm text-gray-700 mb-1 block flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" /></svg>
             Google Play URL
           </label>
           <input type="url" value={appData.androidUrl} onChange={(e) => updateAppData('androidUrl', e.target.value)} className="w-full px-3 py-2 border rounded-lg" placeholder="https://play.google.com/store/apps/..." />
@@ -304,59 +349,169 @@ export default function EditQRForm({
 
             {/* MENU içeriği */}
             {normalizedType === 'MENU' && (() => {
-              // items JSON string olarak gelebilir, parse edelim
-              let menuItems: Array<{ name: string; description: string; image: string }> = []
+              // items JSON string olarak geliyor, parse edelim
+              let menuItems: Array<{ url: string; caption: string }> = []
               try {
-                if (initialRawContent.items) {
-                  menuItems = JSON.parse(initialRawContent.items)
+                if (menuData.items) {
+                  menuItems = JSON.parse(menuData.items)
                 }
               } catch {
                 menuItems = []
               }
 
               return (
-                <div className="space-y-4 p-4 bg-orange-50 rounded-xl">
-                  <h4 className="font-medium text-gray-900 flex items-center gap-2">🍽️ Menü Bilgileri</h4>
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">Restoran Adı</label>
-                    <input type="text" value={initialRawContent.restaurantName || ''} readOnly
-                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                <div className="space-y-4">
+                  {/* Renk Teması */}
+                  <div className="p-4 bg-orange-50 rounded-xl space-y-3">
+                    <h4 className="font-medium text-gray-900 flex items-center gap-2">🎨 Renk Teması</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Primary Color</label>
+                        <div className="flex items-center gap-2">
+                          <input type="color" value={menuData.primaryColor} onChange={(e) => updateMenuData('primaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                          <input type="text" value={menuData.primaryColor} onChange={(e) => updateMenuData('primaryColor', e.target.value)} className="flex-1 px-2 py-1.5 border rounded text-xs font-mono" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Text Color</label>
+                        <div className="flex items-center gap-2">
+                          <input type="color" value={menuData.textColor} onChange={(e) => updateMenuData('textColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                          <input type="text" value={menuData.textColor} onChange={(e) => updateMenuData('textColor', e.target.value)} className="flex-1 px-2 py-1.5 border rounded text-xs font-mono" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">Açıklama</label>
-                    <textarea value={initialRawContent.description || ''} readOnly rows={2}
-                      className="w-full px-3 py-2 border rounded-lg bg-gray-100 resize-none" />
+
+                  {/* Restoran Bilgileri */}
+                  <div className="p-4 bg-orange-50 rounded-xl space-y-3">
+                    <h4 className="font-medium text-gray-900 flex items-center gap-2">🍽️ Restoran Bilgileri</h4>
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">Restoran Adı</label>
+                      <input type="text" value={menuData.restaurantName} onChange={(e) => updateMenuData('restaurantName', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Restoran Adı" />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">Açıklama</label>
+                      <textarea value={menuData.description} onChange={(e) => updateMenuData('description', e.target.value)} rows={2}
+                        className="w-full px-3 py-2 border rounded-lg resize-none focus:ring-2 focus:ring-orange-500" placeholder="Menü açıklaması..." />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">Website</label>
+                      <input type="text" value={menuData.website} onChange={(e) => updateMenuData('website', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="https://restoran.com" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">Website</label>
-                    <input type="text" value={initialRawContent.website || ''} readOnly
-                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+
+                  {/* Kapak Görseli */}
+                  <div className="p-4 bg-orange-50 rounded-xl space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Kapak Görseli / Logo</label>
+                    <div className="flex items-center gap-4">
+                      {menuData.coverImage ? (
+                        <div className="relative">
+                          <img src={menuData.coverImage} alt="Cover" className="w-32 h-20 rounded-lg object-cover border border-gray-200" />
+                          <button type="button" onClick={() => updateMenuData('coverImage', '')}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600">×</button>
+                        </div>
+                      ) : (
+                        <label className="w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-100 transition-colors">
+                          <span className="text-2xl text-gray-400">📷</span>
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              const reader = new FileReader()
+                              reader.onload = (ev) => updateMenuData('coverImage', ev.target?.result as string)
+                              reader.readAsDataURL(file)
+                            }
+                          }} />
+                        </label>
+                      )}
+                    </div>
                   </div>
 
                   {/* Menü Görselleri */}
-                  {menuItems.length > 0 && (
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-2">Menü Görselleri ({menuItems.length} adet)</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {menuItems.map((item, index) => (
-                          <div key={index} className="relative group">
-                            <img
-                              src={item.image}
-                              alt={item.name || `Menü ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                            />
-                            {item.name && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 rounded-b-lg truncate">
-                                {item.name}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                  <div className="p-4 bg-orange-50 rounded-xl space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="block text-sm font-medium text-gray-700">📑 Menü Sayfaları</label>
+                      <span className="text-xs text-gray-500">{menuItems.length} sayfa</span>
                     </div>
-                  )}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {menuItems.map((item, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={item.url}
+                            alt={`Menü ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3E✕%3C/text%3E%3C/svg%3E'
+                            }}
+                          />
+                          <button type="button"
+                            onClick={() => {
+                              const newItems = menuItems.filter((_, i) => i !== index)
+                              updateMenuData('items', JSON.stringify(newItems))
+                            }}
+                            className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm">
+                            ×
+                          </button>
+                          <div className="absolute bottom-1 left-1 bg-black/50 text-white px-1.5 py-0.5 rounded text-xs">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
 
-                  <p className="text-xs text-orange-600">⚠️ Menü içeriğini değiştirmek için yeni QR kod oluşturun</p>
+                      {/* Yeni Görsel Ekle */}
+                      <label className="w-full h-24 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-100 transition-colors">
+                        <span className="text-2xl text-gray-400">+</span>
+                        <span className="text-xs text-gray-500">Ekle</span>
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                          if (e.target.files) {
+                            const files = Array.from(e.target.files)
+                            const currentItems = menuItems
+
+                            if (currentItems.length + files.length > 10) {
+                              alert('En fazla 10 menü sayfası ekleyebilirsiniz')
+                              return
+                            }
+
+                            Promise.all(files.map(file => {
+                              return new Promise<{ url: string; caption: string }>((resolve) => {
+                                const reader = new FileReader()
+                                reader.onload = (ev) => {
+                                  const img = new Image()
+                                  img.onload = () => {
+                                    const maxWidth = 1200
+                                    let width = img.width
+                                    let height = img.height
+                                    if (width > maxWidth) {
+                                      height = (height * maxWidth) / width
+                                      width = maxWidth
+                                    }
+                                    const canvas = document.createElement('canvas')
+                                    canvas.width = width
+                                    canvas.height = height
+                                    const ctx = canvas.getContext('2d')
+                                    if (ctx) {
+                                      ctx.drawImage(img, 0, 0, width, height)
+                                      const compressedUrl = canvas.toDataURL('image/jpeg', 0.8)
+                                      resolve({ url: compressedUrl, caption: '' })
+                                    } else {
+                                      resolve({ url: ev.target?.result as string, caption: '' })
+                                    }
+                                  }
+                                  img.src = ev.target?.result as string
+                                }
+                                reader.readAsDataURL(file)
+                              })
+                            })).then(newPages => {
+                              const updatedItems = [...currentItems, ...newPages]
+                              updateMenuData('items', JSON.stringify(updatedItems))
+                            })
+                          }
+                        }} />
+                      </label>
+                    </div>
+                  </div>
                 </div>
               )
             })()}
@@ -710,6 +865,54 @@ export default function EditQRForm({
               </div>
             </div>
             <p className="text-xs text-gray-500 text-center">Landing Page Önizleme</p>
+          </div>
+        ) : normalizedType === 'MENU' ? (
+          <div className="space-y-4">
+            {/* Menu Preview */}
+            <div className="border rounded-xl overflow-hidden mx-auto" style={{ maxWidth: '220px' }}>
+              <div className="h-[360px] flex flex-col" style={{ background: `linear-gradient(to bottom, ${menuData.primaryColor}, ${menuData.primaryColor}dd)` }}>
+                <div className="p-3 flex flex-col items-center text-center flex-1">
+                  {menuData.coverImage && (
+                    <img src={menuData.coverImage} alt="Cover" className="w-16 h-16 rounded-lg object-cover mb-2" />
+                  )}
+                  <p className="text-sm font-bold mb-1" style={{ color: menuData.textColor }}>
+                    {menuData.restaurantName || 'Restoran Adı'}
+                  </p>
+                  <p className="text-xs opacity-70 mb-2" style={{ color: menuData.textColor }}>
+                    {menuData.description || 'Menü açıklaması'}
+                  </p>
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-4xl">🍽️</div>
+                  </div>
+                  {menuData.website && (
+                    <p className="text-[8px] opacity-60" style={{ color: menuData.textColor }}>
+                      {menuData.website.replace(/^https?:\/\//, '')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 text-center">Menü Landing Page Önizleme</p>
+
+            {/* QR Code Preview */}
+            <div className="border-t pt-4">
+              <QRDownloadWrapper
+                content={getQRContent()}
+                foregroundColor={foregroundColor}
+                backgroundColor={backgroundColor}
+                size={size}
+                errorCorrection={errorCorrection}
+                selectedFrame={selectedFrame}
+                frameText={frameText}
+                frameColor={frameColor}
+                logo={logo}
+                logoSize={logoSize}
+                qrName={name || 'qr-code'}
+                isExpired={false}
+                downloadPNGLabel={t('downloadPNG')}
+                downloadSVGLabel={t('downloadSVG')}
+              />
+            </div>
           </div>
         ) : (
           <QRDownloadWrapper
