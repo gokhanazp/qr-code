@@ -398,7 +398,7 @@ export default function QRPreview({
           const shapes = inner.match(/<(path|rect|polygon|circle|ellipse)[^>]*>/g) || []
           if (shapes.length > 5) {
             const classes = inner.match(/class="([^"]+)"/g)
-            const uniqueClasses = Array.from(new Set(classes ? classes.map(c => c.split('"')[1]) : [null]))
+            const uniqueClasses = Array.from(new Set(classes ? classes.map((c: string) => c.split('"')[1]) : [null]))
             if (uniqueClasses.length === 1) return '' // Uniform class = SCAN ME
             if (shapes.length > 30) return '' // High density = Dummy QR
           }
