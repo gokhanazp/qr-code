@@ -62,7 +62,7 @@ function AccordionPanel({ title, icon, isOpen, onToggle, badge, children, accent
       </button>
 
       {/* Panel Content */}
-      <div className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+      <div className={`transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="p-4 bg-white">
           {children}
         </div>
@@ -161,9 +161,8 @@ export default function QRCustomizer({
                   <button
                     key={color}
                     onClick={() => onForegroundChange(color)}
-                    className={`w-7 h-7 rounded-md border-2 transition-transform hover:scale-110 ${
-                      foregroundColor === color ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
-                    }`}
+                    className={`w-7 h-7 rounded-md border-2 transition-transform hover:scale-110 ${foregroundColor === color ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+                      }`}
                     style={{ backgroundColor: color }}
                     aria-label={`Select color ${color}`}
                   />
@@ -189,9 +188,8 @@ export default function QRCustomizer({
                   <button
                     key={color}
                     onClick={() => onBackgroundChange(color)}
-                    className={`w-7 h-7 rounded-md border-2 transition-transform hover:scale-110 ${
-                      backgroundColor === color ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
-                    }`}
+                    className={`w-7 h-7 rounded-md border-2 transition-transform hover:scale-110 ${backgroundColor === color ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
+                      }`}
                     style={{ backgroundColor: color }}
                     aria-label={`Select background color ${color}`}
                   />
@@ -230,11 +228,10 @@ export default function QRCustomizer({
                 <button
                   key={level}
                   onClick={() => onErrorCorrectionChange(level)}
-                  className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                    errorCorrection === level
+                  className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${errorCorrection === level
                       ? 'bg-blue-600 text-white shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {level}
                   <span className="block text-xs opacity-75">

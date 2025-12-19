@@ -117,12 +117,23 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
     onChange({ ...data, primaryColor: newPrimary, secondaryColor: newSecondary })
   }
 
+  // Debounced veri (Debounced data) - Performans için (For performance)
+  const [debouncedData, setDebouncedData] = useState(data)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedData(data)
+    }, 400) // 400ms gecikme (delay)
+
+    return () => clearTimeout(handler)
+  }, [data])
+
   // Landing page URL'si - memoized (Generate landing page URL - memoized)
   const qrContent = useMemo(() => {
     if (!baseUrl) return ''
 
     const vCardData = {
-      ...data,
+      ...debouncedData,
       primaryColor: selectedPalette.primary,
       secondaryColor: selectedPalette.secondary,
     }
@@ -138,7 +149,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
     } catch {
       return ''
     }
-  }, [data, selectedPalette, baseUrl])
+  }, [debouncedData, selectedPalette, baseUrl])
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">

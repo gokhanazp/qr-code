@@ -292,7 +292,7 @@ export default function Header({ user }: HeaderProps) {
 
                 {/* Mega Menu Dropdown - 3 sütunlu kompakt tasarım */}
                 {qrMenuOpen && (
-                  <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-[900px] bg-white rounded-2xl shadow-2xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-50">
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-[1000px] bg-white rounded-3xl shadow-2xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3">
                       <h3 className="text-white font-semibold flex items-center gap-2">
@@ -412,7 +412,7 @@ export default function Header({ user }: HeaderProps) {
 
                   {/* Dropdown menü - Dashboard linkleri ile genişletilmiş */}
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden">
+                    <div className="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden z-50">
                       {/* Üst gradyan */}
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600" />
 
