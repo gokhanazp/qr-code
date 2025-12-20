@@ -16,7 +16,7 @@ import clsx from 'clsx'
 import QRContentForm from './QRContentForm'
 import QRCustomizer from './QRCustomizer'
 import QRPreview from './QRPreview'
-
+import VCardForm from './VCardForm'
 import ParkingQRPreview from './ParkingQRPreview'
 import { QRType } from './QRTypeSelector'
 import { createClient } from '@/lib/supabase/client'
@@ -191,7 +191,36 @@ export default function QRTypePage({ type }: QRTypePageProps) {
 
   const IconComponent = baseConfig?.icon || QrCode
 
+  // vCard için özel sayfa
+  if (type === 'vcard') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <Link href="/" className="inline-flex items-center gap-2 text-purple-200 hover:text-white mb-6 transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              {t('backToHome')}
+            </Link>
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                <CreditCard className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold">{t('digitalBusinessCard')}</h1>
+                <p className="text-purple-200 mt-1">{t('vcardDescription')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        {/* vCard Form */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <VCardForm data={data} onChange={(newData) => setData(newData)} />
+        </div>
+      </div>
+    )
+  }
 
   // Diğer QR tipleri için standart sayfa
   return (

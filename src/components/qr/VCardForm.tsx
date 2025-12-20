@@ -27,6 +27,9 @@ import QRPreview from './QRPreview'
 import VCardPhotoUpload from './VCardPhotoUpload'
 import QRLogoUploader from './QRLogoUploader'
 import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 
 // Renk paletleri (Color palettes)
 const colorPalettes = [
@@ -72,6 +75,14 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
   const [logo, setLogo] = useState<string | null>(null)
   const [logoSize, setLogoSize] = useState(20)
 
+  // Kaydetme durumu (Save state)
+  const router = useRouter()
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error' | 'warning'; text: string } | null>(null)
+  const [qrName, setQrName] = useState('')
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [limits, setLimits] = useState<{ current: number; limit: number | string; plan: string } | null>(null)
+
   // Client tarafında base URL'yi ayarla
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -85,6 +96,19 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       setIsAuthenticated(!!user)
+
+      // Limit bilgisini al (Fetch limits)
+      if (user) {
+        try {
+          const res = await fetch('/api/qr/save')
+          const d = await res.json()
+          if (d.limits) {
+            setLimits(d.limits)
+          }
+        } catch (e) {
+          console.error('Limit fetch error:', e)
+        }
+      }
     }
     checkAuth()
   }, [])
@@ -150,6 +174,73 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
       return ''
     }
   }, [debouncedData, selectedPalette, baseUrl])
+
+  // QR kodunu kaydet (Save QR Code)
+  const handleSaveQR = async () => {
+    if (!qrName.trim()) {
+      setSaveMessage({ type: 'error', text: t('pleaseEnterName') || 'Lütfen bir isim girin' })
+      return
+    }
+
+    setIsSaving(true)
+    setSaveMessage(null)
+
+    try {
+      const vCardData = {
+        ...debouncedData,
+        primaryColor: selectedPalette.primary,
+        secondaryColor: selectedPalette.secondary,
+      }
+
+      const res = await fetch('/api/qr/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: qrName.trim(),
+          type: 'VCARD',
+          content: qrContent, // Landing page URL
+          rawContent: vCardData, // JSON data
+          settings: {
+            foregroundColor: '#000000',
+            backgroundColor: '#ffffff',
+            size: 200,
+            errorCorrection: 'H',
+            frame: 'none',
+            logo,
+            logoSize
+          }
+        })
+      })
+
+      const result = await res.json()
+
+      if (res.ok) {
+        setSaveMessage({ type: 'success', text: t('savedSuccessfully') || 'Başarıyla kaydedildi' })
+        setShowSaveModal(false)
+        setQrName('')
+        if (limits) {
+          setLimits({ ...limits, current: (limits.current as number) + 1 })
+        }
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      } else if (res.status === 403) {
+        setSaveMessage({ type: 'warning', text: result.message || t('limitReached') || 'Limit aşıldı' })
+        setShowSaveModal(false)
+      } else if (res.status === 401) {
+        setSaveMessage({ type: 'error', text: t('pleaseLogin') || 'Lütfen giriş yapın' })
+        setShowSaveModal(false)
+        setTimeout(() => router.push('/auth/login'), 1500)
+      } else {
+        setSaveMessage({ type: 'error', text: result.message || t('saveFailed') || 'Kaydetme başarısız' })
+      }
+    } catch (error) {
+      console.error('Save error:', error)
+      setSaveMessage({ type: 'error', text: t('errorOccurred') || 'Bir hata oluştu' })
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -352,7 +443,96 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
                 </p>
               </div>
             )}
+
           </div>
+
+          {/* Kaydet Butonu ve Modal (Save Button and Modal) */}
+          <div className="bg-gray-50 p-6 border-t border-gray-100">
+            {/* Mesaj Alanı */}
+            {saveMessage && (
+              <div className={clsx(
+                'mb-4 p-3 rounded-lg flex items-center gap-2 text-sm',
+                saveMessage.type === 'success' && 'bg-green-50 text-green-700 border border-green-200',
+                saveMessage.type === 'error' && 'bg-red-50 text-red-700 border border-red-200',
+                saveMessage.type === 'warning' && 'bg-amber-50 text-amber-700 border border-amber-200'
+              )}>
+                {saveMessage.type === 'success' && <CheckCircle className="w-4 h-4" />}
+                {saveMessage.type === 'error' && <AlertCircle className="w-4 h-4" />}
+                {saveMessage.type === 'warning' && <AlertCircle className="w-4 h-4" />}
+                {saveMessage.text}
+              </div>
+            )}
+
+            {/* Limit Bilgisi */}
+            {isAuthenticated && limits && (
+              <div className="mb-3 text-xs text-gray-500 flex items-center justify-between">
+                <span>{t('plan') || 'Plan'}: <span className="font-medium capitalize">{limits.plan}</span></span>
+                <span>
+                  {typeof limits.limit === 'number' ? (
+                    <span className={limits.current >= limits.limit ? 'text-red-500' : ''}>
+                      {limits.current}/{limits.limit} QR
+                    </span>
+                  ) : (
+                    <span className="text-green-600">{t('unlimited') || 'Sınırsız'}</span>
+                  )}
+                </span>
+              </div>
+            )}
+
+            {isAuthenticated ? (
+              showSaveModal ? (
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder={t('qrNamePlaceholder') || 'QR Kod Adı'}
+                    value={qrName}
+                    onChange={(e) => setQrName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveQR}
+                      disabled={isSaving}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    >
+                      {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {isSaving ? (t('saving') || 'Kaydediliyor') : (t('save') || 'Kaydet')}
+                    </button>
+                    <button
+                      onClick={() => { setShowSaveModal(false); setQrName('') }}
+                      className="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors"
+                    >
+                      {t('cancel') || 'İptal'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowSaveModal(true)}
+                  disabled={!!(limits && typeof limits.limit === 'number' && limits.current >= limits.limit)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-5 h-5" />
+                  {t('saveToAccount') || 'Hesabıma Kaydet'}
+                </button>
+              )
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600 text-center">
+                  {t('loginToSave') || 'Kaydetmek için giriş yapın'}
+                </p>
+                <Link
+                  href="/auth/login"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-800 to-black hover:from-gray-900 hover:to-black text-white rounded-xl font-medium transition-all shadow-md hover:shadow-lg"
+                >
+                  {t('login') || 'Giriş Yap'}
+                </Link>
+              </div>
+            )}
+          </div>
+
+
         </div>
       </div>
     </div>
