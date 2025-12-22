@@ -60,6 +60,7 @@ const qrCategoriesConfig = [
       { type: 'text', labelKey: 'text', icon: FileText, color: 'bg-gray-500', descKey: 'anyTextContent' },
       { type: 'event', labelKey: 'event', icon: Calendar, color: 'bg-orange-500', descKey: 'addToCalendar' },
       { type: 'location', labelKey: 'location', icon: MapPin, color: 'bg-red-500', descKey: 'gpsCoordinates' },
+      { type: 'parking', labelKey: 'parking', icon: Car, color: 'bg-yellow-500', descKey: 'carOwnerContact' },
     ]
   },
   {

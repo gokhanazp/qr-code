@@ -406,7 +406,9 @@
     "clickToPreview": "Dijital kartvizitinizi önizlemek için tıklayın",
     "addContact": "Kişi Ekle",
     "phone": "Telefon",
-    "work": "İş"
+    "work": "İş",
+    "template": "Kart Tasarımı",
+    "saveContact": "Rehbere Ekle"
   },
   "auth": {
     "loginTitle": "Tekrar Hoş Geldiniz",

@@ -406,7 +406,9 @@
     "clickToPreview": "Click to preview your digital business card",
     "addContact": "Add Contact",
     "phone": "Phone",
-    "work": "Work"
+    "work": "Work",
+    "template": "Card Design",
+    "saveContact": "Save Contact"
   },
   "auth": {
     "loginTitle": "Welcome Back",

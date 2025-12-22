@@ -19,6 +19,7 @@ import {
   Download,
   QrCode,
   ImageIcon,
+  LayoutTemplate,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
@@ -43,6 +44,13 @@ const colorPalettes = [
   { id: 8, primary: '#EC4899', secondary: '#F9A8D4', name: 'Pink' },
 ]
 
+// Tasarım Şablonları (Design Templates)
+const DESIGN_TEMPLATES = [
+  { id: 'classic', name: 'Classic', color: 'bg-gradient-to-br from-blue-500 to-purple-600' },
+  { id: 'modern', name: 'Modern', color: 'bg-white border-t-8 border-blue-500' },
+  { id: 'sleek', name: 'Sleek', color: 'bg-gray-100 border-l-8 border-black' },
+] as const
+
 interface VCardFormProps {
   data: Record<string, string>
   onChange: (data: Record<string, string>) => void
@@ -64,6 +72,9 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
 
   // Seçili palet (Selected palette)
   const [selectedPalette, setSelectedPalette] = useState(colorPalettes[0])
+
+  // Seçili Şablon (Selected Template)
+  const [template, setTemplate] = useState<'classic' | 'modern' | 'sleek'>('classic')
 
   // Base URL için state (client-side only)
   const [baseUrl, setBaseUrl] = useState('')
@@ -160,6 +171,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
       ...debouncedData,
       primaryColor: selectedPalette.primary,
       secondaryColor: selectedPalette.secondary,
+      template, // Şablon bilgisini URL'e ekle
     }
 
     try {
@@ -207,7 +219,8 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
             errorCorrection: 'H',
             frame: 'none',
             logo,
-            logoSize
+            logoSize,
+            template // Save template setting
           }
         })
       })
@@ -254,6 +267,96 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
           isOpen={openSections.design}
           onToggle={() => toggleSection('design')}
         >
+          {/* Şablon Seçimi (Template Selection) */}
+          <div className="space-y-4 mb-6">
+            <label className="block text-sm font-medium text-gray-700">{t('template') || 'Kart Tasarımı'}</label>
+            <div className="grid grid-cols-3 gap-4">
+              {DESIGN_TEMPLATES.map((tmpl) => (
+                <button
+                  key={tmpl.id}
+                  onClick={() => setTemplate(tmpl.id)}
+                  className={clsx(
+                    'relative h-36 rounded-xl border transition-all overflow-hidden group text-left',
+                    template === tmpl.id
+                      ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md bg-white'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white'
+                  )}
+                >
+                  {/* Visual Preview */}
+                  <div className="absolute top-2 left-2 right-2 bottom-8 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
+                    {/* 1. Classic Thumbnail */}
+                    {tmpl.id === 'classic' && (
+                      <div className="w-full h-full flex flex-col items-center">
+                        <div className="w-full h-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-b-[10px]" />
+                        <div className="w-8 h-8 rounded-full bg-white border-2 border-gray-100 -mt-4 shadow-sm z-10" />
+                        <div className="mt-2 space-y-1 w-full px-3 flex flex-col items-center">
+                          <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+                          <div className="w-8 h-1 bg-gray-100 rounded-full" />
+                          <div className="flex gap-1 mt-1">
+                            <div className="w-3 h-3 rounded-full bg-blue-100" />
+                            <div className="w-3 h-3 rounded-full bg-blue-100" />
+                            <div className="w-3 h-3 rounded-full bg-blue-100" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. Modern Thumbnail */}
+                    {tmpl.id === 'modern' && (
+                      <div className="w-full h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 opacity-20" />
+                        <div className="absolute inset-x-3 top-6 bottom-0 bg-white rounded-t-lg shadow-sm border-x border-t border-gray-100 flex flex-col items-center pt-5">
+                          <div className="absolute -top-4 w-8 h-8 rounded-lg bg-indigo-500 border-2 border-white shadow-sm transform rotate-6" />
+                          <div className="w-10 h-1.5 bg-gray-800 rounded-full mt-1" />
+                          <div className="w-6 h-1 bg-indigo-200 rounded-full mt-1" />
+                          <div className="mt-2 text-[4px] space-y-1 w-full px-2 text-gray-300">
+                            <div className="border-b border-gray-50 pb-1 flex gap-1"><div className="w-2 h-2 bg-gray-100 rounded" /> ---------</div>
+                            <div className="border-b border-gray-50 pb-1 flex gap-1"><div className="w-2 h-2 bg-gray-100 rounded" /> ---------</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 3. Sleek Thumbnail */}
+                    {tmpl.id === 'sleek' && (
+                      <div className="w-full h-full bg-gray-900 flex flex-col relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full blur-xl -mr-10 -mt-10" />
+                        <div className="h-1 w-full bg-gradient-to-r from-amber-400 to-yellow-600" />
+                        <div className="p-3 flex flex-col items-center">
+                          <div className="w-8 h-8 rounded-full border border-gray-700 bg-gray-800 mb-2 relative">
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-yellow-600 opacity-20 blur-sm" />
+                          </div>
+                          <div className="w-12 h-1.5 bg-white rounded-full opacity-90" />
+                          <div className="w-8 h-1 bg-white/30 rounded-full mt-1" />
+                          <div className="mt-3 w-full space-y-1 opacity-40">
+                            <div className="w-full h-0.5 bg-gray-700" />
+                            <div className="w-full h-0.5 bg-gray-700" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Label */}
+                  <div className="absolute bottom-2 left-0 right-0 text-center">
+                    <span className={clsx("text-xs font-semibold", template === tmpl.id ? "text-blue-600" : "text-gray-500")}>
+                      {tmpl.name}
+                    </span>
+                  </div>
+
+                  {/* Active Indicator */}
+                  {template === tmpl.id && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-sm">
+                      <CheckCircle className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="w-full h-px bg-gray-100 my-6" />
+
           {/* Renk Paleti (Color Palette) */}
           <div className="space-y-4">
             <label className="block text-sm font-medium text-gray-700">{t('colorPalette')}</label>
@@ -376,6 +479,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
             data={data}
             primaryColor={selectedPalette.primary}
             secondaryColor={selectedPalette.secondary}
+            template={template}
           />
         </div>
 
