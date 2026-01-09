@@ -183,6 +183,7 @@ export default async function RootLayout({
 
           {/* QR landing ve Admin sayfalarında Footer gösterme */}
           {!hideHeaderFooter && <Footer />}
+          <Analytics />
         </NextIntlClientProvider>
 
         {/* Vercel Analytics */}
