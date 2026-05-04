@@ -128,10 +128,10 @@ export default async function VCardLandingPage({ params }: PageProps) {
 
   // Default: Classic template
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Header Gradient */}
       <div
-        className="pt-12 pb-16 flex flex-col items-center relative"
+        className="pt-12 pb-16 flex flex-col items-center relative flex-shrink-0"
         style={{
           background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`
         }}
@@ -165,7 +165,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 -mt-8 pb-8 relative z-10">
+      <div className="max-w-md mx-auto w-full px-4 -mt-8 pb-6 relative z-10 flex-1 flex flex-col">
         <div className="flex justify-center gap-4 mb-6">
           {data.mobile && (
             <a href={`tel:${data.mobile}`} className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-105 transition-transform" style={{ color: primaryColor }}>
@@ -205,8 +205,12 @@ export default async function VCardLandingPage({ params }: PageProps) {
           {labels.downloadVCard}
         </a>
 
-        <p className="text-center text-gray-400 text-sm mt-8">{labels.createdWith}</p>
+        {/* Footer dibe yapışsın */}
+        <p className="text-center text-gray-400 text-sm mt-auto pt-6">{labels.createdWith}</p>
       </div>
+
+      {/* Alt accent şeridi - boş alan görünmesin */}
+      <div className="h-2 w-full flex-shrink-0" style={{ background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})` }} />
     </div>
   )
 }
@@ -228,12 +232,12 @@ interface LayoutProps {
 // MODERN — Tam ekran gradient + ortada yüzen beyaz kart
 function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoined, vCardDataUri, downloadName, labels }: LayoutProps) {
   return (
-    <div className="min-h-screen relative" style={{ background: `linear-gradient(to bottom right, ${primaryColor}, ${secondaryColor})` }}>
+    <div className="min-h-screen flex flex-col relative" style={{ background: `linear-gradient(to bottom right, ${primaryColor}, ${secondaryColor})` }}>
       {/* Dekor blur daireler */}
       <div className="absolute top-[-60px] right-[-60px] w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-60px] left-[-60px] w-56 h-56 bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md mx-auto px-4 pt-16 pb-8 relative z-10">
+      <div className="max-w-md mx-auto w-full px-4 pt-16 pb-6 relative z-10 flex-1 flex flex-col">
         {/* Yüzen kart */}
         <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
           {/* Üst banner */}
@@ -306,7 +310,7 @@ function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoi
           </div>
         </div>
 
-        <p className="text-center text-white/80 text-xs mt-6">{labels.createdWith}</p>
+        <p className="text-center text-white/80 text-xs mt-auto pt-6">{labels.createdWith}</p>
       </div>
     </div>
   )
@@ -315,14 +319,14 @@ function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoi
 // SLEEK — Koyu tema, premium kart görünümü
 function SleekLayout({ data, fullName, primaryColor, secondaryColor, addressJoined, vCardDataUri, downloadName, labels }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-900 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-72 h-72 opacity-20 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" style={{ backgroundColor: primaryColor }} />
 
       {/* Üst aksent çizgisi */}
-      <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})` }} />
+      <div className="h-1.5 w-full flex-shrink-0" style={{ background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})` }} />
 
-      <div className="max-w-md mx-auto px-6 py-10 relative z-10">
+      <div className="max-w-md mx-auto w-full px-6 py-10 relative z-10 flex-1 flex flex-col">
         {/* Avatar with glow */}
         <div className="flex justify-center mb-6">
           <div className="relative">
@@ -375,7 +379,7 @@ function SleekLayout({ data, fullName, primaryColor, secondaryColor, addressJoin
           {labels.downloadVCard}
         </a>
 
-        <p className="text-center text-gray-500 text-xs mt-8">{labels.createdWith}</p>
+        <p className="text-center text-gray-500 text-xs mt-auto pt-8">{labels.createdWith}</p>
       </div>
     </div>
   )
