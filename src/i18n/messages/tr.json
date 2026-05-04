@@ -408,7 +408,10 @@
     "phone": "Telefon",
     "work": "İş",
     "template": "Kart Tasarımı",
-    "saveContact": "Rehbere Ekle"
+    "saveContact": "Rehbere Ekle",
+    "downloadVCard": "vCard İndir",
+    "createdWith": "QR Code Shine ile oluşturuldu",
+    "defaultContactName": "Kişi"
   },
   "auth": {
     "loginTitle": "Tekrar Hoş Geldiniz",

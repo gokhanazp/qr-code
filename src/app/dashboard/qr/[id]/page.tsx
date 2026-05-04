@@ -55,8 +55,9 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
   }
   interface VCardDataType {
     firstName?: string; lastName?: string; title?: string; company?: string
-    email?: string; phone?: string; mobile?: string; website?: string
-    address?: string; city?: string; country?: string; notes?: string
+    email?: string; mobile?: string; workPhone?: string; website?: string
+    street?: string; city?: string; state?: string; zip?: string; country?: string
+    note?: string; photo?: string
   }
   interface WiFiDataType { ssid?: string; password?: string; encryption?: string; hidden?: boolean }
   interface EmailDataType { email?: string; subject?: string; body?: string }
@@ -292,27 +293,38 @@ export default async function QRCodeDetailPage({ params }: PageProps) {
                   )}
 
                   {/* vCard Tipi - Kartvizit */}
-                  {isVCardType && (
-                    <>
-                      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-sm">👤 Kartvizit</h3>
-                      <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-4 text-white">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-lg font-bold">{(vcardData.firstName || '?')[0]?.toUpperCase()}</div>
-                          <div>
-                            <h4 className="font-bold text-sm">{`${vcardData.firstName || ''} ${vcardData.lastName || ''}`}</h4>
-                            {vcardData.title && <p className="text-white/80 text-xs">{vcardData.title}</p>}
-                            {vcardData.company && <p className="text-white/70 text-[10px]">{vcardData.company}</p>}
+                  {isVCardType && (() => {
+                    const phoneDisplay = vcardData.mobile || vcardData.workPhone || ''
+                    const addressDisplay = [vcardData.street, vcardData.city, vcardData.country].filter(Boolean).join(', ')
+                    return (
+                      <>
+                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2 text-sm">👤 Kartvizit</h3>
+                        <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-4 text-white">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-lg font-bold overflow-hidden flex-shrink-0">
+                              {vcardData.photo ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={vcardData.photo} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                (vcardData.firstName || '?')[0]?.toUpperCase()
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-sm">{`${vcardData.firstName || ''} ${vcardData.lastName || ''}`}</h4>
+                              {vcardData.title && <p className="text-white/80 text-xs">{vcardData.title}</p>}
+                              {vcardData.company && <p className="text-white/70 text-[10px]">{vcardData.company}</p>}
+                            </div>
+                          </div>
+                          <div className="space-y-1.5 text-xs">
+                            {phoneDisplay && <p className="flex items-center gap-2"><Phone className="w-3 h-3" /> {phoneDisplay}</p>}
+                            {vcardData.email && <p className="flex items-center gap-2"><Mail className="w-3 h-3" /> {vcardData.email}</p>}
+                            {vcardData.website && <p className="flex items-center gap-2"><Globe className="w-3 h-3" /> {vcardData.website}</p>}
+                            {addressDisplay && <p className="flex items-center gap-2"><MapPin className="w-3 h-3" /> {addressDisplay}</p>}
                           </div>
                         </div>
-                        <div className="space-y-1.5 text-xs">
-                          {vcardData.phone && <p className="flex items-center gap-2"><Phone className="w-3 h-3" /> {vcardData.phone}</p>}
-                          {vcardData.email && <p className="flex items-center gap-2"><Mail className="w-3 h-3" /> {vcardData.email}</p>}
-                          {vcardData.website && <p className="flex items-center gap-2"><Globe className="w-3 h-3" /> {vcardData.website}</p>}
-                          {vcardData.address && <p className="flex items-center gap-2"><MapPin className="w-3 h-3" /> {vcardData.address}</p>}
-                        </div>
-                      </div>
-                    </>
-                  )}
+                      </>
+                    )
+                  })()}
 
                   {/* URL Tipi */}
                   {isUrlType && (

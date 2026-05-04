@@ -408,7 +408,10 @@
     "phone": "Phone",
     "work": "Work",
     "template": "Card Design",
-    "saveContact": "Save Contact"
+    "saveContact": "Save Contact",
+    "downloadVCard": "Download vCard",
+    "createdWith": "Created with QR Code Shine",
+    "defaultContactName": "Contact"
   },
   "auth": {
     "loginTitle": "Welcome Back",

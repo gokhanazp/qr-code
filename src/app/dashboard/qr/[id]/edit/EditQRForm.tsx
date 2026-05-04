@@ -103,16 +103,58 @@ export default function EditQRForm({
     setMenuData(prev => ({ ...prev, [key]: value }))
   }
 
+  // VCARD tipi için ek state'ler - VCardForm ile birebir aynı alan adları
+  const [vcardData, setVcardData] = useState({
+    firstName: initialRawContent.firstName || '',
+    lastName: initialRawContent.lastName || '',
+    company: initialRawContent.company || '',
+    title: initialRawContent.title || '',
+    mobile: initialRawContent.mobile || '',
+    workPhone: initialRawContent.workPhone || '',
+    email: initialRawContent.email || '',
+    website: initialRawContent.website || '',
+    street: initialRawContent.street || '',
+    city: initialRawContent.city || '',
+    state: initialRawContent.state || '',
+    zip: initialRawContent.zip || '',
+    country: initialRawContent.country || '',
+    note: initialRawContent.note || '',
+    photo: initialRawContent.photo || '',
+    primaryColor: initialRawContent.primaryColor || '#527AC9',
+    secondaryColor: initialRawContent.secondaryColor || '#7EC09F',
+    template: (initialRawContent.template as 'classic' | 'modern' | 'sleek') || 'classic',
+  })
+
+  const updateVcardData = (key: string, value: string) => {
+    setVcardData(prev => ({ ...prev, [key]: value }))
+  }
+
   const handleSave = async () => {
     if (!name.trim()) { setMessage({ type: 'error', text: t('pleaseEnterName') }); return }
     setIsSaving(true); setMessage(null)
 
     // Güncellenmiş rawContent oluştur
-    let updatedRawContent = { ...initialRawContent }
+    let updatedRawContent: Record<string, string> = { ...initialRawContent }
     if (normalizedType === 'APP') {
       updatedRawContent = { ...appData, welcomeScreenEnabled: String(appData.welcomeScreenEnabled) }
     } else if (normalizedType === 'MENU') {
       updatedRawContent = { ...menuData }
+    } else if (normalizedType === 'VCARD') {
+      updatedRawContent = { ...vcardData }
+    }
+
+    // VCARD için orijinal hedef URL'sini güncel verilerle yeniden üret.
+    // Böylece /v/[base64] ile açılan eski/önbelleklenmiş paylaşımlar da güncel veriyi gösterir.
+    let contentToSave: string = normalizedType === 'URL' ? url : initialUrl
+    if (normalizedType === 'VCARD' && typeof window !== 'undefined') {
+      try {
+        const jsonStr = JSON.stringify(updatedRawContent)
+        const base64 = btoa(unescape(encodeURIComponent(jsonStr)))
+          .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+        contentToSave = `${window.location.origin}/v/${base64}`
+      } catch {
+        contentToSave = initialUrl
+      }
     }
 
     try {
@@ -120,7 +162,7 @@ export default function EditQRForm({
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
-          content: normalizedType === 'URL' ? url : initialUrl,
+          content: contentToSave,
           rawContent: updatedRawContent,
           settings: {
             ...settings,
@@ -545,29 +587,104 @@ export default function EditQRForm({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm text-gray-700 mb-1">Ad</label>
-                    <input type="text" value={initialRawContent.firstName || ''} readOnly
-                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                    <input type="text" value={vcardData.firstName} onChange={(e) => updateVcardData('firstName', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
                     <label className="block text-sm text-gray-700 mb-1">Soyad</label>
-                    <input type="text" value={initialRawContent.lastName || ''} readOnly
-                      className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                    <input type="text" value={vcardData.lastName} onChange={(e) => updateVcardData('lastName', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Şirket</label>
+                    <input type="text" value={vcardData.company} onChange={(e) => updateVcardData('company', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Ünvan</label>
+                    <input type="text" value={vcardData.title} onChange={(e) => updateVcardData('title', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Cep Telefonu</label>
+                    <input type="text" value={vcardData.mobile} onChange={(e) => updateVcardData('mobile', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">İş Telefonu</label>
+                    <input type="text" value={vcardData.workPhone} onChange={(e) => updateVcardData('workPhone', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Email</label>
+                    <input type="email" value={vcardData.email} onChange={(e) => updateVcardData('email', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Website</label>
+                    <input type="text" value={vcardData.website} onChange={(e) => updateVcardData('website', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="https://..." />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-700 mb-1">Şirket</label>
-                  <input type="text" value={initialRawContent.organization || ''} readOnly
-                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                  <label className="block text-sm text-gray-700 mb-1">Adres</label>
+                  <input type="text" value={vcardData.street} onChange={(e) => updateVcardData('street', e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Sokak / Cadde" />
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">Telefon</label>
-                  <input type="text" value={initialRawContent.phone || ''} readOnly
-                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Şehir</label>
+                    <input type="text" value={vcardData.city} onChange={(e) => updateVcardData('city', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">İl / Eyalet</label>
+                    <input type="text" value={vcardData.state} onChange={(e) => updateVcardData('state', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">Email</label>
-                  <input type="text" value={initialRawContent.email || ''} readOnly
-                    className="w-full px-3 py-2 border rounded-lg bg-gray-100" />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Posta Kodu</label>
+                    <input type="text" value={vcardData.zip} onChange={(e) => updateVcardData('zip', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Ülke</label>
+                    <input type="text" value={vcardData.country} onChange={(e) => updateVcardData('country', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-indigo-100">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Şablon</label>
+                    <select value={vcardData.template} onChange={(e) => updateVcardData('template', e.target.value)}
+                      className="w-full px-2 py-2 border rounded-lg text-sm">
+                      <option value="classic">Classic</option>
+                      <option value="modern">Modern</option>
+                      <option value="sleek">Sleek</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Birincil Renk</label>
+                    <div className="flex items-center gap-1">
+                      <input type="color" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                      <input type="text" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">İkincil Renk</label>
+                    <div className="flex items-center gap-1">
+                      <input type="color" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                      <input type="text" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

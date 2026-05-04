@@ -2,23 +2,51 @@
 // Telefon mockup tasarımına benzer güzel bir landing page
 
 import { Phone, Mail, Globe, MapPin, Briefcase, UserPlus, Download } from 'lucide-react'
+import { createServiceClient } from '@/lib/supabase/service'
+import { getTranslations } from 'next-intl/server'
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // vCard verilerini URL-safe base64'den decode et (Decode vCard data from URL-safe base64)
-function decodeVCardData(encodedData: string): Record<string, string> {
+function decodeVCardData(encodedData: string): Record<string, string> | null {
   try {
     // URL-safe karakterleri standart base64'e çevir (Convert URL-safe chars to standard base64)
-    // - -> +, _ -> /, padding ekle
     let base64 = encodedData.replace(/-/g, '+').replace(/_/g, '/')
-    // Padding ekle (Add padding)
     while (base64.length % 4) {
       base64 += '='
     }
-    // Base64 decode, sonra UTF-8 decode
     const decoded = decodeURIComponent(escape(atob(base64)))
-    return JSON.parse(decoded)
-  } catch (error) {
-    console.error('vCard decode error:', error)
-    return {}
+    const parsed = JSON.parse(decoded)
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, string>
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+// Kaydedilmiş vCard'ı veritabanından çek (Load saved vCard from DB by UUID)
+async function loadVCardFromDb(uuid: string): Promise<Record<string, string> | null> {
+  try {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('qr_codes')
+      .select('content')
+      .eq('id', uuid)
+      .single()
+    if (error || !data) return null
+    const content = data.content as { raw?: Record<string, unknown> } | null
+    const raw = content?.raw || {}
+    // Tüm değerleri string'e çevir (mobile, workPhone, primaryColor vb.)
+    const out: Record<string, string> = {}
+    for (const [k, v] of Object.entries(raw)) {
+      if (v == null) continue
+      out[k] = typeof v === 'string' ? v : String(v)
+    }
+    return out
+  } catch {
+    return null
   }
 }
 
@@ -45,9 +73,18 @@ interface PageProps {
 
 export default async function VCardLandingPage({ params }: PageProps) {
   const { id } = await params
-  const data = decodeVCardData(id)
-  
-  const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Contact'
+  const t = await getTranslations('generator')
+
+  // Önce UUID mi diye bak: kaydedilmiş QR taraması bu yola düşer.
+  // Değilse base64-encoded JSON olarak decode etmeyi dene (önizleme akışı).
+  let data: Record<string, string> = {}
+  if (UUID_REGEX.test(id)) {
+    data = (await loadVCardFromDb(id)) || {}
+  } else {
+    data = decodeVCardData(id) || {}
+  }
+
+  const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || t('defaultContactName')
   const primaryColor = data.primaryColor || '#527AC9'
   const secondaryColor = data.secondaryColor || '#7EC09F'
   const vCardContent = generateVCardFile(data)
@@ -63,10 +100,15 @@ export default async function VCardLandingPage({ params }: PageProps) {
         }}
       >
         {/* Profil Resmi / Baş Harf (Profile / Initial) */}
-        <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30 shadow-xl mb-4">
-          <span className="text-4xl font-bold text-white">
-            {(data.firstName?.[0] || 'C').toUpperCase()}
-          </span>
+        <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30 shadow-xl mb-4 overflow-hidden">
+          {data.photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={data.photo} alt={fullName} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-4xl font-bold text-white">
+              {(data.firstName?.[0] || 'C').toUpperCase()}
+            </span>
+          )}
         </div>
 
         {/* İsim ve Ünvan - Gradient içinde (Name and Title - Inside gradient) */}
@@ -115,11 +157,11 @@ export default async function VCardLandingPage({ params }: PageProps) {
 
         {/* İletişim Kartları (Contact Cards) */}
         <div className="space-y-3">
-          <ContactCard icon={<Phone />} label="Mobile" value={data.mobile} href={`tel:${data.mobile}`} color={primaryColor} />
-          <ContactCard icon={<Phone />} label="Work" value={data.workPhone} href={`tel:${data.workPhone}`} color={primaryColor} />
-          <ContactCard icon={<Mail />} label="Email" value={data.email} href={`mailto:${data.email}`} color={primaryColor} />
-          <ContactCard icon={<Globe />} label="Website" value={data.website} href={data.website} color={primaryColor} />
-          <ContactCard icon={<MapPin />} label="Address" value={[data.street, data.city, data.country].filter(Boolean).join(', ')} color={primaryColor} />
+          <ContactCard icon={<Phone />} label={t('mobilePhone')} value={data.mobile} href={`tel:${data.mobile}`} color={primaryColor} />
+          <ContactCard icon={<Phone />} label={t('workPhone')} value={data.workPhone} href={`tel:${data.workPhone}`} color={primaryColor} />
+          <ContactCard icon={<Mail />} label={t('email')} value={data.email} href={`mailto:${data.email}`} color={primaryColor} />
+          <ContactCard icon={<Globe />} label={t('website')} value={data.website} href={data.website} color={primaryColor} />
+          <ContactCard icon={<MapPin />} label={t('address')} value={[data.street, data.city, data.state, data.zip, data.country].filter(Boolean).join(', ')} color={primaryColor} multiline />
         </div>
 
         {/* Rehbere Ekle Butonu (Add to Contacts Button) */}
@@ -130,7 +172,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
           style={{ backgroundColor: primaryColor }}
         >
           <UserPlus className="w-6 h-6" />
-          Add to Contacts
+          {t('saveContact')}
         </a>
 
         {/* Download vCard */}
@@ -140,12 +182,12 @@ export default async function VCardLandingPage({ params }: PageProps) {
           className="w-full mt-3 py-3 rounded-xl bg-white text-gray-700 font-medium flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 transition-all"
         >
           <Download className="w-5 h-5" />
-          Download vCard
+          {t('downloadVCard')}
         </a>
 
         {/* Footer */}
         <p className="text-center text-gray-400 text-sm mt-8">
-          Created with QR Code Shine
+          {t('createdWith')}
         </p>
       </div>
     </div>
@@ -159,22 +201,25 @@ interface ContactCardProps {
   value?: string
   href?: string
   color: string
+  multiline?: boolean
 }
 
-function ContactCard({ icon, label, value, href, color }: ContactCardProps) {
+function ContactCard({ icon, label, value, href, color, multiline = false }: ContactCardProps) {
   if (!value) return null
 
   const content = (
-    <div className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+    <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center"
+        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: `${color}15`, color }}
       >
         {icon}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 self-center">
         <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
-        <p className="text-gray-900 font-medium truncate">{value}</p>
+        <p className={`text-gray-900 font-medium ${multiline ? 'break-words whitespace-normal' : 'truncate'}`}>
+          {value}
+        </p>
       </div>
     </div>
   )

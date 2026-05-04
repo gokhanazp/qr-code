@@ -283,7 +283,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
                   )}
                 >
                   {/* Visual Preview */}
-                  <div className="absolute top-2 left-2 right-2 bottom-8 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
+                  <div className="absolute top-2 left-2 right-2 bottom-8 rounded-lg overflow-hidden bg-gray-50">
                     {/* 1. Classic Thumbnail */}
                     {tmpl.id === 'classic' && (
                       <div className="w-full h-full flex flex-col items-center">
