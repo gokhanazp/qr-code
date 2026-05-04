@@ -128,7 +128,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
 
   // Default: Classic template
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 overflow-x-hidden">
       {/* Header Gradient */}
       <div
         className="pt-12 pb-16 flex flex-col items-center relative flex-shrink-0"
@@ -232,7 +232,7 @@ interface LayoutProps {
 // MODERN — Tam ekran gradient + ortada yüzen beyaz kart
 function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoined, vCardDataUri, downloadName, labels }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ background: `linear-gradient(to bottom right, ${primaryColor}, ${secondaryColor})` }}>
+    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: `linear-gradient(to bottom right, ${primaryColor}, ${secondaryColor})` }}>
       {/* Dekor blur daireler */}
       <div className="absolute top-[-60px] right-[-60px] w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-60px] left-[-60px] w-56 h-56 bg-black/10 rounded-full blur-3xl pointer-events-none" />
