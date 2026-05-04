@@ -237,11 +237,11 @@ function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoi
       <div className="absolute top-[-60px] right-[-60px] w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-[-60px] left-[-60px] w-56 h-56 bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-md mx-auto w-full px-4 pt-16 pb-6 relative z-10 flex-1 flex flex-col">
-        {/* Yüzen kart */}
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
+      <div className="max-w-md mx-auto w-full px-4 pt-10 pb-4 relative z-10 flex-1 flex flex-col">
+        {/* Yüzen kart - sayfa yüksekliğini doldurur */}
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden flex-1 flex flex-col">
           {/* Üst banner */}
-          <div className="h-20 relative" style={{ backgroundColor: `${primaryColor}15` }} />
+          <div className="h-16 relative flex-shrink-0" style={{ backgroundColor: `${primaryColor}15` }} />
 
           {/* Avatar overlap */}
           <div className="flex justify-center -mt-14 px-6">
@@ -294,8 +294,8 @@ function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoi
             <ModernRow icon={<MapPin className="w-4 h-4" />} label={labels.address} value={addressJoined} multiline />
           </div>
 
-          {/* Butonlar */}
-          <div className="px-6 mt-6 pb-6 space-y-3">
+          {/* Butonlar - kartın dibine yapışık */}
+          <div className="px-6 mt-auto pt-6 pb-6 space-y-3">
             <a href={vCardDataUri} download={downloadName}
               className="w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
               style={{ backgroundColor: primaryColor }}>
@@ -310,7 +310,7 @@ function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoi
           </div>
         </div>
 
-        <p className="text-center text-white/80 text-xs mt-auto pt-6">{labels.createdWith}</p>
+        <p className="text-center text-white/80 text-xs pt-4 flex-shrink-0">{labels.createdWith}</p>
       </div>
     </div>
   )
