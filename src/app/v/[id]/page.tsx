@@ -87,19 +87,55 @@ export default async function VCardLandingPage({ params }: PageProps) {
   const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || t('defaultContactName')
   const primaryColor = data.primaryColor || '#527AC9'
   const secondaryColor = data.secondaryColor || '#7EC09F'
+  const template = (data.template === 'modern' || data.template === 'sleek') ? data.template : 'classic'
   const vCardContent = generateVCardFile(data)
   const vCardDataUri = `data:text/vcard;charset=utf-8,${encodeURIComponent(vCardContent)}`
+  const addressJoined = [data.street, data.city, data.state, data.zip, data.country].filter(Boolean).join(', ')
+  const downloadName = `${fullName.replace(/\s+/g, '_')}.vcf`
 
+  const labels = {
+    mobile: t('mobilePhone'),
+    work: t('workPhone'),
+    email: t('email'),
+    website: t('website'),
+    address: t('address'),
+    saveContact: t('saveContact'),
+    downloadVCard: t('downloadVCard'),
+    createdWith: t('createdWith'),
+  }
+
+  if (template === 'modern') {
+    return (
+      <ModernLayout
+        data={data} fullName={fullName}
+        primaryColor={primaryColor} secondaryColor={secondaryColor}
+        addressJoined={addressJoined} vCardDataUri={vCardDataUri} downloadName={downloadName}
+        labels={labels}
+      />
+    )
+  }
+
+  if (template === 'sleek') {
+    return (
+      <SleekLayout
+        data={data} fullName={fullName}
+        primaryColor={primaryColor} secondaryColor={secondaryColor}
+        addressJoined={addressJoined} vCardDataUri={vCardDataUri} downloadName={downloadName}
+        labels={labels}
+      />
+    )
+  }
+
+  // Default: Classic template
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header Gradient - İsim ve profil dahil (Including name and profile) */}
+      {/* Header Gradient */}
       <div
         className="pt-12 pb-16 flex flex-col items-center relative"
         style={{
           background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`
         }}
       >
-        {/* Profil Resmi / Baş Harf (Profile / Initial) */}
         <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30 shadow-xl mb-4 overflow-hidden">
           {data.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -111,10 +147,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* İsim ve Ünvan - Gradient içinde (Name and Title - Inside gradient) */}
-        <h1 className="text-2xl font-bold text-white text-center px-4 uppercase tracking-wide">
-          {fullName}
-        </h1>
+        <h1 className="text-2xl font-bold text-white text-center px-4 uppercase tracking-wide">{fullName}</h1>
         {data.title && (
           <p className="text-white/90 mt-1 text-sm uppercase tracking-wider">{data.title}</p>
         )}
@@ -125,7 +158,6 @@ export default async function VCardLandingPage({ params }: PageProps) {
           </p>
         )}
 
-        {/* Dalga Şekli (Wave Shape) */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H0Z" fill="#f3f4f6" />
@@ -133,10 +165,7 @@ export default async function VCardLandingPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* İçerik Alanı (Content Area) */}
       <div className="max-w-md mx-auto px-4 -mt-8 pb-8 relative z-10">
-
-        {/* Hızlı Aksiyonlar (Quick Actions) */}
         <div className="flex justify-center gap-4 mb-6">
           {data.mobile && (
             <a href={`tel:${data.mobile}`} className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-105 transition-transform" style={{ color: primaryColor }}>
@@ -155,43 +184,249 @@ export default async function VCardLandingPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* İletişim Kartları (Contact Cards) */}
         <div className="space-y-3">
-          <ContactCard icon={<Phone />} label={t('mobilePhone')} value={data.mobile} href={`tel:${data.mobile}`} color={primaryColor} />
-          <ContactCard icon={<Phone />} label={t('workPhone')} value={data.workPhone} href={`tel:${data.workPhone}`} color={primaryColor} />
-          <ContactCard icon={<Mail />} label={t('email')} value={data.email} href={`mailto:${data.email}`} color={primaryColor} />
-          <ContactCard icon={<Globe />} label={t('website')} value={data.website} href={data.website} color={primaryColor} />
-          <ContactCard icon={<MapPin />} label={t('address')} value={[data.street, data.city, data.state, data.zip, data.country].filter(Boolean).join(', ')} color={primaryColor} multiline />
+          <ContactCard icon={<Phone />} label={labels.mobile} value={data.mobile} href={`tel:${data.mobile}`} color={primaryColor} />
+          <ContactCard icon={<Phone />} label={labels.work} value={data.workPhone} href={`tel:${data.workPhone}`} color={primaryColor} />
+          <ContactCard icon={<Mail />} label={labels.email} value={data.email} href={`mailto:${data.email}`} color={primaryColor} />
+          <ContactCard icon={<Globe />} label={labels.website} value={data.website} href={data.website} color={primaryColor} />
+          <ContactCard icon={<MapPin />} label={labels.address} value={addressJoined} color={primaryColor} multiline />
         </div>
 
-        {/* Rehbere Ekle Butonu (Add to Contacts Button) */}
-        <a
-          href={vCardDataUri}
-          download={`${fullName.replace(/\s+/g, '_')}.vcf`}
+        <a href={vCardDataUri} download={downloadName}
           className="w-full mt-8 py-4 rounded-2xl text-white font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-95"
-          style={{ backgroundColor: primaryColor }}
-        >
+          style={{ backgroundColor: primaryColor }}>
           <UserPlus className="w-6 h-6" />
-          {t('saveContact')}
+          {labels.saveContact}
         </a>
 
-        {/* Download vCard */}
-        <a
-          href={vCardDataUri}
-          download={`${fullName.replace(/\s+/g, '_')}.vcf`}
-          className="w-full mt-3 py-3 rounded-xl bg-white text-gray-700 font-medium flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 transition-all"
-        >
+        <a href={vCardDataUri} download={downloadName}
+          className="w-full mt-3 py-3 rounded-xl bg-white text-gray-700 font-medium flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 transition-all">
           <Download className="w-5 h-5" />
-          {t('downloadVCard')}
+          {labels.downloadVCard}
         </a>
 
-        {/* Footer */}
-        <p className="text-center text-gray-400 text-sm mt-8">
-          {t('createdWith')}
-        </p>
+        <p className="text-center text-gray-400 text-sm mt-8">{labels.createdWith}</p>
       </div>
     </div>
   )
+}
+
+interface LayoutProps {
+  data: Record<string, string>
+  fullName: string
+  primaryColor: string
+  secondaryColor: string
+  addressJoined: string
+  vCardDataUri: string
+  downloadName: string
+  labels: {
+    mobile: string; work: string; email: string; website: string; address: string
+    saveContact: string; downloadVCard: string; createdWith: string
+  }
+}
+
+// MODERN — Tam ekran gradient + ortada yüzen beyaz kart
+function ModernLayout({ data, fullName, primaryColor, secondaryColor, addressJoined, vCardDataUri, downloadName, labels }: LayoutProps) {
+  return (
+    <div className="min-h-screen relative" style={{ background: `linear-gradient(to bottom right, ${primaryColor}, ${secondaryColor})` }}>
+      {/* Dekor blur daireler */}
+      <div className="absolute top-[-60px] right-[-60px] w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-60px] left-[-60px] w-56 h-56 bg-black/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-md mx-auto px-4 pt-16 pb-8 relative z-10">
+        {/* Yüzen kart */}
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
+          {/* Üst banner */}
+          <div className="h-20 relative" style={{ backgroundColor: `${primaryColor}15` }} />
+
+          {/* Avatar overlap */}
+          <div className="flex justify-center -mt-14 px-6">
+            <div className="w-28 h-28 rounded-2xl bg-white p-1.5 shadow-lg overflow-hidden">
+              <div className="w-full h-full rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                {data.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={data.photo} alt={fullName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-bold text-gray-400">{(data.firstName?.[0] || 'C').toUpperCase()}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* İsim & Ünvan */}
+          <div className="text-center px-6 mt-3">
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">{fullName}</h1>
+            {data.title && (
+              <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: primaryColor }}>{data.title}</p>
+            )}
+            {data.company && <p className="text-sm text-gray-500 mt-1">{data.company}</p>}
+          </div>
+
+          {/* Hızlı aksiyonlar */}
+          <div className="flex justify-center gap-3 mt-5 px-6">
+            {data.mobile && (
+              <a href={`tel:${data.mobile}`} className="w-12 h-12 rounded-full bg-white border-2 shadow-md flex items-center justify-center hover:scale-105 transition-transform" style={{ borderColor: primaryColor, color: primaryColor }}>
+                <Phone className="w-5 h-5" />
+              </a>
+            )}
+            {data.email && (
+              <a href={`mailto:${data.email}`} className="w-12 h-12 rounded-full bg-white border-2 shadow-md flex items-center justify-center hover:scale-105 transition-transform" style={{ borderColor: primaryColor, color: primaryColor }}>
+                <Mail className="w-5 h-5" />
+              </a>
+            )}
+            {data.website && (
+              <a href={data.website} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-white border-2 shadow-md flex items-center justify-center hover:scale-105 transition-transform" style={{ borderColor: primaryColor, color: primaryColor }}>
+                <Globe className="w-5 h-5" />
+              </a>
+            )}
+          </div>
+
+          {/* İletişim listesi */}
+          <div className="px-6 mt-6 space-y-3">
+            <ModernRow icon={<Phone className="w-4 h-4" />} label={labels.mobile} value={data.mobile} href={data.mobile ? `tel:${data.mobile}` : undefined} />
+            <ModernRow icon={<Phone className="w-4 h-4" />} label={labels.work} value={data.workPhone} href={data.workPhone ? `tel:${data.workPhone}` : undefined} />
+            <ModernRow icon={<Mail className="w-4 h-4" />} label={labels.email} value={data.email} href={data.email ? `mailto:${data.email}` : undefined} />
+            <ModernRow icon={<Globe className="w-4 h-4" />} label={labels.website} value={data.website} href={data.website} />
+            <ModernRow icon={<MapPin className="w-4 h-4" />} label={labels.address} value={addressJoined} multiline />
+          </div>
+
+          {/* Butonlar */}
+          <div className="px-6 mt-6 pb-6 space-y-3">
+            <a href={vCardDataUri} download={downloadName}
+              className="w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
+              style={{ backgroundColor: primaryColor }}>
+              <UserPlus className="w-5 h-5" />
+              {labels.saveContact}
+            </a>
+            <a href={vCardDataUri} download={downloadName}
+              className="w-full py-3 rounded-xl bg-gray-50 text-gray-700 font-medium flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-100 transition-all">
+              <Download className="w-4 h-4" />
+              {labels.downloadVCard}
+            </a>
+          </div>
+        </div>
+
+        <p className="text-center text-white/80 text-xs mt-6">{labels.createdWith}</p>
+      </div>
+    </div>
+  )
+}
+
+// SLEEK — Koyu tema, premium kart görünümü
+function SleekLayout({ data, fullName, primaryColor, secondaryColor, addressJoined, vCardDataUri, downloadName, labels }: LayoutProps) {
+  return (
+    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 opacity-20 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none" style={{ backgroundColor: primaryColor }} />
+
+      {/* Üst aksent çizgisi */}
+      <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})` }} />
+
+      <div className="max-w-md mx-auto px-6 py-10 relative z-10">
+        {/* Avatar with glow */}
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-full blur opacity-60" style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }} />
+            <div className="relative w-32 h-32 rounded-full border-4 border-gray-900 bg-gray-800 overflow-hidden flex items-center justify-center">
+              {data.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={data.photo} alt={fullName} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-4xl font-bold text-gray-400">{(data.firstName?.[0] || 'C').toUpperCase()}</span>
+              )}
+            </div>
+            <div className="absolute bottom-1 right-1 bg-white text-gray-900 w-9 h-9 rounded-full flex items-center justify-center border-4 border-gray-900 shadow-sm">
+              <Briefcase className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+
+        {/* İsim */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-white tracking-wide uppercase">{fullName}</h1>
+          {data.title && (
+            <div className="inline-block mt-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+              <p className="text-xs font-medium tracking-widest text-gray-300 uppercase">{data.title}</p>
+            </div>
+          )}
+          {data.company && <p className="text-gray-400 text-sm mt-2">{data.company}</p>}
+        </div>
+
+        {/* İletişim listesi - koyu satırlar */}
+        <div className="space-y-3">
+          <SleekRow icon={<Phone className="w-4 h-4" />} label={labels.mobile} value={data.mobile} href={data.mobile ? `tel:${data.mobile}` : undefined} color={primaryColor} />
+          <SleekRow icon={<Phone className="w-4 h-4" />} label={labels.work} value={data.workPhone} href={data.workPhone ? `tel:${data.workPhone}` : undefined} color={primaryColor} />
+          <SleekRow icon={<Mail className="w-4 h-4" />} label={labels.email} value={data.email} href={data.email ? `mailto:${data.email}` : undefined} color={primaryColor} />
+          <SleekRow icon={<Globe className="w-4 h-4" />} label={labels.website} value={data.website} href={data.website} color={primaryColor} />
+          <SleekRow icon={<MapPin className="w-4 h-4" />} label={labels.address} value={addressJoined} color={primaryColor} multiline />
+        </div>
+
+        {/* Butonlar */}
+        <a href={vCardDataUri} download={downloadName}
+          className="w-full mt-8 py-4 rounded-xl text-white font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-xs"
+          style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)` }}>
+          <UserPlus className="w-5 h-5" />
+          {labels.saveContact}
+        </a>
+
+        <a href={vCardDataUri} download={downloadName}
+          className="w-full mt-3 py-3 rounded-xl bg-white/5 text-white font-medium flex items-center justify-center gap-2 border border-white/10 hover:bg-white/10 transition-all text-sm">
+          <Download className="w-4 h-4" />
+          {labels.downloadVCard}
+        </a>
+
+        <p className="text-center text-gray-500 text-xs mt-8">{labels.createdWith}</p>
+      </div>
+    </div>
+  )
+}
+
+// Modern alt-bileşeni
+interface RowProps {
+  icon: React.ReactNode
+  label: string
+  value?: string
+  href?: string
+  multiline?: boolean
+}
+function ModernRow({ icon, label, value, href, multiline }: RowProps) {
+  if (!value) return null
+  const content = (
+    <div className="flex items-start gap-3 py-2">
+      <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0">
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{label}</p>
+        <p className={`text-sm font-semibold text-gray-900 ${multiline ? 'break-words' : 'truncate'}`}>{value}</p>
+      </div>
+    </div>
+  )
+  if (href) {
+    return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{content}</a>
+  }
+  return content
+}
+
+// Sleek alt-bileşeni
+interface SleekRowProps extends RowProps { color: string }
+function SleekRow({ icon, label, value, href, color, multiline }: SleekRowProps) {
+  if (!value) return null
+  const content = (
+    <div className="flex items-start gap-4 p-3.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-lg flex-shrink-0" style={{ backgroundColor: color }}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0 self-center">
+        <p className={`text-sm font-semibold text-white ${multiline ? 'break-words' : 'truncate'}`}>{value}</p>
+        <p className="text-[10px] font-bold tracking-wider uppercase opacity-50 text-white mt-0.5">{label}</p>
+      </div>
+    </div>
+  )
+  if (href) {
+    return <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer">{content}</a>
+  }
+  return content
 }
 
 // İletişim Kartı Bileşeni (Contact Card Component)

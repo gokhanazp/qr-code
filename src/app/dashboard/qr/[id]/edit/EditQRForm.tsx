@@ -2,13 +2,14 @@
 
 // QR Kod Düzenleme Formu (QR Code Edit Form)
 // Tüm QR tipleri için tam düzenleme desteği - Frame, Logo, Renkler dahil
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Save, Loader2, CheckCircle, XCircle, Upload, X } from 'lucide-react'
+import { Save, Loader2, CheckCircle, XCircle, Upload, X, ArrowLeftRight } from 'lucide-react'
 import QRDownloadWrapper from '../QRDownloadWrapper'
 import { FRAME_TEMPLATES } from '@/components/qr/QRFrameSelector'
 import { PRESET_LOGOS } from '@/components/qr/QRLogoUploader'
+import VCardPhotoUpload from '@/components/qr/VCardPhotoUpload'
 
 interface EditQRFormProps {
   qrId: string
@@ -29,6 +30,24 @@ const colorPresets = [
   { id: 'purple', primary: '#6a1b9a', secondary: '#ba68c8', text: '#ffffff' },
   { id: 'orange', primary: '#e65100', secondary: '#ffb74d', text: '#000000' },
 ]
+
+// VCARD tipi renk paletleri - VCardForm ile aynı
+const vcardColorPalettes = [
+  { id: 1, primary: '#527AC9', secondary: '#7EC09F', name: 'Ocean' },
+  { id: 2, primary: '#374151', secondary: '#6B7280', name: 'Gray' },
+  { id: 3, primary: '#3B82F6', secondary: '#93C5FD', name: 'Blue' },
+  { id: 4, primary: '#8B5CF6', secondary: '#C4B5FD', name: 'Purple' },
+  { id: 5, primary: '#10B981', secondary: '#6EE7B7', name: 'Green' },
+  { id: 6, primary: '#F59E0B', secondary: '#FCD34D', name: 'Yellow' },
+  { id: 7, primary: '#EF4444', secondary: '#FCA5A5', name: 'Red' },
+  { id: 8, primary: '#EC4899', secondary: '#F9A8D4', name: 'Pink' },
+]
+
+const VCARD_TEMPLATES = [
+  { id: 'classic', name: 'Classic' },
+  { id: 'modern', name: 'Modern' },
+  { id: 'sleek', name: 'Sleek' },
+] as const
 
 // Preset renkler (Preset colors)
 const presetColors = ['#000000', '#1e40af', '#059669', '#dc2626', '#7c3aed', '#ea580c', '#0891b2', '#be185d']
@@ -128,6 +147,24 @@ export default function EditQRForm({
   const updateVcardData = (key: string, value: string) => {
     setVcardData(prev => ({ ...prev, [key]: value }))
   }
+
+  // VCARD canlı önizleme URL'si
+  const [baseUrl, setBaseUrl] = useState('')
+  useEffect(() => {
+    if (typeof window !== 'undefined') setBaseUrl(window.location.origin)
+  }, [])
+
+  const vcardPreviewUrl = useMemo(() => {
+    if (normalizedType !== 'VCARD' || !baseUrl) return ''
+    try {
+      const jsonStr = JSON.stringify(vcardData)
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+      return `${baseUrl}/v/${base64}`
+    } catch {
+      return ''
+    }
+  }, [vcardData, baseUrl, normalizedType])
 
   const handleSave = async () => {
     if (!name.trim()) { setMessage({ type: 'error', text: t('pleaseEnterName') }); return }
@@ -584,6 +621,13 @@ export default function EditQRForm({
             {normalizedType === 'VCARD' && (
               <div className="space-y-4 p-4 bg-indigo-50 rounded-xl">
                 <h4 className="font-medium text-gray-900 flex items-center gap-2">👤 Kişi Bilgileri</h4>
+
+                {/* Profil Fotoğrafı */}
+                <VCardPhotoUpload
+                  value={vcardData.photo}
+                  onChange={(url) => updateVcardData('photo', url)}
+                />
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm text-gray-700 mb-1">Ad</label>
@@ -661,28 +705,118 @@ export default function EditQRForm({
                       className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-3 pt-2 border-t border-indigo-100">
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Şablon</label>
-                    <select value={vcardData.template} onChange={(e) => updateVcardData('template', e.target.value)}
-                      className="w-full px-2 py-2 border rounded-lg text-sm">
-                      <option value="classic">Classic</option>
-                      <option value="modern">Modern</option>
-                      <option value="sleek">Sleek</option>
-                    </select>
+                {/* Kart Tasarımı - Görsel Şablon Seçici */}
+                <div className="pt-3 border-t border-indigo-100 space-y-3">
+                  <label className="block text-sm font-medium text-gray-700">Kart Tasarımı</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {VCARD_TEMPLATES.map((tmpl) => {
+                      const selected = vcardData.template === tmpl.id
+                      return (
+                        <button
+                          key={tmpl.id}
+                          type="button"
+                          onClick={() => updateVcardData('template', tmpl.id)}
+                          className={`relative h-28 rounded-xl border transition-all overflow-hidden text-left bg-white ${selected ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md' : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'}`}
+                        >
+                          <div className="absolute top-2 left-2 right-2 bottom-7 rounded-lg overflow-hidden bg-gray-50">
+                            {tmpl.id === 'classic' && (
+                              <div className="w-full h-full flex flex-col items-center">
+                                <div className="w-full h-8" style={{ background: `linear-gradient(to right, ${vcardData.primaryColor}, ${vcardData.secondaryColor})`, borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px' }} />
+                                <div className="w-7 h-7 rounded-full bg-white border-2 border-gray-100 -mt-3 shadow-sm z-10" />
+                                <div className="mt-1 space-y-1 w-full px-2 flex flex-col items-center">
+                                  <div className="w-10 h-1 bg-gray-300 rounded-full" />
+                                  <div className="w-7 h-0.5 bg-gray-200 rounded-full" />
+                                </div>
+                              </div>
+                            )}
+                            {tmpl.id === 'modern' && (
+                              <div className="w-full h-full relative overflow-hidden" style={{ background: `linear-gradient(to bottom right, ${vcardData.primaryColor}, ${vcardData.secondaryColor})` }}>
+                                <div className="absolute inset-x-2 top-4 bottom-0 bg-white rounded-t-md shadow-sm flex flex-col items-center pt-3">
+                                  <div className="absolute -top-3 w-6 h-6 rounded-md bg-white border-2 border-white shadow-sm" style={{ backgroundColor: vcardData.primaryColor }} />
+                                  <div className="w-8 h-1 bg-gray-700 rounded-full mt-1" />
+                                  <div className="w-5 h-0.5 bg-gray-300 rounded-full mt-1" />
+                                </div>
+                              </div>
+                            )}
+                            {tmpl.id === 'sleek' && (
+                              <div className="w-full h-full bg-gray-900 flex flex-col relative overflow-hidden">
+                                <div className="h-1 w-full" style={{ background: `linear-gradient(to right, ${vcardData.primaryColor}, ${vcardData.secondaryColor})` }} />
+                                <div className="p-2 flex flex-col items-center">
+                                  <div className="w-7 h-7 rounded-full border border-gray-700 bg-gray-800 mb-1" />
+                                  <div className="w-10 h-1 bg-white rounded-full opacity-90" />
+                                  <div className="w-7 h-0.5 bg-white/30 rounded-full mt-1" />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="absolute bottom-1 left-0 right-0 text-center">
+                            <span className={`text-[11px] font-semibold ${selected ? 'text-blue-600' : 'text-gray-500'}`}>{tmpl.name}</span>
+                          </div>
+                          {selected && (
+                            <div className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center shadow-sm">
+                              <CheckCircle className="w-2.5 h-2.5 text-white" />
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Birincil Renk</label>
-                    <div className="flex items-center gap-1">
-                      <input type="color" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
-                      <input type="text" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                </div>
+
+                {/* Renk Paleti */}
+                <div className="pt-3 border-t border-indigo-100 space-y-3">
+                  <label className="block text-sm font-medium text-gray-700">Renk Paleti</label>
+                  <div className="flex flex-wrap gap-2">
+                    {vcardColorPalettes.map((palette) => {
+                      const selected = vcardData.primaryColor.toLowerCase() === palette.primary.toLowerCase()
+                        && vcardData.secondaryColor.toLowerCase() === palette.secondary.toLowerCase()
+                      return (
+                        <button
+                          key={palette.id}
+                          type="button"
+                          onClick={() => {
+                            updateVcardData('primaryColor', palette.primary)
+                            updateVcardData('secondaryColor', palette.secondary)
+                          }}
+                          title={palette.name}
+                          className={`w-14 h-9 rounded-lg overflow-hidden border-2 transition-all ${selected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'}`}
+                        >
+                          <div className="h-full flex">
+                            <div className="w-1/2 h-full" style={{ backgroundColor: palette.primary }} />
+                            <div className="w-1/2 h-full" style={{ backgroundColor: palette.secondary }} />
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* Birincil & İkincil renk + Swap */}
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-600 mb-1">Birincil Renk</label>
+                      <div className="flex items-center gap-1">
+                        <input type="color" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                        <input type="text" value={vcardData.primaryColor} onChange={(e) => updateVcardData('primaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">İkincil Renk</label>
-                    <div className="flex items-center gap-1">
-                      <input type="color" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
-                      <input type="text" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const p = vcardData.primaryColor
+                        updateVcardData('primaryColor', vcardData.secondaryColor)
+                        updateVcardData('secondaryColor', p)
+                      }}
+                      className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors mb-1"
+                      title="Renkleri değiştir"
+                    >
+                      <ArrowLeftRight className="w-5 h-5" />
+                    </button>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-600 mb-1">İkincil Renk</label>
+                      <div className="flex items-center gap-1">
+                        <input type="color" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="w-8 h-8 rounded border cursor-pointer" />
+                        <input type="text" value={vcardData.secondaryColor} onChange={(e) => updateVcardData('secondaryColor', e.target.value)} className="flex-1 px-2 py-1 border rounded text-xs font-mono" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1030,6 +1164,52 @@ export default function EditQRForm({
                 downloadSVGLabel={t('downloadSVG')}
               />
             </div>
+          </div>
+        ) : normalizedType === 'VCARD' ? (
+          <div className="space-y-4">
+            <QRDownloadWrapper
+              content={getQRContent()}
+              foregroundColor={foregroundColor}
+              backgroundColor={backgroundColor}
+              size={size}
+              errorCorrection={errorCorrection}
+              selectedFrame={selectedFrame}
+              frameText={frameText}
+              frameColor={frameColor}
+              logo={logo}
+              logoSize={logoSize}
+              qrName={name || 'qr-code'}
+              isExpired={false}
+              downloadPNGLabel={t('downloadPNG')}
+              downloadSVGLabel={t('downloadSVG')}
+            />
+
+            {/* Canlı Önizleme URL'si - kaydetmeden değişiklikleri görmek için */}
+            {vcardPreviewUrl && (
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-500 mb-1 font-medium">{tGen('previewUrl')}</p>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={vcardPreviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-xs text-blue-600 hover:underline break-all line-clamp-2"
+                  >
+                    {vcardPreviewUrl}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => window.open(vcardPreviewUrl, '_blank')}
+                    className="flex-shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {tGen('open')}
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 mt-2">
+                  {tGen('clickToPreview')}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <QRDownloadWrapper

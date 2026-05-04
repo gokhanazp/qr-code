@@ -185,7 +185,7 @@ export default function VCardForm({ data, onChange }: VCardFormProps) {
     } catch {
       return ''
     }
-  }, [debouncedData, selectedPalette, baseUrl])
+  }, [debouncedData, selectedPalette, baseUrl, template])
 
   // QR kodunu kaydet (Save QR Code)
   const handleSaveQR = async () => {
